@@ -8,13 +8,13 @@ El proyecto no se limita a construir uno. Su objeto es **medir si el mantenimien
 
 Programar hoy con herramientas de IA exige consultar literatura abierta de forma constante. Esos repositorios publican sin revisión por pares y acumulan *slop*: textos generados por modelos de lenguaje, bien redactados, sin código ni evidencia verificable detrás. El volumen hace inviable filtrarlo a mano, y las reglas existentes son sustitutos y no filtros.
 
-RAG agrava el problema en lugar de mitigarlo: al recuperar por similitud semántica trata todos los fragmentos como equivalentes, y otorga la misma autoridad a un experimento validado que a una afirmación sin sustento. El juicio recae entero en el lector, que no dispone de metadato alguno para ejercerlo.
+RAG no parece ser la solución más óptina: al recuperar por similitud semántica trata todos los fragmentos como equivalentes, y otorga la misma autoridad a un experimento validado que a una afirmación sin sustento. 
 
 ## Pregunta de investigación
 
 > ¿Cómo evoluciona la calidad de un WikiLLM a medida que se le van ingiriendo fuentes, y en qué condiciones supera a un sistema RAG tradicional?
 
-La formulación es abierta a propósito: se busca delimitar **bajo qué condiciones** compilar conviene, no demostrar que siempre conviene. Se pone a prueba además una hipótesis de riesgo contra el propio diseño: que compilar **blanquee el ruido**, convirtiendo una afirmación débil en prosa segura y permanente. Si ocurre, el WikiLLM sería peor que RAG en este escenario, y el proyecto lo reportará.
+La formulación es abierta: se busca delimitar **bajo qué condiciones** compilar conviene, no demostrar que siempre conviene. cenario, y el proyecto lo reportará.
 
 Corresponde a la RQ1 de §11 del estado del arte. Las otras dos candidatas —*lint* como tarea evaluable, y la frontera económica compilar vs. recuperar— quedaron descartadas para un semestre; la comparación contra RAG se conserva como línea base, no como objeto principal.
 

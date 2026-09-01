@@ -30,6 +30,7 @@ Fase de fundamentación. **No hay implementación todavía.** El plan de trabajo
 | [Cronograma](cronograma.md) | Fases, fechas, entregables y reparto del trabajo. **Borrador**, sujeto a ajuste. |
 | [Cumplimiento de la rúbrica](cumplimiento_rubrica.md) | Trazabilidad criterio por criterio con la evidencia que el proyecto entrega. |
 | [Estado del arte](docs/estado-del-arte.md) | Revisión de literatura, panorama de implementaciones, vacíos de investigación y encuadre. |
+| [Entrega final](docs/entrega/) | Documento en LaTeX y su PDF, en el formato de la Facultad Barberi. Compone los cuatro documentos anteriores y lleva el cronograma como diagrama de Gantt. |
 | `Plan de trabajo del curso.docx` | Versión condensada a dos páginas de los tres documentos anteriores, entregada al curso. |
 
 ## Diseño experimental

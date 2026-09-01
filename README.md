@@ -59,4 +59,4 @@ Se propone publicar bajo licencia **MIT**. Pendiente de añadir el archivo `LICE
 
 ## Equipo
 
-Juan David Cardona · Juan Diego Ramírez
+Juan David Cruz · Juan Diego Ramírez

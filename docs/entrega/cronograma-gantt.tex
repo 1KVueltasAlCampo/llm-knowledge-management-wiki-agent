@@ -1,0 +1,70 @@
+% =====================================================================
+%  Cronograma del semestre 2026-2 como imagen independiente.
+%  Mismo diagrama que la Figura 1 de informe.tex, aislado para exportar.
+%  Compilar:  pdflatex cronograma-gantt.tex
+%  Exportar:  pdftoppm -png -r 300 cronograma-gantt.pdf cronograma-gantt
+% =====================================================================
+\documentclass[border=10pt]{standalone}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{mathptmx}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+\definecolor{barfill}{HTML}{3B5C86}
+\definecolor{hito}{HTML}{9B3A2E}
+\definecolor{rejilla}{HTML}{C8CDD4}
+
+\begin{document}
+\begin{tikzpicture}[x=0.165cm, y=-0.68cm, font=\footnotesize]
+
+% --- titulo
+\node[anchor=south west, font=\normalsize\bfseries] at (-30,-1.95)
+     {Cronograma de ejecución --- semestre 2026-2};
+
+% --- rejilla semanal
+\foreach \d in {0,7,14,21,28,35,42,49,56,63,70,77,84}{
+  \draw[rejilla, line width=0.3pt] (\d,-0.45) -- (\d,7.35);
+}
+% --- limites de mes
+\foreach \d in {0,30,61,88}{
+  \draw[gray!70, line width=0.6pt] (\d,-0.75) -- (\d,7.35);
+}
+% --- etiquetas de mes
+\node[anchor=south] at (15,-0.80) {\textsc{septiembre}};
+\node[anchor=south] at (45.5,-0.80) {\textsc{octubre}};
+\node[anchor=south] at (74.5,-0.80) {\textsc{noviembre}};
+
+% --- eje
+\draw[gray!70, line width=0.6pt] (0,-0.45) -- (88,-0.45);
+
+% --- barras
+\newcommand{\fase}[5]{%
+  \node[anchor=east, font=\footnotesize] at (-2,#1) {#4};
+  \fill[barfill] (#2,#1-0.19) rectangle (#3,#1+0.19);
+  \node[anchor=west, gray!55!black, font=\scriptsize] at (#3+1.6,#1) {#5};
+}
+\fase{0.6}{0}{7}{\textbf{F0} Delimitación}{1--7 sep}
+\fase{1.6}{7}{21}{\textbf{F1} Corpus}{8--21 sep}
+\fase{2.6}{21}{35}{\textbf{F2} Protocolo}{22 sep--5 oct}
+\fase{3.6}{35}{49}{\textbf{F3} Agente WikiLLM v1}{6--19 oct}
+\fase{4.6}{49}{63}{\textbf{F4} Línea base}{20 oct--2 nov}
+\fase{5.6}{63}{77}{\textbf{F5} Experimento}{3--16 nov}
+\fase{6.6}{77}{88}{\textbf{F6} Cierre}{17--27 nov}
+
+% --- hitos de control
+\fill[hito] (35,2.6) circle (1.9pt);
+\fill[hito] (63,4.6) circle (1.9pt);
+\draw[hito, dashed, line width=0.5pt] (35,2.6) -- (35,7.15);
+\draw[hito, dashed, line width=0.5pt] (63,4.6) -- (63,7.15);
+\node[hito, anchor=north west, font=\scriptsize] at (35.5,7.15) {5 oct};
+\node[hito, anchor=north west, font=\scriptsize] at (63.5,7.15) {2 nov};
+
+% --- leyenda
+\node[hito, anchor=north west, font=\scriptsize] at (-30,7.55)
+     {\textbullet\ Puntos de corte: cierre de F2 y cierre de F4};
+
+\end{tikzpicture}
+\end{document}

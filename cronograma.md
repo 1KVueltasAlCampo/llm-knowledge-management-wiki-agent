@@ -9,7 +9,7 @@ Semestre 2026-2. Equipo de dos personas. Los hitos internos son los que gobierna
 | F0 | Delimitación y aprobación | 1 – 7 sep | Acta de alcance validada con el tutor: subárea de IA, ventana temporal y criterio de inclusión del corpus. Repositorio público con licencia MIT. | Ambos |
 | F1 | Corpus e ingeniería de datos | 8 – 21 sep | Corpus versionado de 30 a 50 preprints con extracción de texto y estructura. Base de metadatos y señales de calidad por fuente. Reporte de calidad de datos. | J. D. Ramírez |
 | F2 | Protocolo de evaluación | 22 sep – 5 oct | 60 preguntas de control con respuesta verificable en las fuentes, respondidas por separado por los dos autores y con el nivel de acuerdo entre ambos reportado. Script de evaluación automática. | Ambos |
-| F3 | Agente WikiLLM v1 | 6 – 19 oct | Operaciones `ingest` y `lint` funcionando. Wiki compilado sobre el corpus con procedencia por afirmación. Flujo *human-in-the-loop* vía Pull Request. | J. D. Cardona |
+| F3 | Agente WikiLLM v1 | 6 – 19 oct | Operaciones `ingest` y `lint` funcionando. Wiki compilado sobre el corpus con procedencia por afirmación. Flujo *human-in-the-loop* vía Pull Request. | J. D. Cruz |
 | F4 | Línea base y orquestación | 20 oct – 2 nov | Línea base RAG reproducible sobre el mismo corpus. Pipeline orquestado con ejecución programada, reintentos, *logging* estructurado y monitoreo de costo. | Ambos |
 | F5 | Experimento | 3 – 16 nov | N ingestas incrementales con *snapshot* por ingesta, tres ablaciones de *lint*, inyección controlada de errores y de fuentes de baja calidad. Resultados y notebooks. | Ambos |
 | F6 | Cierre | 17 – 27 nov | Informe final, documentación de reproducción, artículo comparativo y sustentación oral. | Ambos |
@@ -27,4 +27,4 @@ Alcance recortable en orden, si se pierde tiempo: primero las ablaciones de inte
 
 **J. D. Ramírez** — curaduría y flujo de datos del corpus, y diseño de la **base de metadatos y señales de calidad** por fuente (disponibilidad de código, experimentos propios, estado de publicación, historial de versiones, cifras reportadas en benchmarks). Esa base es la que hace medible la métrica de discriminación de evidencia; sin ella, la hipótesis de riesgo del proyecto no se puede evaluar. Actúa además como la segunda persona que responde las preguntas de control y opera el punto de revisión humana del experimento.
 
-**J. D. Cardona** — agente LLM, operaciones de ingesta y *lint*, orquestación del pipeline, arnés de evaluación y ejecución del experimento.
+**J. D. Cruz** — agente LLM, operaciones de ingesta y *lint*, orquestación del pipeline, arnés de evaluación y ejecución del experimento.

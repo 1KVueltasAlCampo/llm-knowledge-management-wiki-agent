@@ -1,0 +1,566 @@
+% =====================================================================
+%  Del Slop al Conocimiento Verificable
+%  Universidad Icesi - Maestria en Inteligencia Artificial Aplicada
+%  Formato: plantilla de presentacion de documentos, Facultad Barberi.
+%  Compilar con: pdflatex informe.tex  (dos veces)
+% =====================================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage{mathptmx}                 % Times New Roman
+\usepackage[scaled=0.92]{helvet}
+\usepackage{courier}
+
+\usepackage[letterpaper,top=2.54cm,bottom=2.54cm,left=2.54cm,right=2.54cm,
+            headheight=14pt,headsep=18pt]{geometry}
+
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{caption}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+% ---------------------------------------------------------------- estilo
+\definecolor{barfill}{HTML}{3B5C86}
+\definecolor{barlight}{HTML}{9FB3CE}
+\definecolor{hito}{HTML}{9B3A2E}
+\definecolor{rejilla}{HTML}{C8CDD4}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize Universidad Icesi, Facultad Barberi de Ingeniería Diseño y Ciencias Aplicadas}
+\fancyhead[R]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}[block]{\centering\normalsize\scshape}{\Roman{section}.\quad}{0pt}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titleformat{\subsection}[block]{\normalsize\itshape}{\Alph{subsection}.\quad}{0pt}{}
+\titlespacing*{\subsection}{\parindent}{11pt}{4pt}
+
+\captionsetup[table]{labelsep=newline,justification=centering,font=sc,labelfont=sc,skip=2pt}
+\captionsetup[figure]{labelsep=period,justification=raggedright,font=footnotesize,skip=6pt}
+\renewcommand{\thetable}{\Roman{table}}
+\renewcommand{\arraystretch}{1.18}
+
+\setlength{\parindent}{1.3em}
+\setlength{\parskip}{0pt}
+
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcommand{\refhang}[1]{\par\noindent\hangindent=1.5em\hangafter=1 #1\par\vspace{2pt}}
+
+% nota al pie sin marca, como en la plantilla
+\newcommand{\notasinmarca}[1]{%
+  \begingroup\renewcommand{\thefootnote}{}\footnote{#1}\addtocounter{footnote}{-1}\endgroup}
+
+% ================================================================ inicio
+\begin{document}
+
+\thispagestyle{fancy}
+
+\begin{center}
+{\LARGE Del Slop al Conocimiento Verificable:\\[2pt]
+Compilación incremental y trazabilidad de literatura científica\par}
+\vspace{18pt}
+{\ttfamily\small Juan Diego Ramírez\quad Juan David Cruz García\par}
+{\ttfamily\small juan.ramirezzuluaga@u.icesi.edu.co, juan.cruz6@u.icesi.edu.co\par}
+\end{center}
+
+\vspace{20pt}
+
+\notasinmarca{Documento recibido el 1 de septiembre de 2026. Proyecto de la Maestría en Inteligencia Artificial Aplicada, Universidad Icesi. Código y datos disponibles bajo licencia MIT en \url{https://github.com/1KVueltasAlCampo/llm-knowledge-management-wiki-agent}.}
+
+\noindent\textbf{Resumen —} Las organizaciones pierden tiempo de trabajo buscando conocimiento
+fragmentado y desactualizado, y los asistentes basados en Recuperación Aumentada por Generación
+(RAG) que se adoptan para mitigarlo repiten el trabajo de síntesis en cada consulta, mezclan
+documentos vigentes con obsoletos y no consolidan un activo reutilizable. Este trabajo propone un
+pipeline MLOps que construye y mantiene una base de conocimiento en markdown interenlazado según el
+patrón WikiLLM, trasladando el costo de síntesis desde la consulta hacia la ingesta. El problema se
+instancia sobre literatura abierta de inteligencia artificial publicada en arXiv, donde la ausencia
+de revisión por pares acumula texto generado por modelos de lenguaje sin evidencia verificable. La
+evaluación ordena las fuentes por fecha, las ingiere de a una y guarda una copia versionada del wiki
+tras cada ingesta; sobre cada copia se responde un conjunto de preguntas de control con respuesta
+fijada de antemano, y se miden cobertura, fundamentación, resolución de contradicciones,
+supervivencia de un error inyectado y costo, con una línea base RAG sobre el mismo corpus. La
+contribución esperada es un protocolo de evaluación de mantenimiento incremental, su primer conjunto
+de mediciones y una implementación abierta y reproducible. El documento presenta la formulación, la
+metodología, el cronograma y los criterios de evaluación; los resultados experimentales corresponden
+a una fase posterior.
+
+\vspace{8pt}
+\noindent\textbf{Índice de Términos —} Base de conocimiento, evaluación incremental, MLOps,
+recuperación aumentada por generación.
+
+% ====================================================================
+\section{Introducción}
+
+\subsection{Planteamiento del problema}
+
+En las organizaciones, el conocimiento —procesos, decisiones técnicas, manuales, políticas— está
+fragmentado y envejece rápido, y localizarlo consume tiempo de trabajo. Un estudio con 716 empleados
+de cuatro entidades públicas encontró que el 22,3\,\% dedica cerca de media jornada semanal a buscar
+la información que necesita, y que un 10,5\,\% dedica jornada y media, cerca del 30\,\% de su semana
+(Nakash y Bouhnik, 2024). La cifra más citada en la industria, alrededor del 20\,\% de la semana
+laboral, proviene de un informe anterior (Chui et al., 2012) y conviene leerla como orden de
+magnitud. Ambas apuntan a una ineficiencia transversal y anterior a la adopción de inteligencia
+artificial.
+
+La respuesta habitual son asistentes basados en Recuperación Aumentada por Generación (RAG). La
+evaluación sistemática de Han et al. (2025) muestra que ni el RAG vectorial ni los enfoques basados
+en grafos dominan de forma absoluta: cada uno aventaja al otro según la naturaleza de la consulta.
+Frente al problema de conocimiento organizacional, el RAG convencional presenta tres límites:
+
+\begin{enumerate}
+\item \textit{Costo operativo por consulta.} El modelo recupera, lee y sintetiza texto crudo cada vez
+que alguien pregunta. El trabajo de síntesis se repite íntegro aunque la pregunta sea parecida a la
+anterior (Karpathy, 2026).
+\item \textit{Degradación de la coherencia.} El sistema recupera documentos obsoletos o en conflicto
+con material reciente e intenta reconciliarlos en el momento de responder, lo que propaga errores y
+produce la deriva que Myakala et al. (2026) formalizan como \textit{drift coherence}.
+\item \textit{Incapacidad de consolidación.} El conocimiento sintetizado no persiste. La organización
+no construye un activo que crezca, sino un buscador que vuelve a empezar de cero.
+\end{enumerate}
+
+\subsection{Dominio de estudio}
+
+El proyecto instancia ese problema general sobre la literatura abierta de inteligencia artificial
+publicada en arXiv. La elección es metodológica antes que temática: constituye la versión más
+exigente del mismo problema y la única que puede evaluarse de forma reproducible y pública.
+
+Desarrollar software con herramientas de inteligencia artificial exige consultar literatura abierta
+de forma constante, y en este campo el intervalo entre publicar y construir se ha comprimido a
+semanas. Estos repositorios, sin embargo, publican sin revisión por pares y acumulan \textit{slop}:
+textos generados por modelos de lenguaje, correctamente redactados, sin código ni evidencia
+verificable. El volumen hace inviable el filtrado manual —solo en febrero de 2026 arXiv recibió más
+de 20.500 preprints de computación (arXiv, 2026a)— y las normas vigentes no cierran el vacío, porque
+operan como sustitutos y no como filtros: la de octubre de 2025 restringe un formato de publicación
+en lugar de detectar generación automática (arXiv, 2025), y la sanción de mayo de 2026 alcanza
+únicamente el descuido evidente, como referencias inexistentes o instrucciones olvidadas dentro del
+manuscrito (Dietterich, 2026). Elazar y Antoniak (2026) delimitan dónde queda el hueco: el texto
+generado por modelos de lenguaje es casi seis veces más frecuente en artículos que no son revisiones,
+justamente la categoría que ninguna norma alcanza.
+
+RAG agrava este escenario en lugar de mitigarlo. Al recuperar por similitud semántica trata todos los
+fragmentos como equivalentes y otorga la misma autoridad a un experimento validado que a una
+afirmación sin sustento. En un corpus donde no puede presumirse que lo publicado fue verificado, esa
+indiferencia deja de ser un detalle técnico: el juicio recae íntegramente en el lector, que no dispone
+de metadato alguno para ejercerlo.
+
+Adicionalmente, el corpus es de acceso libre, sin permisos ni costos de licencia, lo que permite
+publicar datos y código y que un tercero replique el experimento. Un corpus corporativo real
+impediría esa verificación.
+
+\subsection{Pregunta de investigación y contribución esperada}
+
+El trabajo se organiza en torno a una pregunta: \textit{¿cómo evoluciona la calidad de un WikiLLM a
+medida que se le ingieren fuentes, y en qué condiciones supera a un sistema RAG tradicional?}
+
+La formulación es deliberadamente abierta. Se busca establecer bajo qué condiciones compilar por
+adelantado resulta conveniente, no demostrar que siempre lo es, dado que Han et al. (2025) ya
+mostraron que ninguna arquitectura aventaja a las demás en toda tarea. El diseño incorpora además una
+hipótesis de riesgo contra la propia propuesta: una base compilada puede blanquear el ruido,
+convirtiendo una afirmación débil en prosa segura y permanente. Si eso ocurre, el WikiLLM resultaría
+inferior a RAG en este escenario, y el trabajo lo reportará.
+
+Los sistemas de referencia en generación de artículos enciclopédicos —STORM (Shao et al., 2024),
+WikiChat (Semnani et al., 2023) y el conjunto de evaluación FreshWiki— miden artefactos generados una
+sola vez. Ninguno evalúa lo que define al patrón WikiLLM: qué le ocurre a una base de conocimiento
+mantenida en el tiempo. El patrón, en cambio, ya cuenta con implementaciones maduras; la más completa
+es un complemento de Obsidian que ofrece detección de contradicciones, fusión de duplicados y páginas
+protegidas contra sobrescritura (green-dalii, 2026). El problema de ingeniería, por tanto, está
+resuelto, y la pregunta abierta se desplaza hacia la evaluación: la única cifra de desempeño publicada
+en este espacio es un 27,1\,\% frente a un 24,1\,\% de la línea base, autorreportada por el propio
+proyecto sobre su propio corpus, y midiendo recuperación en un wiki ya construido, no su conservación
+durante el mantenimiento. Una ventaja de tres puntos sin protocolo independiente no establece que el
+patrón funcione: establece que todavía no se ha medido lo relevante.
+
+La contribución esperada consta de tres elementos: un protocolo de evaluación de mantenimiento
+incremental, su primer conjunto de mediciones, y una implementación abierta que lo haga reproducible.
+
+% ====================================================================
+\section{Materiales y métodos}
+
+\subsection{Marco teórico}
+
+El patrón WikiLLM designa una base de conocimiento en texto plano —markdown interenlazado— que un
+agente construye y mantiene de forma incremental a partir de fuentes crudas (Karpathy, 2026). Su
+diferencia operativa con RAG reside en el momento en que ocurre la síntesis, con las consecuencias
+que resume la Tabla~\ref{tab:comparacion}.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparación entre RAG y el patrón WikiLLM}
+\label{tab:comparacion}
+\begin{tabular}{L{3.6cm} L{4.9cm} L{4.9cm}}
+\toprule
+ & \textbf{RAG (línea base)} & \textbf{WikiLLM (propuesta)} \\
+\midrule
+Momento de la síntesis & En cada consulta & Una vez, al ingerir \\
+Qué persiste & Fragmentos y vectores & Páginas redactadas y enlazadas \\
+Manejo de la contradicción & Implícito, al responder & Explícito, marcado y fechado \\
+Falla característica & Recuperar el fragmento equivocado & Propagar un error de síntesis anterior \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La arquitectura traslada el costo de síntesis desde la consulta hacia la ingesta: el agente compila
+una vez y después responde sobre páginas ya redactadas, enlazadas y fechadas.
+
+\subsection{Delimitación del corpus}
+
+El corpus se restringe a una subárea de inteligencia artificial con tableros de clasificación
+activos, entre 30 y 50 fuentes, en una ventana temporal posterior al corte de entrenamiento del
+modelo evaluado. Esta delimitación cumple dos funciones. Las afirmaciones sobre resultados en
+\textit{benchmarks} son numéricas, fechadas y objetivamente superables, lo que proporciona un criterio
+de verdad sin juicio subjetivo. La ventana posterior al corte de entrenamiento impide que el modelo
+responda de memoria en lugar de leer el wiki, condición sin la cual se estaría midiendo el
+conocimiento previo del modelo y no la arquitectura.
+
+La procedencia se trata como metadato de primera clase: cada afirmación conserva su fuente y sus
+señales de respaldo —disponibilidad de código, presencia de experimentos propios, estado de
+publicación y versión del preprint—, de modo que la calidad de la evidencia no se disuelva en la
+prosa.
+
+\subsection{Preprocesamiento}
+
+La etapa de preparación de datos extrae texto de PDF y LaTeX conservando la estructura, normaliza
+codificación y notación de cifras, elimina duplicados por huella de contenido y por versión del
+preprint, unifica nombres de métodos y \textit{benchmarks}, y valida el formato descartando documentos
+malformados antes de consumir una llamada al modelo.
+
+\subsection{Elección del modelo}
+
+La operación de ingesta debe leer una fuente nueva y revisar entre diez y quince páginas ya escritas.
+Ese requisito funcional fija cuatro criterios de selección: ventana de contexto amplia, obediencia
+estricta al formato de salida, costo por token predecible —el costo es una de las variables que el
+experimento mide— y disponibilidad de una opción de ejecución local. La Tabla~\ref{tab:modelos}
+recoge las alternativas consideradas.
+
+\begin{table}[htbp]
+\centering
+\caption{Alternativas de modelo y función asignada}
+\label{tab:modelos}
+\begin{tabular}{L{3.9cm} L{1.5cm} L{1.5cm} L{1.5cm} L{4.3cm}}
+\toprule
+\textbf{Alternativa} & \textbf{Contexto} & \textbf{Formato} & \textbf{Local} & \textbf{Función} \\
+\midrule
+Comercial de gama alta & $\geq$200K & Alta & No & Ingesta y revisión \\
+Comercial económico & $\geq$200K & Media-alta & No & Consultas y evaluación masiva \\
+Abierto de ejecución local & 32--128K & Media & Sí & Control de contaminación \\
+Vectores y reordenador & --- & --- & Sí & Únicamente la línea base RAG \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No se selecciona un modelo único, sino qué modelo interviene en cada etapa. El uso de \texttt{litellm}
+permite que cambiar de proveedor sea una modificación de configuración y no de código, con lo que el
+modelo se convierte en una variable del experimento y puede reportarse la relación entre costo y
+calidad en lugar de un valor aislado.
+
+\subsection{Arquitectura del pipeline}
+
+El sistema se organiza como un flujo modular de seis pasos, cada uno reejecutable por separado sin
+rehacer los anteriores: obtener la fuente, extraer afirmaciones con su origen, unificar entidades,
+actualizar las páginas afectadas, revisar el wiki y guardar una copia versionada.
+
+El modelo no opera como interfaz conversacional, sino como motor de un ciclo documental gobernado por
+Git: lee una fuente, propone cambios sobre varias páginas simultáneamente y los entrega como
+\textit{Pull Request}. Ninguna escritura llega al wiki sin aprobación humana previa. La diferencia con
+las implementaciones existentes radica en la ubicación del control: hoy una página se protege
+marcándola manualmente para que no sea sobrescrita, es decir, después de que el agente escribió. Aquí
+la aprobación antecede a la escritura y queda registrada en el historial del repositorio, lo que
+convierte la gobernanza en un dato medible —cuántos errores intercepta el revisor y a qué costo en
+tiempo— en lugar de una garantía declarada.
+
+El revisor evalúa los cambios en Obsidian, donde el grafo de enlaces muestra qué páginas toca cada
+propuesta. La ingesta es idempotente: procesar dos veces la misma fuente no la duplica. El flujo
+reintenta con espera creciente ante fallos del proveedor y guarda avance por fuente para reanudar sin
+reprocesar el corpus completo.
+
+\subsection{Herramientas}
+
+Python con \texttt{litellm} para la abstracción de proveedores, \texttt{pydantic} para validar que la
+salida del modelo tenga la forma esperada y \texttt{pytest} para detectar regresiones. La API de arXiv
+provee fuentes y metadatos. Git y Obsidian conforman la capa de revisión humana sobre los mismos
+archivos markdown, sin dependencia de plataforma. Las instrucciones del agente se versionan como
+código y cada operación deja registro estructurado.
+
+\subsection{Protocolo experimental}
+
+Las fuentes se ordenan por fecha y se ingieren de a una. Tras cada ingesta se guarda una copia
+versionada del wiki, y sobre cada copia se responde el mismo conjunto de sesenta preguntas de control,
+cuya respuesta correcta fue fijada de antemano por los dos autores por separado, reportando el nivel
+de acuerdo entre ambos. La comparación se establece contra una línea base RAG construida sobre el
+mismo corpus.
+
+Las ablaciones varían dos parámetros enunciados en la literatura y no medidos hasta ahora: la
+frecuencia de la revisión automática del wiki y la profundidad de la intervención humana. Se practica
+además inyección controlada de errores y de fuentes de baja calidad.
+
+\subsection{Criterios de evaluación}
+
+Se miden cinco variables sobre cada copia versionada, definidas en la Tabla~\ref{tab:metricas}. Las
+métricas de resolución de contradicciones y supervivencia del error no son medidas estándar de
+exactitud: evalúan si el sistema se corrige a sí mismo con el tiempo, que es el objetivo del producto.
+
+\begin{table}[htbp]
+\centering
+\caption{Métricas de evaluación}
+\label{tab:metricas}
+\begin{tabular}{L{4.4cm} L{9.9cm}}
+\toprule
+\textbf{Métrica} & \textbf{Qué responde} \\
+\midrule
+Cobertura & ¿El wiki contiene la información que debería contener? \\
+Fundamentación & ¿Cada afirmación se rastrea hasta su fuente, con su nivel de respaldo? \\
+Resolución de contradicciones & ¿El wiki se corrige cuando un trabajo nuevo supera una cifra anterior? \\
+Supervivencia del error & ¿Cuántas ingestas sobrevive un error introducido a propósito? \\
+Costo & Tokens y tiempo por ingesta y por consulta, frente a la línea base RAG \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El conjunto de preguntas de control opera simultáneamente como prueba de regresión: si una
+modificación del agente degrada la calidad, se detecta antes del despliegue. Dado que el sistema no
+entrena pesos, el equivalente al reentrenamiento es la recompilación de las páginas que una fuente
+nueva deja obsoletas.
+
+% ====================================================================
+\section{Resultados esperados}
+
+Esta sección presenta el plan de ejecución y los criterios con los que se juzgarán los resultados. Las
+mediciones corresponden a una fase posterior del proyecto y no se reportan aquí.
+
+\subsection{Cronograma}
+
+El semestre 2026-2 se ejecuta en siete fases sobre un equipo de dos personas. La
+Figura~\ref{fig:gantt} representa su distribución temporal y los dos puntos de corte que gobiernan la
+contingencia. El cronograma es una propuesta de trabajo y no un compromiso cerrado: las fechas se
+ajustarán tras la delimitación del alcance con el tutor y según el calendario académico oficial.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=0.135cm, y=-0.60cm, font=\footnotesize]
+
+% --- rejilla semanal
+\foreach \d in {0,7,14,21,28,35,42,49,56,63,70,77,84}{
+  \draw[rejilla, line width=0.3pt] (\d,-0.45) -- (\d,7.35);
+}
+% --- limites de mes
+\foreach \d in {0,30,61,88}{
+  \draw[gray!70, line width=0.6pt] (\d,-0.75) -- (\d,7.35);
+}
+% --- etiquetas de mes
+\node[anchor=south] at (15,-0.80) {\textsc{septiembre}};
+\node[anchor=south] at (45.5,-0.80) {\textsc{octubre}};
+\node[anchor=south] at (74.5,-0.80) {\textsc{noviembre}};
+
+% --- eje
+\draw[gray!70, line width=0.6pt] (0,-0.45) -- (88,-0.45);
+
+% --- barras
+\newcommand{\fase}[4]{%
+  \node[anchor=east, font=\footnotesize] at (-2,#1) {#4};
+  \fill[barfill] (#2,#1-0.19) rectangle (#3,#1+0.19);
+}
+\fase{0.6}{0}{7}{\textbf{F0} Delimitación}
+\fase{1.6}{7}{21}{\textbf{F1} Corpus}
+\fase{2.6}{21}{35}{\textbf{F2} Protocolo}
+\fase{3.6}{35}{49}{\textbf{F3} Agente WikiLLM v1}
+\fase{4.6}{49}{63}{\textbf{F4} Línea base}
+\fase{5.6}{63}{77}{\textbf{F5} Experimento}
+\fase{6.6}{77}{88}{\textbf{F6} Cierre}
+
+% --- hitos de control
+\fill[hito] (35,2.6) circle (2.1pt);
+\fill[hito] (63,4.6) circle (2.1pt);
+\draw[hito, dashed, line width=0.5pt] (35,2.6) -- (35,7.15);
+\draw[hito, dashed, line width=0.5pt] (63,4.6) -- (63,7.15);
+\node[hito, anchor=north west, font=\scriptsize] at (35.5,7.15) {5 oct};
+\node[hito, anchor=north west, font=\scriptsize] at (63.5,7.15) {2 nov};
+
+\end{tikzpicture}
+\caption{Cronograma de ejecución del semestre 2026-2. Los marcadores en rojo señalan los dos puntos de
+corte: cierre de F2 el 5 de octubre y cierre de F4 el 2 de noviembre.}
+\label{fig:gantt}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Entregables verificables por fase}
+\label{tab:fases}
+\begin{tabular}{L{3.0cm} L{2.0cm} L{7.2cm} L{2.2cm}}
+\toprule
+\textbf{Fase} & \textbf{Fechas} & \textbf{Entregable verificable} & \textbf{Responsable} \\
+\midrule
+F0 Delimitación y aprobación & 1--7 sep & Acta de alcance validada con el tutor: subárea, ventana temporal y criterio de inclusión del corpus. Repositorio público con licencia MIT. & Ambos \\
+F1 Corpus e ingeniería de datos & 8--21 sep & Corpus versionado de 30 a 50 preprints con extracción de texto y estructura. Base de metadatos y señales de calidad por fuente. Reporte de calidad de datos. & J. D. Ramírez \\
+F2 Protocolo de evaluación & 22 sep--5 oct & Sesenta preguntas de control con respuesta verificable en las fuentes, respondidas por separado por ambos autores y con el nivel de acuerdo reportado. Script de evaluación automática. & Ambos \\
+F3 Agente WikiLLM v1 & 6--19 oct & Operaciones de ingesta y revisión funcionando. Wiki compilado sobre el corpus con procedencia por afirmación. Flujo de revisión humana vía \textit{Pull Request}. & J. D. Cruz \\
+F4 Línea base y orquestación & 20 oct--2 nov & Línea base RAG reproducible sobre el mismo corpus. Pipeline orquestado con ejecución programada, reintentos, registro estructurado y monitoreo de costo. & Ambos \\
+F5 Experimento & 3--16 nov & Ingestas incrementales con copia versionada por ingesta, tres ablaciones de revisión, inyección controlada de errores y de fuentes de baja calidad. Resultados. & Ambos \\
+F6 Cierre & 17--27 nov & Informe final, documentación de reproducción, artículo comparativo y sustentación oral. & Ambos \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Hitos de control y contingencia}
+
+El riesgo dominante del plan es que F3 se desplace y comprima F5, que es donde reside la
+contribución. Se fijan dos puntos de corte. El 5 de octubre debe estar cerrada F2; si las preguntas de
+control no están listas, se reducen de sesenta a treinta antes que retrasar el experimento, dado que
+sin preguntas de control no hay nada que medir: la fase no es negociable en existencia, solo en
+tamaño. El 2 de noviembre debe estar cerrada F4; si el pipeline orquestado no está estable, el
+experimento se ejecuta con disparo manual y la orquestación se documenta como limitación. En ambos
+casos se protege el experimento y no la infraestructura.
+
+El alcance recortable sigue un orden establecido de antemano: primero las ablaciones de intervención
+humana, después las de frecuencia de revisión automática y por último el número de fuentes. La línea
+base RAG y la inyección controlada de errores no son recortables, porque sin ellas el resultado no
+resulta interpretable.
+
+\subsection{Criterios de éxito}
+
+El trabajo se considera exitoso si produce, sobre el protocolo descrito, una curva de evolución de las
+cinco métricas a lo largo de las ingestas sucesivas, con la comparación contra la línea base RAG y con
+el punto de equilibrio de costo expresado en número de consultas por fuente ingerida. Un resultado
+desfavorable al WikiLLM constituye igualmente un resultado válido, en tanto delimita las condiciones
+en que cada arquitectura conviene.
+
+% ====================================================================
+\section{Discusión}
+
+\subsection{Riesgos del diseño}
+
+El riesgo central es la hipótesis de blanqueo enunciada en la Sección I: que la compilación convierta
+literatura sin evidencia en prosa autoritativa. En este dominio el riesgo es mayor que en un corpus
+revisado por pares, precisamente porque la relación entre señal y ruido de la fuente de entrada es
+decreciente. No se declara como salvedad: se mide, inyectando fuentes de baja calidad y observando con
+cuánta seguridad el wiki termina afirmándolas.
+
+Un segundo riesgo es la propagación de errores de síntesis. En RAG el daño de una recuperación
+incorrecta dura una respuesta; en una base compilada queda escrito de forma permanente y puede
+sobrevivir a múltiples ingestas posteriores. La métrica de supervivencia del error existe para
+cuantificarlo.
+
+\subsection{Riesgos éticos y su mitigación}
+
+\textit{Seguridad.} Un documento fuente puede contener instrucciones dirigidas al agente. Como se
+señaló, en RAG el efecto se limita a una respuesta, mientras que aquí quedaría inscrito en el wiki de
+forma persistente. La mitigación combina tres medidas: las fuentes se tratan siempre como datos y
+nunca como órdenes, toda escritura pasa por revisión humana previa, y el sistema se prueba con
+documentos preparados para inducir ese comportamiento, reportando la proporción que se detiene.
+
+\textit{Sesgo.} Se atienden tres frentes: el criterio de inclusión de fuentes, declarado
+explícitamente; la tendencia a que lo más reciente sobrescriba lo anterior sin evidencia suficiente; y
+el blanqueo descrito en el apartado previo.
+
+\textit{Privacidad.} El corpus es público y carece de datos personales. Todo texto enviado a un
+proveedor externo queda registrado, y la variante con modelo local permite ejecutar el pipeline
+completo sin que los datos abandonen el equipo, midiendo cuánta calidad cuesta esa opción.
+
+La revisión humana atraviesa los tres frentes y su eficacia se reporta como dato: errores detectados
+sobre errores introducidos, y minutos de revisión por error detectado.
+
+\subsection{Limitaciones previstas}
+
+El alcance es de un semestre y un solo dominio, con un corpus de entre 30 y 50 fuentes. La
+contribución esperada es el protocolo y su primer conjunto de mediciones, no una respuesta definitiva
+sobre la conveniencia del patrón. La generalización a corpus corporativos, con permisos y datos
+sensibles, queda fuera del alcance y constituye una línea de continuación.
+
+El conjunto de preguntas de control es construido por los propios autores, lo que introduce un riesgo
+de sesgo de diseño que se mitiga parcialmente respondiéndolas por separado y reportando el nivel de
+acuerdo, pero no se elimina. Un protocolo maduro requeriría anotadores independientes.
+
+% ====================================================================
+\section{Conclusiones}
+
+El conocimiento organizacional fragmentado impone un costo medible, y los asistentes RAG que se
+adoptan para reducirlo repiten el trabajo de síntesis, mezclan material vigente con obsoleto y no
+consolidan un activo. El patrón WikiLLM propone trasladar la síntesis de la consulta a la ingesta,
+pero su propiedad definitoria —el mantenimiento de la base en el tiempo— no ha sido evaluada por la
+literatura disponible, que mide artefactos generados una sola vez.
+
+Este trabajo delimita ese vacío y propone un protocolo para cubrirlo: ingesta incremental con copia
+versionada, un conjunto fijo de preguntas de control con respuesta establecida de antemano, cinco
+métricas que incluyen la corrección del sistema sobre sí mismo, y una línea base RAG sobre el mismo
+corpus. El diseño incorpora una hipótesis de riesgo contra la propia propuesta y se compromete a
+reportarla si se confirma.
+
+Los resultados experimentales corresponden a la fase siguiente. La aplicación futura más inmediata es
+la extensión del protocolo a corpus organizacionales, donde el problema original se manifiesta con
+restricciones de permisos y privacidad que el corpus público no presenta.
+
+% ====================================================================
+\section*{Apéndice: cumplimiento de la rúbrica}
+
+\small
+\begin{longtable}{L{2.9cm} L{11.4cm}}
+\toprule
+\textbf{Criterio} & \textbf{Qué hace el proyecto} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Criterio} & \textbf{Qué hace el proyecto} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Cr1 Formulación & Se plantea como problema que las organizaciones pierden hasta un 30\,\% de la jornada buscando información y que los asistentes RAG actuales no lo resuelven, porque repiten el trabajo en cada consulta, mezclan lo vigente con lo obsoleto y no acumulan nada. El caso se estudia sobre literatura científica de IA, donde además ya no se distingue lo verificado del \textit{slop}. \\
+Cr2 Elección del modelo & Se comparan cuatro tipos de modelo —comercial de gama alta, comercial económico, abierto local y un buscador por vectores para la línea base— frente a cuatro requisitos: ventana de contexto amplia, obediencia al formato de salida, costo por token y posibilidad de ejecución local. \\
+Cr3 Integración & Se integra el modelo como motor de un flujo documental sobre Git: lee una fuente, propone cambios en varias páginas y los entrega como \textit{Pull Request}. Ningún cambio entra al wiki sin aprobación humana. \\
+Cr4 Evaluación & Cinco métricas medidas después de cada ingesta contra un conjunto de preguntas cuya respuesta correcta se fijó de antemano: cobertura, fundamentación, resolución de contradicciones, supervivencia del error y costo. \\
+Cr5 Tareas automatizables & Se automatiza leer, resumir y cruzar fuentes, que es la parte repetitiva y costosa en tiempo. Se deja al humano únicamente el juicio sobre qué información es válida. \\
+Cr6 Eficiencia & Se mide el costo del sistema frente a un RAG tradicional sobre el mismo corpus, y se calcula a partir de cuántas consultas por fuente la compilación previa resulta más barata. \\
+Cr7 Riesgos éticos & Seguridad: una fuente puede traer instrucciones ocultas que quedarían escritas de forma permanente, de modo que se prueba el sistema con documentos preparados para engañarlo y se reporta cuántos se detienen. Sesgo: se mide si el sistema convierte literatura sin evidencia en texto que suena confiable. Privacidad: el corpus es público y todo puede ejecutarse con un modelo local. \\
+Cr8 Documentación & Se publica el repositorio bajo licencia MIT, con guía de reproducción paso a paso, las instrucciones del agente versionadas y un registro de las decisiones de diseño. \\
+R.7.1 Cr1 Preprocesamiento & Se construye una etapa que extrae texto de PDF y LaTeX conservando la estructura, normaliza formatos, elimina duplicados y versiones repetidas del mismo preprint, y descarta documentos malformados antes de gastar una llamada al modelo. \\
+R.7.1 Cr2 Herramientas & Python con \texttt{litellm} para cambiar de proveedor sin tocar código, \texttt{pydantic} para verificar que la salida del modelo tenga la forma esperada y \texttt{pytest}, más la API de arXiv y Git junto a Obsidian para la revisión humana. \\
+R.7.1 Cr3 Pipeline & Un pipeline de seis pasos: traer la fuente, extraer afirmaciones con su origen, unificar entidades, actualizar páginas, revisar el wiki y guardar una copia versionada, cada uno reejecutable por separado. \\
+R.7.2 Cr4 Despliegue & Se automatiza la ejecución del pipeline por calendario o a demanda, con seguimiento del costo y el tiempo de cada paso y aviso automático si la calidad se degrada. \\
+R.7.2 Cr5 Robustez & La ingesta es idempotente, con reintentos ante fallos del proveedor y avance guardado por fuente. Se reporta cómo crece el tiempo de respuesta a medida que crece el wiki. \\
+R.7.2 Cr6 MLOps & Se versionan las instrucciones del agente como código y se registra cada operación; las preguntas de evaluación funcionan como prueba de regresión. Como el sistema no entrena pesos, el equivalente al reentrenamiento es recompilar las páginas que una fuente nueva deja obsoletas. \\
+RA1 y RA2 & El documento se estructura en las secciones solicitadas, con tablas donde la comparación es el contenido y citas APA verificadas en la fuente original. La sustentación se organiza sobre una sola tesis, con respuesta preparada para las objeciones previsibles. \\
+\end{longtable}
+\normalsize
+
+% ====================================================================
+\section*{Referencias}
+
+\small
+
+\refhang{arXiv. (2025, 31 de octubre). \textit{Attention authors: Updated practice for review articles and position papers in arXiv CS category}. arXiv Blog. \url{https://blog.arxiv.org/2025/10/31/attention-authors-updated-practice-for-review-articles-and-position-papers-in-arxiv-cs-category/}}
+
+\refhang{arXiv. (2026a). \textit{Monthly submissions}. \url{https://arxiv.org/stats/monthly_submissions}}
+
+\refhang{Chui, M., Manyika, J., Bughin, J., Dobbs, R., Roxburgh, C., Sarrazin, H., Sands, G., y Westergren, M. (2012). \textit{The social economy: Unlocking value and productivity through social technologies}. McKinsey Global Institute. \url{https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/the-social-economy}}
+
+\refhang{Dietterich, T. (2026, 15 de mayo). \textit{Updated practice for papers containing unverified LLM output in arXiv CS category}. arXiv Blog.}
+
+\refhang{Elazar, Y., y Antoniak, M. (2026). \textit{LLM-generated or human-written? Comparing review and non-review papers on arXiv} (arXiv:2601.17036). arXiv. \url{https://arxiv.org/abs/2601.17036}}
+
+\refhang{green-dalii. (2026). \textit{Karpathy LLM Wiki: Obsidian plugin} [Software]. GitHub. \url{https://github.com/green-dalii/obsidian-llm-wiki}}
+
+\refhang{Han, H., Ma, L., Wang, Y., Shomer, H., Lei, Y., Qi, Z., Guo, K., Hua, Z., Long, B., Liu, H., Aggarwal, C. C., y Tang, J. (2025). \textit{RAG vs. GraphRAG: A systematic evaluation and key insights} (arXiv:2502.11371). arXiv. \url{https://arxiv.org/abs/2502.11371}}
+
+\refhang{Karpathy, A. (2026, 4 de abril). \textit{LLM wiki: A pattern for building personal knowledge bases using LLMs} [Gist]. GitHub. \url{https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f}}
+
+\refhang{Myakala, P. K., Agrawal, M., y Manche, R. (2026). \textit{BeliefShift: Benchmarking temporal belief consistency and opinion drift in LLM agents} (arXiv:2603.23848). arXiv. \url{https://arxiv.org/abs/2603.23848}}
+
+\refhang{Nakash, M., y Bouhnik, D. (2024). How much time does the workforce spend searching for information in the ``new normal''? En \textit{iConference 2024 Proceedings}. \url{https://www.ideals.illinois.edu/items/129980}}
+
+\refhang{Semnani, S. J., Yao, V. Z., Zhang, H. C., y Lam, M. S. (2023). WikiChat: Stopping the hallucination of large language model chatbots by few-shot grounding on Wikipedia. En \textit{Findings of the Association for Computational Linguistics: EMNLP 2023} (pp. 2387--2413). \url{https://arxiv.org/abs/2305.14292}}
+
+\refhang{Shao, Y., Jiang, Y., Kanell, T. A., Xu, P., Khattab, O., y Lam, M. S. (2024). Assisting in writing Wikipedia-like articles from scratch with large language models. En \textit{Proceedings of NAACL 2024}. \url{https://arxiv.org/abs/2402.14207}}
+
+\normalsize
+
+\end{document}

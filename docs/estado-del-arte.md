@@ -67,7 +67,14 @@ cada operación.
    de entidades y conceptos, y añade una entrada al log. El diseño favorece ingesta de
    a una fuente, con el humano validando antes de escribir.
 2. **Query.** Busca en las páginas relevantes, sintetiza con citas y opcionalmente
-   archiva la respuesta valiosa como página nueva.
+   archiva la respuesta valiosa como página nueva. Variante poco explorada para la
+   fase de búsqueda: indexar preguntas generadas por página en vez del texto de la
+   página, y comparar la consulta del usuario contra ese índice de preguntas en lugar
+   de contra el contenido —reduce el desajuste gramatical entre pregunta interrogativa
+   y pasaje declarativo— (Thottingal, 2025,
+   [arXiv:2501.11301](https://arxiv.org/abs/2501.11301); preprint de un solo autor, sin
+   revisión por pares confirmada, sin comparación cuantitativa contra líneas base —
+   tomar como idea, no como evidencia).
 3. **Lint.** Pasada periódica que detecta contradicciones entre páginas, afirmaciones
    obsoletas superadas por fuentes nuevas, páginas huérfanas sin enlaces entrantes,
    referencias cruzadas faltantes y vacíos de datos.
@@ -91,15 +98,15 @@ antes de citarlos** en un trabajo académico.
 
 | Proyecto | Stack | Qué aporta |
 |---|---|---|
-| [nvk/llm-wiki](https://github.com/nvk/llm-wiki) | Plugins para Claude Code, Codex, OpenCode | La implementación más elaborada. Ver detalle abajo. |
-| SamurAIGPT/llm-wiki-agent | Multiplataforma (Claude Code, Codex, Gemini CLI) | ~1.965 ⭐. Esquemas separados por plataforma. |
-| AgriciDaniel/claude-obsidian | Claude Code + Obsidian | ~1.480 ⭐. Diez skills especializadas, incluye `/autoresearch`. |
-| [lucasastorian/llmwiki](https://github.com/lucasastorian/llmwiki) | Web + MCP | Sube documentos y conecta la cuenta de Claude vía MCP. |
-| [Astro-Han/karpathy-llm-wiki](https://github.com/Astro-Han/karpathy-llm-wiki) | Agent Skills | Compatible con Claude Code, Cursor y Codex. |
+| [nvk/llm-wiki](https://github.com/nvk/llm-wiki) | Plugins para Claude Code, Codex, OpenCode | ~1.300 ⭐ (verificado 19 sep 2026). La implementación más elaborada. Ver detalle abajo. |
+| SamurAIGPT/llm-wiki-agent | Multiplataforma (Claude Code, Codex, Gemini CLI) | ~3.500 ⭐ (verificado 19 sep 2026; cifra anterior ~1.965). Esquemas separados por plataforma. |
+| AgriciDaniel/claude-obsidian | Claude Code + Obsidian | ~14.800 ⭐ (verificado 19 sep 2026; cifra anterior ~1.480 — creció ~10× en el semestre). Diez skills especializadas, incluye `/autoresearch`, y ahora un *provenance ledger* propio (atribución de fuente, frescura, confianza) sin usar OKF — ver ficha de lectura §4. |
+| [lucasastorian/llmwiki](https://github.com/lucasastorian/llmwiki) | Web + MCP | ~1.600 ⭐ (verificado 19 sep 2026). Sube documentos y conecta la cuenta de Claude vía MCP. |
+| [Astro-Han/karpathy-llm-wiki](https://github.com/Astro-Han/karpathy-llm-wiki) | Agent Skills | ~2.300 ⭐ (verificado 19 sep 2026). Compatible con Claude Code, Cursor y Codex. |
 | llm-wiki-compiler (atomicmemory) | TypeScript | ~250 ⭐ |
 | sage-wiki (xoai) | Go | ~276 ⭐ |
 | obsidian-wiki (Ar9av) | Python | ~219 ⭐ |
-| llm-wiki-skill (sdyckjq-lab) | Shell | ~366 ⭐ |
+| llm-wiki-skill (sdyckjq-lab) | Shell | ~2.500 ⭐ (verificado 19 sep 2026; cifra anterior ~366) |
 
 ### 3.1 `nvk/llm-wiki` en detalle
 
@@ -161,15 +168,34 @@ solo los hechos fundamentados**, y los combina con información recuperada del c
 Reporta 97,3 % de precisión factual en conversaciones simuladas, con una metodología
 de evaluación híbrida humano-LLM que es en sí misma un aporte reutilizable.
 
-**WikiAutoGen** (ICCV 2025) — extiende la generación de artículos estilo Wikipedia al
-caso multimodal.
+**WikiSP** (Xu et al., Stanford OVAL —el mismo grupo de WikiChat—, EMNLP 2023,
+[arXiv:2305.14202](https://arxiv.org/abs/2305.14202)) — analizador semántico que
+traduce preguntas a SPARQL sobre Wikidata, sustituyendo identificadores opacos por
+nombres de dominio legibles y entrenando con las *menciones* textuales de la pregunta
+para recuperarse de errores del vinculador de entidades. Alcanza 76 %/65 % de
+exactitud en desarrollo/prueba sobre su propio banco de pruebas (WikiWebQuestions), y
+96 % de cobertura útil combinando con GPT-3 como respaldo. Es el caso inverso a un
+WikiLLM: la base de conocimiento ya está estructurada (Wikidata) y el problema es
+traducir lenguaje natural a esa estructura, no construirla desde texto libre.
 
-**GraphRAG** (Microsoft Research, 2024) — la arquitectura de referencia para combinar
-LLMs con grafos de conocimiento: construye el grafo desde texto no estructurado,
-aplica detección de comunidades, genera resúmenes por comunidad y responde tanto a
-nivel de entidad como de corpus. Es el competidor conceptual más serio del WikiLLM,
-porque resuelve el mismo problema (síntesis global precomputada) con estructura
-explícita en lugar de prosa.
+**WikiAutoGen** (Yang et al., ICCV 2025, [arXiv:2503.19065](https://arxiv.org/abs/2503.19065)) —
+extiende la generación de artículos estilo Wikipedia al caso multimodal: recupera e
+integra imágenes junto con el texto, con un mecanismo de auto-reflexión
+multi-perspectiva para mejorar precisión factual y cobertura.
+
+**GraphRAG** (Edge et al., Microsoft Research, 2024,
+[arXiv:2404.16130](https://arxiv.org/abs/2404.16130)) — la arquitectura de referencia
+para combinar LLMs con grafos de conocimiento: construye el grafo desde texto no
+estructurado, aplica detección de comunidades (algoritmo de Leiden), genera resúmenes
+por comunidad y responde tanto a nivel de entidad como de corpus. En su evaluación
+original supera al RAG vectorial en comprehensividad (72–83 % de tasa de victoria) y
+diversidad, a costa de indexar por adelantado toda la jerarquía de comunidades. Es el
+competidor conceptual más serio del WikiLLM, porque resuelve el mismo problema
+(síntesis global precomputada) con estructura explícita en lugar de prosa. Una
+reimplementación ligera, `fast-graphrag` (circlemind-ai), sustituye el resumen de
+comunidades por recuperación con *Personalized PageRank* —el mismo mecanismo que
+HippoRAG, §6.1— reportando, sin protocolo publicado, una fracción del costo de
+indexación.
 
 ---
 
@@ -210,15 +236,19 @@ y donde converge la investigación reciente de memoria agéntica.
 
 | Sistema | Arquitectura | Nota |
 |---|---|---|
-| **MemGPT / Letta** | Inspirado en sistemas operativos: la ventana de contexto es memoria de trabajo, el almacenamiento externo es archivo, con operaciones explícitas de lectura y escritura entre niveles | El puente conceptual más directo con el patrón wiki |
+| **MemGPT / Letta** ([arXiv:2310.08560](https://arxiv.org/abs/2310.08560)) | Inspirado en sistemas operativos: la ventana de contexto es memoria de trabajo, el almacenamiento externo es archivo, con operaciones explícitas de lectura y escritura entre niveles | El puente conceptual más directo con el patrón wiki. 92,5 % de exactitud en recuperación multi-sesión (DMR), frente a ≤38,7 % de los baselines sin memoria |
 | **Mem0** | Pipeline extraer–almacenar–recuperar | ECAI 2025; primera comparación amplia de diez enfoques sobre LoCoMo |
 | **Zep** | Híbrido vector + grafo | Orientado a sesiones de larga duración |
 | **A-Mem** | Notas estructuradas estilo **Zettelkasten**, enlazadas a memorias históricas, con red que evoluciona | Es, esencialmente, un WikiLLM con otro nombre — comparación obligada |
 | **Memori** | Capa de memoria persistente ([arXiv:2603.19935](https://arxiv.org/pdf/2603.19935)) | |
+| **HippoRAG** | Grafo construido por OpenIE + recuperación de un solo paso con *Personalized PageRank*, inspirado en la teoría del índice hipocampal ([arXiv:2405.14831](https://arxiv.org/abs/2405.14831); continuación HippoRAG 2, ICML 2025, [arXiv:2502.14802](https://arxiv.org/abs/2502.14802)) | Supera a todas las líneas base en recuperación multi-salto (recall@5 promedio 72,9 % vs. 65,6 % del mejor baseline, sobre MuSiQue/2Wiki/HotpotQA); combinado con recuperación iterativa (IRCoT) es 10–30× más barato y 6–13× más rápido |
 
 Resultados sobre LoCoMo reportados en 2026: Memori 81,95 %, Zep 79,09 %, LangMem
 78,05 %, Mem0 62,47 %. En abril de 2026 Mem0 publicó un algoritmo más eficiente en
 tokens con +29,6 puntos en consultas temporales y +23,1 en razonamiento multi-salto.
+(El 81,95 % de Memori se confirma en su artículo original,
+[arXiv:2603.19935](https://arxiv.org/pdf/2603.19935), junto con su eficiencia de 1.294
+tokens por consulta; Zep, LangMem y Mem0 siguen sin verificar contra fuente primaria.)
 
 Advertencia metodológica: estos números provienen en buena parte de blogs de los
 propios proveedores. Se citan como señal del estado del campo, no como evidencia.
@@ -254,6 +284,12 @@ enunciado pero no resuelto.
 - **MemConflict** ([arXiv:2605.20926](https://arxiv.org/pdf/2605.20926)) y
   **MemSyco-Bench** ([arXiv:2607.01071](https://arxiv.org/pdf/2607.01071), sicofancia en
   memoria de agentes).
+- **KnowHalu** ([arXiv:2404.02935](https://arxiv.org/abs/2404.02935)) — separa la
+  detección de alucinaciones en dos fases: primero si la respuesta es relevante a la
+  pregunta (*"alucinación por no-fabricación"*: un hecho correcto que no responde lo
+  preguntado), después una verificación factual de cinco pasos que combina
+  conocimiento estructurado (tripletas) y no estructurado (pasajes recuperados con
+  WikiChat), con una tercera opción de veredicto —INCONCLUSIVO— en vez de forzar sí/no.
 
 ### 6.3 Por qué esto importa: el argumento de la deriva semántica
 
@@ -274,6 +310,20 @@ copias derivando. **Esa apuesta no está validada empíricamente.** Ese es el hu
 de larga duración en 2026: un agente falla no cuando se llena la ventana de contexto,
 sino porque un contexto más largo hace que el modelo razone peor, aun con espacio de
 sobra.
+
+El hallazgo original que respalda esto —una curva de desempeño en forma de **U** según
+la posición de la información relevante en el contexto, que persiste incluso en
+modelos con ventana extendida— se documenta con datos propios en Liu et al. (2023,
+TACL, [arXiv:2307.03172](https://arxiv.org/abs/2307.03172)): el desempeño cae de forma
+marcada cuando la respuesta está en el medio del contexto, y más documentos
+recuperados no mejora el resultado de forma monótona. El mismo síntoma se replica en
+una arquitectura sin atención —Mamba, sin mecanismo de atención— en la bitácora de
+exploración `jzhang38/LongMamba` (no revisada por pares), lo que sugiere que el
+problema no es exclusivo del Transformer. Una vía de mitigación alternativa, por el
+lado del entrenamiento en vez de la arquitectura de recuperación, es afinar
+explícitamente el modelo con tareas de contexto largo —resumen y preguntas
+multi-documento— como en `togethercomputer/llama-2-7b-32k-instruct`, aunque sin
+evaluación publicada de cuánto mitiga el sesgo de posición.
 
 Pero hay un contrapunto empírico importante y contraintuitivo: **bajo prompt caching
 moderno, conservar el historial completo superó a toda estrategia de compactación
@@ -344,6 +394,33 @@ Construirlo —aunque sea a escala modesta— sería una contribución real.
 - **Plataformas empresariales** — Glean (100+ aplicaciones en una capa de búsqueda
   consciente de permisos), Neo4j como capa de conocimiento. Relevantes como estado del
   arte industrial y como fuente de requisitos realistas (permisos, auditoría).
+- **Open Knowledge Format (OKF)** — especificación abierta de Google Cloud que
+  formaliza el patrón LLM Wiki: directorio de markdown con frontmatter YAML, un único
+  campo obligatorio (`type`), y en su versión 0.2 procedencia, confianza y frescura
+  como campos consultables (`sources`, `generated`, `verified`, `status`,
+  `stale_after`). No resuelve sincronización semántica ni evaluación —solo
+  representación—. [Spec](https://github.com/GoogleCloudPlatform/open-knowledge-format) ·
+  [anuncio](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing).
+- **FAIR Guiding Principles** (Wilkinson et al., 2016, *Scientific Data*,
+  [doi:10.1038/sdata.2016.18](https://doi.org/10.1038/sdata.2016.18)) — el antecedente
+  académico, dos décadas anterior, de la procedencia como principio: Findable,
+  Accessible, Interoperable, Reusable. Su R1.2 (*"(meta)data are associated with
+  detailed provenance"*) es, en sustancia, el campo `sources` de OKF antes de que el
+  formato existiera. Revisado por pares, a diferencia de casi todo lo demás en esta
+  sección.
+- **ReFinED** (Ayoola et al., Amazon, NAACL 2022,
+  [arXiv:2207.04108](https://arxiv.org/abs/2207.04108)) — vinculador de entidades
+  *zero-shot* contra Wikipedia/Wikidata en un solo paso hacia adelante, citado por
+  GraphRAG como alternativa a la coincidencia exacta de cadenas para la resolución de
+  entidades del §11.3. Más de 60× más rápido que los sistemas competitivos previos,
+  +3,7 F1 sobre el estado del arte anterior.
+- **Arquitectura de conocimiento** (Garralda-Barrio, 2026,
+  [arXiv:2607.02609](https://arxiv.org/abs/2607.02609)) — artículo de visión, sin
+  revisión por pares, que traduce cada garantía de la ingeniería de datos clásica
+  (ingesta, linaje, catálogo, calidad, gobierno) a su versión para artefactos de
+  conocimiento, y sitúa al patrón LLM Wiki y a OKF como evidencia temprana de esa
+  transición, no como su solución completa. Cítese como marco conceptual, no como
+  evidencia empírica.
 
 ---
 
@@ -365,7 +442,14 @@ de un semestre:
    riesgo estructural del patrón y no hay datos.
 5. **El diseño del human-in-the-loop es folclore.** El gist dice "el humano revisa antes
    de escribir"; nadie ha medido cuánta revisión hace falta ni dónde colocarla para
-   maximizar calidad por minuto de atención humana.
+   maximizar calidad por minuto de atención humana. Un caso parcial y medido en un
+   dominio adyacente: Edisum (Šakota et al., 2024,
+   [arXiv:2404.03428](https://arxiv.org/abs/2404.03428)) muestra, en Wikipedia y con
+   evaluación humana, que un modelo pequeño (220M parámetros) generando resúmenes de
+   edición rinde a la par de editores humanos, sin diferencia estadísticamente
+   significativa (p = 0,883) — evidencia de que automatizar la entrada del `log.md` es
+   viable, aunque no resuelve cuánta revisión humana hace falta en la escritura del
+   contenido mismo.
 
 ---
 
@@ -452,36 +536,52 @@ definitiva.
 - [Karpathy, A. — llm-wiki (gist, 4 de abril de 2026)](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 - [nvk/llm-wiki](https://github.com/nvk/llm-wiki)
 - [lucasastorian/llmwiki](https://github.com/lucasastorian/llmwiki) · [Astro-Han/karpathy-llm-wiki](https://github.com/Astro-Han/karpathy-llm-wiki)
+- [Open Knowledge Format (OKF) — especificación v0.2](https://github.com/GoogleCloudPlatform/open-knowledge-format) · [anuncio de Google Cloud](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing) — formaliza el patrón en un formato portable
 
 **Generación de artículos tipo wiki**
 - [Shao et al. — Assisting in Writing Wikipedia-like Articles From Scratch with LLMs (STORM), arXiv:2402.14207](https://arxiv.org/abs/2402.14207) · [repo](https://github.com/stanford-oval/storm) · [proyecto](https://storm-project.stanford.edu/research/storm/)
 - [Semnani et al. — WikiChat, EMNLP Findings 2023, arXiv:2305.14292](https://arxiv.org/abs/2305.14292) · [repo](https://github.com/stanford-oval/WikiChat)
-- [Yang et al. — WikiAutoGen, ICCV 2025](https://openaccess.thecvf.com/content/ICCV2025/papers/Yang_WikiAutoGen_Towards_Multi-Modal_Wikipedia-Style_Article_Generation_ICCV_2025_paper.pdf)
+- [Xu et al. — WikiSP / WikiWebQuestions, EMNLP 2023, arXiv:2305.14202](https://arxiv.org/abs/2305.14202) · [repo](https://github.com/stanford-oval/wikidata-emnlp23)
+- [Yang et al. — WikiAutoGen, ICCV 2025, arXiv:2503.19065](https://arxiv.org/abs/2503.19065) · [PDF de CVF](https://openaccess.thecvf.com/content/ICCV2025/papers/Yang_WikiAutoGen_Towards_Multi-Modal_Wikipedia-Style_Article_Generation_ICCV_2025_paper.pdf)
+- [Šakota et al. — Edisum: Summarizing and Explaining Wikipedia Edits at Scale, arXiv:2404.03428](https://arxiv.org/abs/2404.03428) · [código](https://github.com/epfl-dlab/edisum)
 
 **RAG, GraphRAG y comparaciones**
 - [Han et al. — RAG vs. GraphRAG: A Systematic Evaluation and Key Insights, arXiv:2502.11371](https://arxiv.org/abs/2502.11371)
+- [Edge et al. — From Local to Global: A Graph RAG Approach to Query-Focused Summarization, arXiv:2404.16130](https://arxiv.org/abs/2404.16130) · [código](https://github.com/microsoft/graphrag) — la fuente primaria de GraphRAG
+- [circlemind-ai/fast-graphrag](https://github.com/circlemind-ai/fast-graphrag) — GraphRAG con recuperación por *Personalized PageRank* en vez de resumen de comunidades
+- [GraphRAG-Bench — When to Use Graphs in RAG, ICLR 2026, arXiv:2506.05690](https://arxiv.org/abs/2506.05690)
 - [VentureBeat — Stop graphing everything: when GraphRAG actually beats vector RAG](https://venturebeat.com/orchestration/stop-graphing-everything-when-graphrag-actually-beats-vector-rag)
 
 **Memoria de agentes, consistencia y revisión de creencias**
+- [Packer et al. — MemGPT: Towards LLMs as Operating Systems, arXiv:2310.08560](https://arxiv.org/abs/2310.08560) · [código/sucesor Letta](https://github.com/letta-ai/letta)
+- [Jiménez Gutiérrez et al. — HippoRAG, NeurIPS 2024, arXiv:2405.14831](https://arxiv.org/abs/2405.14831) · [continuación HippoRAG 2, ICML 2025, arXiv:2502.14802](https://arxiv.org/abs/2502.14802) · [código](https://github.com/osu-nlp-group/hipporag)
 - [Myakala, Agrawal y Manche — BeliefShift, arXiv:2603.23848](https://arxiv.org/abs/2603.23848)
 - [STALE, arXiv:2605.06527](https://arxiv.org/pdf/2605.06527) · [TOKI, arXiv:2606.06240](https://arxiv.org/pdf/2606.06240) · [NeuSymMS, arXiv:2605.17596](https://arxiv.org/html/2605.17596v1)
 - [MemConflict, arXiv:2605.20926](https://arxiv.org/pdf/2605.20926) · [MemSyco-Bench, arXiv:2607.01071](https://arxiv.org/pdf/2607.01071) · [Memori, arXiv:2603.19935](https://arxiv.org/pdf/2603.19935)
 - [Contradiction Detection in RAG Systems, arXiv:2504.00180](https://arxiv.org/abs/2504.00180)
+- [Zhang et al. — KnowHalu, arXiv:2404.02935](https://arxiv.org/abs/2404.02935) · [código](https://github.com/javyduck/knowhalu)
 - [Fundamental Problems With Model Editing, arXiv:2406.19354](https://arxiv.org/pdf/2406.19354)
 - [Memory in the Age of AI Agents, arXiv:2512.13564](https://arxiv.org/pdf/2512.13564)
 - [Always-On Agents: A Survey of Persistent Memory, State, and Governance, arXiv:2606.30306](https://arxiv.org/pdf/2606.30306)
 
 **Contexto e ingeniería de contexto**
+- [Liu et al. — Lost in the Middle: How Language Models Use Long Contexts, TACL 2023, arXiv:2307.03172](https://arxiv.org/abs/2307.03172) · [código](https://github.com/nelson-liu/lost-in-the-middle) — la fuente primaria del fenómeno de degradación por posición
+- [jzhang38/LongMamba](https://github.com/jzhang38/LongMamba) — el mismo síntoma en una arquitectura sin atención (bitácora de exploración, no revisada por pares)
+- [togethercomputer/llama-2-7b-32k-instruct](https://github.com/togethercomputer/llama-2-7b-32k-instruct) — mitigación por entrenamiento en vez de por arquitectura de recuperación
 - [Bouchard, L. — Context Engineering in 2026: Why We Stopped Compacting Our Agent's Context](https://www.louisbouchard.ai/context-engineering-2026/)
 - [Governance Decay, arXiv:2606.22528](https://arxiv.org/pdf/2606.22528) · [Self-Compacting Language Model Agents, arXiv:2606.23525](https://arxiv.org/pdf/2606.23525) · [Parallel Context Compaction, arXiv:2605.23296](https://arxiv.org/pdf/2605.23296)
 
 **Evaluación**
-- [DeepScholar-Bench, arXiv:2508.20033](https://arxiv.org/html/2508.20033v1) · [HalluLens, arXiv:2504.17550](https://arxiv.org/pdf/2504.17550) · [ResearchRubrics, OpenReview](https://openreview.net/forum?id=ErnvfmSX0P)
+- [DeepScholar-Bench, arXiv:2508.20033](https://arxiv.org/html/2508.20033v1) · [HalluLens, arXiv:2504.17550](https://arxiv.org/pdf/2504.17550) · [ResearchRubrics — A Benchmark of Prompts and Rubrics, ICLR 2026, arXiv:2511.07685](https://arxiv.org/abs/2511.07685)
+- [Thottingal — Question-to-Question Retrieval for Hallucination-Free Knowledge Access, arXiv:2501.11301](https://arxiv.org/abs/2501.11301) — preprint sin revisión por pares confirmada
 
 **Infraestructura y panorama industrial**
 - [awesome-mcp-servers: knowledge management & memory](https://github.com/TensorBlock/awesome-mcp-servers/blob/main/docs/knowledge-management--memory.md)
 - [Neo4j — The knowledge layer for enterprise AI](https://neo4j.com/blog/agentic-ai/enterprise-knowledge-layer/)
 - [Falconer — The enterprise LLM wiki: scaling Karpathy's pattern to your org](https://falconer.com/guides/enterprise-llm-wiki-karpathy/)
+- [Wilkinson et al. — The FAIR Guiding Principles, Scientific Data 2016, doi:10.1038/sdata.2016.18](https://doi.org/10.1038/sdata.2016.18) — revisado por pares
+- [Ayoola et al. — ReFinED, NAACL 2022, arXiv:2207.04108](https://arxiv.org/abs/2207.04108) · [código](https://github.com/alexa/refined)
+- [Garralda-Barrio — Knowledge-Centric Information Systems, arXiv:2607.02609](https://arxiv.org/abs/2607.02609) — vision paper, citar como marco, no como evidencia
 
 **Literatura gris consultada** (útil para panorama, no citable como evidencia)
 - [DataCamp — LLM Wiki](https://www.datacamp.com/blog/llm-wiki) · [MindStudio](https://www.mindstudio.ai/blog/what-is-llm-wiki-karpathy-knowledge-base-architecture) · [Kunal Ganglani](https://www.kunalganglani.com/blog/llm-wiki-karpathy-local-knowledge-base) · [Denser.ai](https://denser.ai/blog/llm-wiki-karpathy-knowledge-base/) · [note.com/wayne_chang](https://note.com/wayne_chang/n/nc6b1eef3fb90?hl=en)
@@ -495,9 +595,29 @@ Antes de citar en el documento final:
 
 1. Confirmar conteos de estrellas y autoría de las implementaciones de §3 directamente
    en GitHub. Provienen de blogs.
+   **Resuelto (19 sep 2026):** los nueve repositorios de §3 se verificaron directamente
+   en GitHub; conteos actualizados en la tabla, con fecha de verificación junto a cada
+   uno. `llm-wiki-compiler` (atomicmemory) se confirmó existente solo de forma
+   indirecta, vía un *fork* que lo referencia; su conteo de estrellas sigue sin
+   verificar.
 2. Confirmar los números de LoCoMo de §6.1 en los papers originales, no en los blogs de
    los proveedores.
+   **Parcialmente resuelto (19 sep 2026):** el 81,95 % de Memori se confirmó en su
+   artículo original (arXiv:2603.19935). Zep, LangMem y Mem0 siguen sin verificar
+   contra fuente primaria.
 3. Verificar el estado de publicación (preprint vs. revisado por pares) de los arXiv de
    2026 citados en §6.2.
+   **Resuelto (19 sep 2026):** los ocho identificadores de §6.2 existen y su contenido
+   coincide con lo descrito aquí. Ninguno mostró evidencia de venue de revisión por
+   pares distinto de arXiv en la verificación —deben tratarse como preprints hasta
+   confirmar lo contrario—.
 4. Localizar la referencia primaria de GraphRAG (Microsoft Research, 2024); aquí se cita
    de segunda mano.
+   **Resuelto (19 sep 2026):** Edge et al., arXiv:2404.16130, añadida en §4 y §12.
+5. **Nuevo (19 sep 2026):** dieciséis fuentes adicionales revisadas en profundidad
+   —cada una con ficha de doce secciones— en
+   [docs/fichas-lectura.md](fichas-lectura.md). Las referencias verificadas de ese
+   documento ya están incorporadas en §2, §4, §6, §7, §9, §10 y §12 de este archivo;
+   `docs/fichas-lectura.md` conserva el detalle completo de cada una (metodología,
+   resultados exactos, limitaciones, preguntas abiertas) para quien necesite más
+   profundidad que la síntesis aquí.

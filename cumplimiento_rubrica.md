@@ -35,7 +35,7 @@ No se elige un modelo: se elige **qué modelo va en cada etapa**. Se usa `litell
 
 **Pide:** aplicar métricas adecuadas e interpretarlas frente a los objetivos.
 
-**Entrega:** cinco métricas medidas sobre cada copia versionada del wiki (cobertura, fundamentación, resolución de contradicciones, supervivencia del error y costo), contra un conjunto de preguntas de control con respuesta fijada de antemano por los dos autores, reportando el acuerdo entre ambos. Las métricas 3 y 4 no son estándar de exactitud: miden si el sistema se corrige a sí mismo con el tiempo, que es el objetivo real del producto.
+**Entrega:** siete métricas medidas sobre cada copia versionada del wiki (eficiencia de contexto, esfuerzo humano, cobertura, fundamentación, resolución de contradicciones, persistencia del error y costo), contra un conjunto de preguntas de control con respuesta fijada de antemano por los dos autores, reportando el acuerdo entre ambos. La resolución de contradicciones y la persistencia del error no son métricas estándar de exactitud: miden si el sistema se corrige a sí mismo con el tiempo, que es el objetivo real del producto.
 
 ## R.6.2 — Automatización de tareas
 

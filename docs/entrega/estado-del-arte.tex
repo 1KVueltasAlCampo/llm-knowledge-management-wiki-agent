@@ -1,0 +1,650 @@
+% =====================================================================
+%  Estado del arte: LLM Wiki (WikiLLM)
+%  Universidad Icesi - Maestria en Inteligencia Artificial Aplicada
+%  Formato de presentacion de documentos, Facultad Barberi.
+%  Archivo autocontenido: la bibliografia va al final, no requiere BibTeX.
+%  Compilar con pdflatex (dos pasadas).
+% =====================================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage{mathptmx}                 % Times New Roman
+\usepackage[scaled=0.92]{helvet}
+\usepackage{courier}
+
+\usepackage[letterpaper,top=2.54cm,bottom=2.54cm,left=2.54cm,right=2.54cm,
+            headheight=14pt,headsep=18pt]{geometry}
+
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage[round,sort]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+% ---------------------------------------------------------------- estilo
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize Universidad Icesi, Facultad Barberi de Ingeniería Diseño y Ciencias Aplicadas}
+\fancyhead[R]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}[block]{\centering\normalsize\scshape}{\Roman{section}.\quad}{0pt}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titleformat{\subsection}[block]{\normalsize\itshape}{\Alph{subsection}.\quad}{0pt}{}
+\titlespacing*{\subsection}{\parindent}{11pt}{4pt}
+
+\captionsetup[table]{labelsep=newline,justification=centering,font=sc,labelfont=sc,skip=2pt}
+\renewcommand{\thetable}{\Roman{table}}
+\renewcommand{\arraystretch}{1.18}
+
+\setlength{\parindent}{1.3em}
+\setlength{\parskip}{0pt}
+\setlength{\bibsep}{2pt}
+\renewcommand{\bibfont}{\small}
+
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\setlist{nosep,leftmargin=1.6em}
+
+\newcommand{\notasinmarca}[1]{%
+  \begingroup\renewcommand{\thefootnote}{}\footnote{#1}\addtocounter{footnote}{-1}\endgroup}
+
+% ================================================================ inicio
+\begin{document}
+
+\thispagestyle{fancy}
+
+\begin{center}
+{\LARGE Estado del arte: bases de conocimiento\\[2pt]
+mantenidas por modelos de lenguaje (\emph{LLM Wiki})\par}
+\vspace{18pt}
+{\large Juan Diego Ramírez -- Juan David Cruz\par}
+\vspace{4pt}
+{\ttfamily\small juan.ramirezzuluaga@u.icesi.edu.co, juan.cruz6@u.icesi.edu.co\par}
+\end{center}
+
+\vspace{14pt}
+
+\notasinmarca{Revisión con corte al 3 de octubre de 2026. Proyecto de la Maestría en Inteligencia Artificial Aplicada, Universidad Icesi.}
+
+
+% ---------------------------------------------------------------------
+\section{Alcance y método de revisión}
+
+\textbf{Búsqueda.} Se consultaron el repositorio arXiv y buscadores web generales con los términos \emph{LLM Wiki}, \emph{LLM-maintained wiki}, \emph{knowledge compilation}, \emph{agent-native wiki}, \emph{filesystem memory} y \emph{Karpathy}, más búsquedas dirigidas sobre memoria de agentes, obsolescencia, contradicción y propagación de errores. El punto de partida fue un conjunto inicial de seis artículos identificados por los autores, ampliado a partir de esas búsquedas.
+
+\textbf{Inclusión.} Se incluyen trabajos con (i) relación directa con el patrón o con uno de sus componentes y (ii) metadatos verificables. Los identificadores, autores y títulos de todos los preprints se comprobaron contra el registro de arXiv; las sedes de publicación se reportan solo cuando constan en ese registro o en el propio artículo. Se excluyeron blogs y documentación de producto, salvo el gist de Karpathy, que es la fuente primaria, y la especificación del formato OKF con dos implementaciones de referencia, citadas como literatura gris en la Sección~VI. Se excluyó \emph{LLM-WikiRace} (arXiv:2602.16902) pese a la cercanía de su nombre: evalúa planificación sobre hipervínculos de Wikipedia y no trata bases de conocimiento mantenidas por un modelo.
+
+\textbf{Nivel de evidencia.} Cada trabajo se clasifica como \emph{R} (revisado por pares en sede reconocida), \emph{J} (revista de creación reciente, indexación no verificada), \emph{P} (preprint) o \emph{G} (literatura gris). Los resultados numéricos de trabajos \emph{P}, \emph{J} y \emph{G} son los que reportan sus autores y no han sido replicados.
+
+% ---------------------------------------------------------------------
+\section{El patrón LLM Wiki}
+
+\citet{karpathy2026} lo presenta como un «archivo de ideas», no como software ni como artículo. Define tres capas: fuentes crudas inmutables; un wiki de páginas markdown enlazadas que el modelo escribe y mantiene; y un esquema (\texttt{CLAUDE.md}, \texttt{AGENTS.md}) que fija convenciones y flujos. Define tres operaciones: \emph{ingest} (integrar una fuente y actualizar las páginas afectadas), \emph{query} (responder con citas desde el wiki) y \emph{lint} (detectar contradicciones, afirmaciones obsoletas y páginas huérfanas). Un índice (\texttt{index.md}) y un registro cronológico (\texttt{log.md}) sustituyen al buscador vectorial a escala pequeña.
+
+La diferencia con RAG \citep{lewis2020} es el momento de la síntesis: RAG la hace en cada consulta sobre fragmentos crudos; el wiki la hace una vez, al ingerir, y la conserva. El costo se traslada de la consulta al mantenimiento, y el modo de falla, de recuperar el fragmento equivocado a perpetuar un error de síntesis. El gist no aporta evaluación alguna.
+
+% ---------------------------------------------------------------------
+\section{Literatura directa sobre LLM Wiki}
+
+La Tabla~\ref{tab:directa} resume los 20 trabajos posteriores al gist que estudian el patrón. Ninguno ha sido publicado en una sede de primer nivel; todos son de 2026.
+
+{\small
+\begin{longtable}{L{2.9cm}L{0.5cm}L{5.4cm}L{5.8cm}}
+\caption{Trabajos que estudian directamente el patrón LLM Wiki}\label{tab:directa}\\
+\toprule
+Referencia & Niv. & Aporte & Resultado reportado \\
+\midrule
+\endfirsthead
+\toprule
+Referencia & Niv. & Aporte & Resultado reportado \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{l}{\itshape Comparaciones empíricas contra RAG}\\
+\citet{zhang2026pilot} & P & Piloto en diagnóstico de aguas residuales; 10 manuales, 40 casos ingeridos por lotes, 3 políticas de ingesta. & Ninguna variante del wiki supera a RAG. Describe tres fallas del mantenedor: fragmentación, atomización y sobrefusión. \\
+\citet{cochran2026rag} & P & Comparación prerregistrada: RAG vectorial frente a wiki compilado; 24 artículos, 13 preguntas, dos jueces ciegos. & El wiki conecta mejor hallazgos entre fuentes, pero gasta $\sim$21 veces más tokens por consulta; no hay punto de equilibrio. Un RAG con descomposición elimina casi toda la ventaja. \\
+\citet{wright2026} & P & RAG frente a wiki sobre el corpus de un curso; 59 preguntas. & Empate en hechos puntuales; en preguntas que cruzan unidades, wiki 9,93 frente a 8,14 y 100\,\% frente a 64\,\% de fundamentación. \\
+\citet{huerta2026wicer} & P & Mide la «brecha de compilación» en 17 dominios de RepLiQA (6.800 preguntas) y propone un ciclo compilar--evaluar--refinar. & La compilación a ciegas falla en 53--60\,\% de los casos y queda por debajo de RAG; una o dos iteraciones de refinamiento recuperan el 80\,\% de la calidad perdida. \\
+\citet{wen2026} & P & Modelo económico del «interés compuesto» del conocimiento; cuatro consultas secuenciales. & 84,6\,\% menos tokens acumulados que RAG; el resto son proyecciones calibradas, no mediciones. \\
+\midrule
+\multicolumn{4}{l}{\itshape Construcción, navegación y refinamiento}\\
+\citet{ming2026llmwiki} & P & Wiki con enlaces bidireccionales navegado por herramientas, más un «libro de errores» para autocorrección. & Supera a HippoRAG~2, LightRAG y GraphRAG por 2,0--8,1 puntos F1 en HotpotQA, MuSiQue y 2WikiMultiHopQA. \\
+\citet{ming2026wikiloop} & P & Entrena en conjunto a quien construye y a quien navega el wiki, con la utilidad en consultas como señal. & +6,3 puntos sobre el sistema anterior en AuthTrace. \\
+\citet{dong2026} & P & Modelo fundacional sobre un grafo de wiki. & Mejoras en cinco benchmarks de memoria y multisalto. \\
+\citet{huang2026deeprefine} & P & Refinamiento del wiki por aprendizaje por refuerzo: diagnostica defectos a partir de las consultas y los repara. & Mejoras consistentes en tareas posteriores; afirma que los defectos se acumulan con el uso iterativo. \\
+\citet{ran2026} & P & Compila en orden cronológico 56 artículos en wiki y grafo; cada ingesta es una transición de estado inspeccionable. & Crecimiento mayormente aditivo y baja rotación estructural. No mide exactitud de respuestas. \\
+\midrule
+\multicolumn{4}{l}{\itshape Mantenimiento, escala y costo}\\
+\citet{huerta2026streaming} & P & Formaliza la compilación sobre un flujo de documentos con presupuesto fijo de tokens; cota de arrepentimiento. & El LLM como juez introduce un sesgo cuando el contenido es posterior al corte de entrenamiento; propone medir arrepentimiento y no puntaje absoluto. \\
+\citet{zhou2026} & P & Primer estudio sistemático de memoria como sistema de archivos markdown que el agente organiza. & La organización reduce a la mitad el costo de búsqueda, pero se erosiona al crecer salvo con el modelo más fuerte, y no produce mejores respuestas. \\
+\citet{cochran2026progressive} & P & Ablación prerregistrada de la estructura de acceso sobre un wiki real de 709 páginas, con contenido idéntico. & Calidad no inferior; el costo baja entre un tercio y más de la mitad. Un agente capaz no carga el índice: infiere la página. \\
+\midrule
+\multicolumn{4}{l}{\itshape Procedencia, gobernanza y marcos conceptuales}\\
+\citet{zhang2026prov} & J & Capa de procedencia: grafo tipado afirmación--evidencia, detección de ediciones silenciosas y propagación de retractaciones. & 100\,\% de cobertura al propagar retractaciones en un corpus de 112 documentos. \\
+\citet{miteski2026} & P & Perfil de gobernanza contra el atrincheramiento de interpretaciones en wikis personales. & Propuesta de diseño; sin evaluación. \\
+\citet{roynard2026} & P & Argumenta que falta una capa de conocimiento, distinta de la memoria, en las arquitecturas cognitivas. & Conceptual. \\
+\citet{moreira2026} & P & Plantilla de wiki para trabajo colaborativo; conserva los resultados negativos. & Tres casos de estudio; una auditoría retroactiva rebajó coberturas declaradas de 20/20 a 14 y 12. \\
+\citet{garralda2026} & P & Artículo de visión: el wiki como evidencia de una «arquitectura de conocimiento». & Conceptual. \\
+\midrule
+\multicolumn{4}{l}{\itshape Aplicaciones}\\
+\citet{zhang2026lco} & J & Wiki de guías clínicas como fuente de restricciones para aprendizaje por refuerzo. & Solo el 1,3\,\% de las restricciones extraídas es ejecutable. \\
+\citet{sun2026} & P & Wiki de memoria sobre trayectorias con procedencia para diálogo largo. & Mejoras en LoCoMo y MedMT. \\
+\end{longtable}
+}
+
+\textbf{Lectura conjunta.} (i)~Las comparaciones contra RAG no convergen: \citet{wright2026} y \citet{ming2026llmwiki} favorecen al wiki en preguntas que cruzan fuentes; \citet{zhang2026pilot} y \citet{huerta2026wicer} muestran que una compilación ingenua pierde hechos y rinde menos que RAG; \citet{cochran2026rag} muestra que el resultado depende de la línea base, de la granularidad de la medición y del juez. (ii)~El argumento económico está en disputa: \citet{wen2026} reportan ahorro y \citet{cochran2026rag} un sobrecosto por consulta. (iii)~El mantenimiento es el punto débil: la organización se erosiona con el crecimiento \citep{zhou2026} y el mantenedor degenera según la política de ingesta \citep{zhang2026pilot}. (iv)~Las muestras son pequeñas (10 a 59 preguntas en tres de las cinco comparaciones) y varios trabajos tienen autor único.
+
+% ---------------------------------------------------------------------
+\section{Antecedentes: síntesis anticipada sin mantenimiento}
+
+\textbf{Generación de artículos tipo wiki.} STORM \citep{shao2024} genera artículos largos con preescritura guiada por perspectivas y los evalúa con FreshWiki; Co-STORM \citep{jiang2024} añade un humano y un mapa conceptual dinámico; WikiChat \citep{semnani2023} retiene solo los hechos fundamentados en el corpus. Los tres generan un artefacto una vez y no lo mantienen.
+
+\textbf{RAG estructurado.} RAPTOR \citep{sarthi2024} precomputa un árbol de resúmenes; GraphRAG \citep{edge2024} extrae un grafo y resume comunidades; HippoRAG \citep{gutierrez2024,gutierrez2025} y LightRAG \citep{guo2024} indexan sobre grafos. Comparten con el wiki la síntesis anticipada, pero en tripletas o resúmenes, no en prosa editable. \citet{han2025} comparan RAG y GraphRAG bajo un protocolo único y concluyen que ninguno domina: la ventaja depende de la tarea.
+
+\textbf{Contexto largo.} La generación aumentada por caché \citep{chan2024} precarga el corpus completo y elimina la recuperación; es el mecanismo de servicio que asume \citet{huerta2026wicer}. \citet{li2024} y \citet{li2025lara} muestran que la elección entre contexto largo y RAG depende del modelo, la longitud y el tipo de pregunta. Además, el desempeño decae cuando la información relevante queda en medio de un contexto largo, incluso en modelos de ventana extendida \citep{liu2024}.
+
+% ---------------------------------------------------------------------
+\section{Memoria de agentes}
+
+El wiki es un caso particular de memoria externa persistente. MemGPT \citep{packer2023} gestiona niveles de memoria con operaciones explícitas de lectura y escritura; los agentes generativos \citep{park2023} consolidan observaciones en reflexiones; CoALA \citep{sumers2023} ordena estas arquitecturas. A-MEM \citep{xu2025amem} mantiene notas enlazadas al estilo Zettelkasten que se reescriben al llegar memorias nuevas, y es el antecedente revisado por pares más cercano al patrón. Mem0 \citep{chhikara2025} y Zep \citep{rasmussen2025} son las referencias de uso industrial, la segunda con un grafo temporal.
+
+Dynamic Cheatsheet \citep{suzgun2025} y ACE \citep{zhang2025ace} mantienen un contexto que evoluciona con el uso. ACE documenta dos fallas de la reescritura repetida: el \emph{sesgo de brevedad} y el \emph{colapso de contexto}, en el que los detalles se erosionan; las evita con actualizaciones incrementales estructuradas en lugar de reescrituras completas. Las revisiones de \citet{hu2025} y \citet{huang2026survey} cubren el campo.
+
+% ---------------------------------------------------------------------
+\section{El problema del mantenimiento}
+
+\textbf{Propagación y deriva.} \citet{xiong2025} muestran que los agentes replican lo que recuperan de su memoria y que los errores almacenados se componen y degradan el desempeño posterior. \citet{perez2024} muestran que en cadenas de reescritura entre modelos los sesgos pequeños se amplifican hacia estados atractores. \citet{chen2026} muestra que la compactación de contexto borra restricciones sin aviso. \citet{lam2026} clasifican los riesgos de corrupción de memoria, entre ellos la deriva semántica por resumen iterativo. \citet{treude2026} hallan referencias obsoletas en los archivos de configuración de agentes del 23\,\% de 356 repositorios.
+
+\textbf{Obsolescencia y contradicción.} Los modelos manejan mal el conflicto entre lo almacenado y la evidencia nueva \citep{xu2024conflicts,hase2024}. STALE \citep{chao2026}, MemConflict \citep{tao2026} y BeliefShift \citep{myakala2026} lo convierten en benchmark; el último define métricas de revisión de creencias y de resolución de contradicciones. MemOps \citep{hao2026} evalúa operaciones de memoria y no solo la respuesta final. \citet{hu2026trust} encuentran que un dato obsoleto con apariencia de vigente engaña más a los modelos más capaces, y que exponer metadatos lo mitiga solo en ellos. MERIT \citep{mishra2026} mide la utilidad de la memoria bajo contabilidad de costos y corrupción controlada: los almacenes que actualizan al escribir resisten mejor los hechos cambiantes que la recuperación por similitud.
+
+\textbf{Mecanismos de reparación.} TOKI \citep{wang2026toki} y MemStrata \citep{yadav2026} resuelven contradicciones con registros bitemporales y reglas deterministas; NeuSymMS \citep{sultan2026} delega la detección a un componente simbólico. ChronoMem \citep{su2026} versiona la memoria y permite revertirla; \citet{yu2026} reparan los estados derivados de una memoria defectuosa siguiendo sus dependencias. Todos operan sobre hechos atómicos o tripletas, no sobre prosa.
+
+\textbf{Procedencia y formato.} Los principios FAIR \citep{wilkinson2016} establecieron que los metadatos deben asociarse a una procedencia detallada (R1.2), y el Open Knowledge Format \citep{okf2026} lo traslada al patrón: markdown con \emph{frontmatter} YAML y, desde su versión 0.2, campos consultables de fuente, generación, verificación y vigencia (\texttt{sources}, \texttt{generated}, \texttt{verified}, \texttt{stale\_after}). Especifica la representación, no la evaluación. En la práctica, \texttt{nvk/llm-wiki} añade curaduría de correcciones y aprobaciones por un humano \citep{nvk2026} y \texttt{claude-obsidian} un registro de procedencia propio \citep{agrici2026}; ambos son literatura gris sin evaluación publicada.
+
+% ---------------------------------------------------------------------
+\section{Evaluación}
+
+Los benchmarks disponibles miden memoria conversacional (LoCoMo, \citealp{maharana2024}; LongMemEval, \citealp{wu2024}), generación única de artículos (FreshWiki, \citealp{shao2024}) o síntesis de investigación (DeepScholar-Bench, \citealp{patel2025}). Ninguno mide un corpus en prosa mantenido a lo largo de ingestas sucesivas.
+
+Tres advertencias metodológicas salen de la literatura directa. El LLM como juez es inestable: en \citet{cochran2026rag} el acuerdo entre jueces sobre fundamentación es casi nulo ($\rho = 0{,}04$) y la valoración global contradice la verificación cita por cita. El juez se sesga cuando el contenido es posterior a su corte de entrenamiento \citep{huerta2026streaming}. Y el resultado depende de la fortaleza de la línea base RAG \citep{cochran2026rag,zhang2026pilot}.
+
+% ---------------------------------------------------------------------
+\section{Síntesis y vacíos}
+
+\textbf{Lo que la literatura sostiene.}
+\begin{enumerate}
+\item El wiki compilado aventaja a RAG simple en preguntas que conectan varias fuentes; en hechos puntuales no hay diferencia \citep{wright2026,cochran2026rag,ming2026llmwiki}.
+\item La compilación sin control pierde hechos y puede rendir menos que RAG \citep{huerta2026wicer,zhang2026pilot}.
+\item La estructura del wiki se degrada al crecer con los modelos actuales \citep{zhou2026}, y la reescritura repetida erosiona detalle \citep{zhang2025ace}.
+\item No hay arquitectura dominante: el resultado depende de la tarea, la línea base y el método de evaluación \citep{han2025,cochran2026rag}.
+\end{enumerate}
+
+\textbf{Lo que falta.} La Tabla~\ref{tab:vacios} contrasta los vacíos con el trabajo más cercano a cada uno.
+
+\begin{table}[!ht]
+\caption{Vacíos de investigación y trabajo más cercano}\label{tab:vacios}
+\small
+\begin{tabular}{L{4.2cm}L{5.3cm}L{5.3cm}}
+\toprule
+Vacío & Trabajo más cercano & Qué no cubre \\
+\midrule
+Calidad factual del wiki medida tras cada ingesta & \citet{zhang2026pilot}: 8 lotes; \citet{ran2026}: 56 ingestas; \citet{zhou2026}: estudio de crecimiento & Muestra mínima; métricas estructurales y no factuales; memoria conversacional y no literatura \\
+Supervivencia de un error a través de las ingestas & \citet{zhang2026prov}: retractación; \citet{yu2026} y \citet{mishra2026}: corrupción controlada & Miden la reparación explícita en grafos o registros, no la persistencia espontánea en prosa \\
+Efecto y frecuencia del \emph{lint} & \citet{huang2026deeprefine}; \citet{huerta2026wicer}; libro de errores de \citet{ming2026llmwiki} & Proponen mecanismos; no varían la frecuencia ni aíslan su efecto sobre la calidad acumulada \\
+Intervención humana & \citet{zhang2026prov}: umbral de revisión; \citet{jiang2024}; \citet{sakota2024}: resúmenes de ediciones a la par de editores humanos & No hay medición de cuánta revisión hace falta; \citet{zhang2026pilot} la deja como trabajo futuro; Edisum cubre el registro de cambios, no la redacción del contenido \\
+Compilación de fuentes de calidad desigual & \citet{hu2026trust}: confianza ante metadatos; \citet{zhang2026prov}: propagación de confianza; \citet{zhang2024knowhalu}: verificación factual de alucinaciones & Nadie mide si compilar convierte una afirmación débil en prosa segura \\
+Frontera de costo frente a RAG & \citet{wen2026}; \citet{cochran2026rag}; \citet{cochran2026progressive} & Resultados contradictorios, sobre corpus pequeños y estáticos \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Posición del proyecto.} Los seis vacíos están abiertos, pero ninguno está intacto: entre mayo y septiembre de 2026 aparecieron mediciones parciales de todos. El espacio no ocupado es la combinación: un wiki en prosa sobre literatura científica posterior al corte de entrenamiento, evaluado con preguntas de control fijas tras cada ingesta, con errores inyectados y procedencia por afirmación. La motivación es empírica: el texto generado por LLM es casi seis veces más frecuente en los artículos de arXiv que no son revisiones \citep{elazar2026}. Las advertencias sobre el juez y la línea base de la Sección~VII condicionan ese diseño.
+
+% ---------------------------------------------------------------------
+\begin{thebibliography}{}
+
+\bibitem[Agrici, 2026]{agrici2026}
+Agrici, D. (2026).
+\newblock {claude-obsidian: Self-organizing AI second brain for Obsidian +
+  Claude Code}.
+\newblock GitHub, \url{https://github.com/AgriciDaniel/claude-obsidian}.
+  Literatura gris.
+
+\bibitem[Chan et~al., 2024]{chan2024}
+Chan, B.~J., Chen, C.-T., Cheng, J.-H., y Huang, H.-H. (2024).
+\newblock {Don't Do RAG: When Cache-Augmented Generation is All You Need for
+  Knowledge Tasks}.
+\newblock arXiv:2412.15605. Publicado en WWW 2025 (short paper).
+
+\bibitem[Chao et~al., 2026]{chao2026}
+Chao, H., Bai, Y., Sheng, R., Li, T., y Sun, Y. (2026).
+\newblock {STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?}
+\newblock arXiv:2605.06527. Preprint.
+
+\bibitem[Chen, 2026]{chen2026}
+Chen, S. (2026).
+\newblock {Governance Decay: How Context Compaction Silently Erases Safety
+  Constraints in Long-Horizon LLM Agents}.
+\newblock arXiv:2606.22528. Preprint.
+
+\bibitem[Chhikara et~al., 2025]{chhikara2025}
+Chhikara, P., Khant, D., Aryan, S., Singh, T., y Yadav, D. (2025).
+\newblock {Mem0: Building Production-Ready AI Agents with Scalable Long-Term
+  Memory}.
+\newblock arXiv:2504.19413. Preprint.
+
+\bibitem[Cochran, 2026a]{cochran2026progressive}
+Cochran, T.~O. (2026a).
+\newblock {Progressive Disclosure for LLM-Maintained Wiki Knowledge Bases: a
+  Preregistered Ablation}.
+\newblock arXiv:2607.04576. Preprint.
+
+\bibitem[Cochran, 2026b]{cochran2026rag}
+Cochran, T.~O. (2026b).
+\newblock {Single-Round Vector RAG vs an LLM-Compiled Wiki: A Preregistered
+  Comparison on a Small Multi-Domain Research Corpus}.
+\newblock arXiv:2605.18490. Preprint.
+
+\bibitem[Dong et~al., 2026]{dong2026}
+Dong, J., Luo, L., Zhang, S., Chen, G., Guo, T., Yu, Y., et~al. (2026).
+\newblock {WFM: Wiki Foundation Model for Complex Agentic Reasoning}.
+\newblock arXiv:2609.18182. Preprint.
+
+\bibitem[Edge et~al., 2024]{edge2024}
+Edge, D., Trinh, H., Cheng, N., Bradley, J., Chao, A., Mody, A., et~al. (2024).
+\newblock {From Local to Global: A Graph RAG Approach to Query-Focused
+  Summarization}.
+\newblock arXiv:2404.16130. Preprint.
+
+\bibitem[Elazar y Antoniak, 2026]{elazar2026}
+Elazar, Y. y Antoniak, M. (2026).
+\newblock {LLM-generated or human-written? Comparing review and non-review
+  papers on arXiv}.
+\newblock arXiv:2601.17036. Preprint.
+
+\bibitem[Garralda-Barrio, 2026]{garralda2026}
+Garralda-Barrio, M. (2026).
+\newblock {Knowledge-Centric Information Systems}.
+\newblock arXiv:2607.02609. Preprint.
+
+\bibitem[Google Cloud, 2026]{okf2026}
+Google Cloud (2026).
+\newblock {Open Knowledge Format (OKF) specification}, versión 0.2.
+\newblock GitHub,
+  \url{https://github.com/GoogleCloudPlatform/open-knowledge-format}.
+  Literatura gris.
+
+\bibitem[Guo et~al., 2024]{guo2024}
+Guo, Z., Xia, L., Yu, Y., Ao, T., y Huang, C. (2024).
+\newblock {LightRAG: Simple and Fast Retrieval-Augmented Generation}.
+\newblock arXiv:2410.05779. Preprint.
+
+\bibitem[Gutiérrez et~al., 2024]{gutierrez2024}
+Gutiérrez, B.~J., Shu, Y., Gu, Y., Yasunaga, M., y Su, Y. (2024).
+\newblock {HippoRAG: Neurobiologically Inspired Long-Term Memory for Large
+  Language Models}.
+\newblock arXiv:2405.14831. Publicado en NeurIPS 2024.
+
+\bibitem[Gutiérrez et~al., 2025]{gutierrez2025}
+Gutiérrez, B.~J., Shu, Y., Qi, W., Zhou, S., y Su, Y. (2025).
+\newblock {From RAG to Memory: Non-Parametric Continual Learning for Large
+  Language Models}.
+\newblock arXiv:2502.14802. Publicado en ICML 2025.
+
+\bibitem[Han et~al., 2025]{han2025}
+Han, H., Ma, L., Wang, Y., Shomer, H., Lei, Y., Qi, Z., et~al. (2025).
+\newblock {RAG vs. GraphRAG: A Systematic Evaluation and Key Insights}.
+\newblock arXiv:2502.11371. Preprint.
+
+\bibitem[Hao et~al., 2026]{hao2026}
+Hao, X., Zhang, Z., Lin, Z., Sun, Y., Guo, Z., Zhang, X., et~al. (2026).
+\newblock {MemOps: Benchmarking Lifecycle Memory Operations in Long-Horizon
+  Conversations}.
+\newblock arXiv:2607.12893. Preprint.
+
+\bibitem[Hase et~al., 2024]{hase2024}
+Hase, P., Hofweber, T., Zhou, X., Stengel-Eskin, E., y Bansal, M. (2024).
+\newblock {Fundamental Problems With Model Editing: How Should Rational Belief
+  Revision Work in LLMs?}
+\newblock arXiv:2406.19354. Preprint.
+
+\bibitem[Hu y Ramachandran, 2026]{hu2026trust}
+Hu, J. y Ramachandran, S. (2026).
+\newblock {The Memory Trust Gap: Capability-Dependent Failures in
+  Persistent-Memory Agents}.
+\newblock arXiv:2609.01852. Preprint.
+
+\bibitem[Hu et~al., 2025]{hu2025}
+Hu, Y., Liu, S., Yue, Y., Zhang, G., Liu, B., Zhu, F., et~al. (2025).
+\newblock {Memory in the Age of AI Agents}.
+\newblock arXiv:2512.13564. Preprint.
+
+\bibitem[Huang et~al., 2026a]{huang2026deeprefine}
+Huang, H., Bai, J., Liu, S., Wei, Y., Jing, H., Tsang, H.~T., et~al. (2026a).
+\newblock {DeepRefine: Agentic Knowledge Refinement via Reinforcement
+  Learning}.
+\newblock arXiv:2605.10488. Preprint.
+
+\bibitem[Huang et~al., 2026b]{huang2026survey}
+Huang, W.-C., Zhang, W., Liang, Y., Bei, Y., Chen, Y., Feng, T., et~al.
+  (2026b).
+\newblock {A Survey of Agent Memory in the Second Half: Towards Self-Evolving
+  and Long-Horizon Agents}.
+\newblock arXiv:2602.06052. Publicado en TMLR (Survey Certification).
+
+\bibitem[Huerta, 2026a]{huerta2026streaming}
+Huerta, J.~M. (2026a).
+\newblock {Streaming Knowledge Compilation: Proactive Materiality-Scored
+  Pinning for Time-Evolving LLM Wikis}.
+\newblock arXiv:2606.09877. Preprint.
+
+\bibitem[Huerta, 2026b]{huerta2026wicer}
+Huerta, J.~M. (2026b).
+\newblock {WiCER: Wiki-memory Compile, Evaluate, Refine Iterative Knowledge
+  Compilation for LLM Wiki Systems}.
+\newblock arXiv:2605.07068. Preprint.
+
+\bibitem[Jiang et~al., 2024]{jiang2024}
+Jiang, Y., Shao, Y., Ma, D., Semnani, S.~J., y Lam, M.~S. (2024).
+\newblock {Into the Unknown Unknowns: Engaged Human Learning through
+  Participation in Language Model Agent Conversations}.
+\newblock arXiv:2408.15232. Publicado en EMNLP 2024.
+
+\bibitem[Karpathy, 2026]{karpathy2026}
+Karpathy, A. (2026).
+\newblock {LLM Wiki}.
+\newblock GitHub Gist, 4 de abril de 2026. Literatura gris.
+
+\bibitem[Lam et~al., 2026]{lam2026}
+Lam, C., Li, J., Zhang, L., y Zhao, K. (2026).
+\newblock {Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the
+  Stability and Safety Governed Memory (SSGM) Framework}.
+\newblock arXiv:2603.11768. Preprint.
+
+\bibitem[Lewis et~al., 2020]{lewis2020}
+Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., et~al.
+  (2020).
+\newblock {Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks}.
+\newblock arXiv:2005.11401. Publicado en NeurIPS 2020.
+
+\bibitem[Li et~al., 2025]{li2025lara}
+Li, K., Zhang, L., Jiang, Y., Xie, P., Huang, F., Wang, S., et~al. (2025).
+\newblock {LaRA: Benchmarking Retrieval-Augmented Generation and Long-Context
+  LLMs -- No Silver Bullet for LC or RAG Routing}.
+\newblock arXiv:2502.09977. Preprint.
+
+\bibitem[Li et~al., 2024]{li2024}
+Li, Z., Li, C., Zhang, M., Mei, Q., y Bendersky, M. (2024).
+\newblock {Retrieval Augmented Generation or Long-Context LLMs? A Comprehensive
+  Study and Hybrid Approach}.
+\newblock arXiv:2407.16833. Publicado en EMNLP 2024 Industry Track.
+
+\bibitem[Liu et~al., 2024]{liu2024}
+Liu, N.~F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., y
+  Liang, P. (2024).
+\newblock {Lost in the Middle: How Language Models Use Long Contexts}.
+\newblock arXiv:2307.03172. Publicado en TACL 12:157--173.
+
+\bibitem[Maharana et~al., 2024]{maharana2024}
+Maharana, A., Lee, D.-H., Tulyakov, S., Bansal, M., Barbieri, F., y Fang, Y.
+  (2024).
+\newblock {Evaluating Very Long-Term Conversational Memory of LLM Agents}.
+\newblock arXiv:2402.17753. Publicado en ACL 2024.
+
+\bibitem[Ming et~al., 2026a]{ming2026wikiloop}
+Ming, H., Li, F., y Que, W. (2026a).
+\newblock {WikiLoop: Jointly Learning to Build and Navigate Agent-Native Wikis
+  with Downstream Feedback}.
+\newblock arXiv:2607.26604. Preprint.
+
+\bibitem[Ming et~al., 2026b]{ming2026llmwiki}
+Ming, H., Li, F., Wu, X., y Que, W. (2026b).
+\newblock {Retrieval as Reasoning: Self-Evolving Agent-Native Retrieval via
+  LLM-Wiki}.
+\newblock arXiv:2605.25480. Preprint.
+
+\bibitem[Mishra y Mishra, 2026]{mishra2026}
+Mishra, S. y Mishra, S. (2026).
+\newblock {When Does Memory Help? A Cost-Aware Evaluation of Long-Term Memory
+  in Tool-Using LLM Agents}.
+\newblock arXiv:2609.05441. Preprint.
+
+\bibitem[Miteski, 2026]{miteski2026}
+Miteski, S. (2026).
+\newblock {Memory as Metabolism: A Design for Companion Knowledge Systems}.
+\newblock arXiv:2604.12034. Preprint.
+
+\bibitem[Moreira y Sweet, 2026]{moreira2026}
+Moreira, P.~S. y Sweet, C.~R. (2026).
+\newblock {Beyond Memory: A Templated Substrate for Heterogeneous Collaborative
+  Knowledge Work with LLM Agents}.
+\newblock arXiv:2607.24759. Preprint.
+
+\bibitem[Myakala et~al., 2026]{myakala2026}
+Myakala, P.~K., Agrawal, M., y Manche, R. (2026).
+\newblock {BeliefShift: Benchmarking Temporal Belief Consistency and Opinion
+  Drift in LLM Agents}.
+\newblock arXiv:2603.23848. Preprint.
+
+\bibitem[nvk, 2026]{nvk2026}
+nvk (2026).
+\newblock {llm-wiki}.
+\newblock GitHub, \url{https://github.com/nvk/llm-wiki}. Literatura gris.
+
+\bibitem[Packer et~al., 2023]{packer2023}
+Packer, C., Wooders, S., Lin, K., Fang, V., Patil, S.~G., Stoica, I., et~al.
+  (2023).
+\newblock {MemGPT: Towards LLMs as Operating Systems}.
+\newblock arXiv:2310.08560. Preprint.
+
+\bibitem[Park et~al., 2023]{park2023}
+Park, J.~S., O'Brien, J.~C., Cai, C.~J., Morris, M.~R., Liang, P., y Bernstein,
+  M.~S. (2023).
+\newblock {Generative Agents: Interactive Simulacra of Human Behavior}.
+\newblock arXiv:2304.03442. Publicado en UIST 2023.
+
+\bibitem[Patel et~al., 2025]{patel2025}
+Patel, L., Arabzadeh, N., Gupta, H., Sundar, A., Stoica, I., Zaharia, M.,
+  et~al. (2025).
+\newblock {DeepScholar-Bench: A Live Benchmark and Automated Evaluation for
+  Generative Research Synthesis}.
+\newblock arXiv:2508.20033. Preprint.
+
+\bibitem[Perez et~al., 2024]{perez2024}
+Perez, J., Kovač, G., Léger, C., Colas, C., Molinaro, G., Derex, M., et~al.
+  (2024).
+\newblock {When LLMs Play the Telephone Game: Cultural Attractors as Conceptual
+  Tools to Evaluate LLMs in Multi-turn Settings}.
+\newblock arXiv:2407.04503. Publicado en ICLR 2025.
+
+\bibitem[Ran et~al., 2026]{ran2026}
+Ran, S.-J., Zhang, K., Wu, X., Yang, L.-S., y Li, W.-J. (2026).
+\newblock {LLMs Interpret, Embeddings Organize, Graphs Emerge: Agent-Driven
+  Compilation of Scientific Knowledge}.
+\newblock arXiv:2608.29612. Preprint.
+
+\bibitem[Rasmussen et~al., 2025]{rasmussen2025}
+Rasmussen, P., Paliychuk, P., Beauvais, T., Ryan, J., y Chalef, D. (2025).
+\newblock {Zep: A Temporal Knowledge Graph Architecture for Agent Memory}.
+\newblock arXiv:2501.13956. Preprint.
+
+\bibitem[Roynard, 2026]{roynard2026}
+Roynard, M. (2026).
+\newblock {The Missing Knowledge Layer in Cognitive Architectures for AI
+  Agents}.
+\newblock arXiv:2604.11364. Preprint.
+
+\bibitem[Šakota et~al., 2024]{sakota2024}
+Šakota, M., Johnson, I., Feng, G., y West, R. (2024).
+\newblock {Edisum: Summarizing and Explaining Wikipedia Edits at Scale}.
+\newblock arXiv:2404.03428. Preprint.
+
+\bibitem[Sarthi et~al., 2024]{sarthi2024}
+Sarthi, P., Abdullah, S., Tuli, A., Khanna, S., Goldie, A., y Manning, C.~D.
+  (2024).
+\newblock {RAPTOR: Recursive Abstractive Processing for Tree-Organized
+  Retrieval}.
+\newblock arXiv:2401.18059. Publicado en ICLR 2024.
+
+\bibitem[Semnani et~al., 2023]{semnani2023}
+Semnani, S.~J., Yao, V.~Z., Zhang, H.~C., y Lam, M.~S. (2023).
+\newblock {WikiChat: Stopping the Hallucination of Large Language Model
+  Chatbots by Few-Shot Grounding on Wikipedia}.
+\newblock arXiv:2305.14292. Publicado en Findings of EMNLP 2023.
+
+\bibitem[Shao et~al., 2024]{shao2024}
+Shao, Y., Jiang, Y., Kanell, T.~A., Xu, P., Khattab, O., y Lam, M.~S. (2024).
+\newblock {Assisting in Writing Wikipedia-like Articles From Scratch with Large
+  Language Models}.
+\newblock arXiv:2402.14207. Publicado en NAACL 2024.
+
+\bibitem[Su et~al., 2026]{su2026}
+Su, Y., Xu, W., Zuo, C., y Bertino, E. (2026).
+\newblock {ChronoMem: Version Control and Semantic Rollback for Large Language
+  Model Agent Memory}.
+\newblock arXiv:2607.27773. Preprint.
+
+\bibitem[Sultan et~al., 2026]{sultan2026}
+Sultan, M., Thuraisamy, S., y Rajaratnam, D. (2026).
+\newblock {NeuSymMS: A Hybrid Neuro-Symbolic Memory System for Persistent,
+  Self-Curating LLM Agents}.
+\newblock arXiv:2605.17596. Preprint.
+
+\bibitem[Sumers et~al., 2023]{sumers2023}
+Sumers, T.~R., Yao, S., Narasimhan, K., y Griffiths, T.~L. (2023).
+\newblock {Cognitive Architectures for Language Agents}.
+\newblock arXiv:2309.02427. Publicado en TMLR.
+
+\bibitem[Sun et~al., 2026]{sun2026}
+Sun, J., Xue, Y., Li, M., Yao, Z., Li, J., Cui, Y., et~al. (2026).
+\newblock {TrajWiki: Source-Grounded Memory Trajectories for Long-Horizon
+  Dialogue Agents}.
+\newblock arXiv:2608.00967. Preprint.
+
+\bibitem[Suzgun et~al., 2025]{suzgun2025}
+Suzgun, M., Yuksekgonul, M., Bianchi, F., Jurafsky, D., y Zou, J. (2025).
+\newblock {Dynamic Cheatsheet: Test-Time Learning with Adaptive Memory}.
+\newblock arXiv:2504.07952. Preprint.
+
+\bibitem[Tao et~al., 2026]{tao2026}
+Tao, Z., Zhao, J., Liu, P., Xi, D., Chen, Y., Xu, W., et~al. (2026).
+\newblock {MemConflict: Evaluating Long-Term Memory Systems Under Memory
+  Conflicts}.
+\newblock arXiv:2605.20926. Preprint.
+
+\bibitem[Treude y Baltes, 2026]{treude2026}
+Treude, C. y Baltes, S. (2026).
+\newblock {Context Rot in AI-Assisted Software Development: Repurposing
+  Documentation Consistency for AI Configuration Artifacts}.
+\newblock arXiv:2606.09090. Preprint.
+
+\bibitem[Wang, 2026]{wang2026toki}
+Wang, Z. (2026).
+\newblock {TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in
+  LLM-Agent Persistent Memory}.
+\newblock arXiv:2606.06240. Preprint.
+
+\bibitem[Wen y Ku, 2026]{wen2026}
+Wen, S. y Ku, B. (2026).
+\newblock {Knowledge Compounding: An Empirical Economic Analysis of
+  Self-Evolving Knowledge Wikis under the Agentic ROI Framework}.
+\newblock arXiv:2604.11243. Preprint.
+
+\bibitem[Wilkinson et~al., 2016]{wilkinson2016}
+Wilkinson, M.~D., Dumontier, M., Aalbersberg, I.~J., Appleton, G., Axton, M.,
+  Baak, A., et~al. (2016).
+\newblock {The FAIR Guiding Principles for Scientific Data Management and
+  Stewardship}.
+\newblock {\em Scientific Data}, 3:160018. doi:10.1038/sdata.2016.18.
+
+\bibitem[Wright, 2026]{wright2026}
+Wright, B. (2026).
+\newblock {Potential for Enhanced Learning in Machine Learning Classes by Using
+  Wiki LLM Indexing}.
+\newblock arXiv:2609.25303. Preprint.
+
+\bibitem[Wu et~al., 2024]{wu2024}
+Wu, D., Wang, H., Yu, W., Zhang, Y., Chang, K.-W., y Yu, D. (2024).
+\newblock {LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive
+  Memory}.
+\newblock arXiv:2410.10813. Publicado en ICLR 2025.
+
+\bibitem[Xiong et~al., 2025]{xiong2025}
+Xiong, Z., Lin, Y., Xie, W., He, P., Liu, Z., Tang, J., et~al. (2025).
+\newblock {How Memory Management Impacts LLM Agents: An Empirical Study of
+  Experience-Following Behavior}.
+\newblock arXiv:2505.16067. Preprint.
+
+\bibitem[Xu et~al., 2024]{xu2024conflicts}
+Xu, R., Qi, Z., Guo, Z., Wang, C., Wang, H., Zhang, Y., et~al. (2024).
+\newblock {Knowledge Conflicts for LLMs: A Survey}.
+\newblock arXiv:2403.08319. Publicado en EMNLP 2024.
+
+\bibitem[Xu et~al., 2025]{xu2025amem}
+Xu, W., Liang, Z., Mei, K., Gao, H., Tan, J., y Zhang, Y. (2025).
+\newblock {A-MEM: Agentic Memory for LLM Agents}.
+\newblock arXiv:2502.12110. Publicado en NeurIPS 2025.
+
+\bibitem[Yadav, 2026]{yadav2026}
+Yadav, N. (2026).
+\newblock {Temporal Validity in Retrieval Memory: Eliminating Stale-Fact Errors
+  for AI Agents over Evolving Knowledge}.
+\newblock arXiv:2606.26511. Preprint.
+
+\bibitem[Yu et~al., 2026]{yu2026}
+Yu, C., Wang, Y., Zhang, J., Duan, Y., Zheng, M., Wu, Z., et~al. (2026).
+\newblock {From Faulty Memories to Corrected Actions: Dependency-Guided
+  Rollback Repair for Memory-Augmented Agents}.
+\newblock arXiv:2608.10502. Preprint.
+
+\bibitem[Zhang, 2026a]{zhang2026pilot}
+Zhang, B. (2026a).
+\newblock {Does the wiki grow smarter? A pilot evaluation of LLM-maintained
+  knowledge bases in an exception-dense decision-support task}.
+\newblock SciErXiv, doi:10.20517/scierxiv202605.0291.v1. Preprint sin
+  revisi{\'o}n por pares.
+
+\bibitem[Zhang, 2026b]{zhang2026lco}
+Zhang, B. (2026b).
+\newblock {LLM Wiki as a Living Constraint Oracle for Safe Offline RL: Evidence
+  from Type 1 Diabetes Glucose Management}.
+\newblock {\em Transactions on Artificial Intelligence}, 2(1):178--189.
+\newblock doi:10.53941/tai.2026.100011.
+
+\bibitem[Zhang, 2026c]{zhang2026prov}
+Zhang, B. (2026c).
+\newblock {Provenance-Native Audit Infrastructure for LLM-Maintained Wiki
+  Knowledge Systems}.
+\newblock {\em Artificial Intelligence and Emerging Technologies}, 3(3):10.
+\newblock doi:10.53941/aiet.2026.100010.
+
+\bibitem[Zhang et~al., 2024]{zhang2024knowhalu}
+Zhang, J., Xu, C., Gai, Y., Lecue, F., Song, D., y Li, B. (2024).
+\newblock {KnowHalu: Hallucination Detection via Multi-Form Knowledge Based
+  Factual Checking}.
+\newblock arXiv:2404.02935. Preprint.
+
+\bibitem[Zhang et~al., 2025]{zhang2025ace}
+Zhang, Q., Hu, C., Upasani, S., Ma, B., Hong, F., Kamanuru, V., et~al. (2025).
+\newblock {Agentic Context Engineering: Evolving Contexts for Self-Improving
+  Language Models}.
+\newblock arXiv:2510.04618. Publicado en ICLR 2026.
+
+\bibitem[Zhou et~al., 2026]{zhou2026}
+Zhou, S., Yu, S., Wei, H., Wu, J., Ouyang, S., Jiao, Y., et~al. (2026).
+\newblock {Filesystem-Based Memory for LLM Agents: Organization, Evolution, and
+  Sustainability}.
+\newblock arXiv:2607.26637. Preprint.
+
+\end{thebibliography}
+
+\end{document}

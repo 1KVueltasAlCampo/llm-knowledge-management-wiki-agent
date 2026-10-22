@@ -1,0 +1,390 @@
+% =====================================================================
+%  Anteproyecto: WikiLLM como base de conocimiento incremental
+%  Universidad Icesi - Maestria en Inteligencia Artificial Aplicada
+%  Formato: plantilla de presentacion de documentos, Facultad Barberi.
+%  Compilar con: pdflatex anteproyecto.tex  (dos veces)
+% =====================================================================
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage{mathptmx}                 % Times New Roman
+\usepackage[scaled=0.92]{helvet}
+\usepackage{courier}
+
+\usepackage[letterpaper,top=2.54cm,bottom=2.54cm,left=2.54cm,right=2.54cm,
+            headheight=14pt,headsep=18pt]{geometry}
+
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{ragged2e}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+% ---------------------------------------------------------------- estilo
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize Universidad Icesi, Facultad Barberi de Ingeniería Diseño y Ciencias Aplicadas}
+\fancyhead[R]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}[block]{\centering\normalsize\scshape}{\Roman{section}.\quad}{0pt}{}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titleformat{\subsection}[block]{\normalsize\itshape}{\Alph{subsection}.\quad}{0pt}{}
+\titlespacing*{\subsection}{\parindent}{5pt}{2pt}
+
+\captionsetup[table]{labelsep=newline,justification=centering,font=sc,labelfont=sc,skip=2pt}
+\renewcommand{\thetable}{\Roman{table}}
+\renewcommand{\arraystretch}{1.15}
+
+\setlength{\parindent}{1.3em}
+\setlength{\parskip}{0pt}
+\setlist{itemsep=1pt,topsep=3pt}
+
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcommand{\refhang}[1]{\par\noindent\hangindent=1.5em\hangafter=1 #1\par}
+
+% nota al pie sin marca, como en la plantilla
+\newcommand{\notasinmarca}[1]{%
+  \begingroup\renewcommand{\thefootnote}{}\footnote{#1}\addtocounter{footnote}{-1}\endgroup}
+
+% ================================================================ inicio
+\begin{document}
+
+\thispagestyle{fancy}
+
+\begin{center}
+{\Large Anteproyecto\par}
+\vspace{4pt}
+{\LARGE WikiLLM: compilación incremental de conocimiento\\[2pt]
+para optimizar el contexto de modelos de lenguaje y personas\par}
+\vspace{8pt}
+{\ttfamily\small Juan Diego Ramírez\quad Juan David Cruz García\par}
+{\ttfamily\small juan.ramirezzuluaga@u.icesi.edu.co, juan.cruz6@u.icesi.edu.co\par}
+\end{center}
+
+\vspace{4pt}
+
+\notasinmarca{Anteproyecto de la Maestría en Inteligencia Artificial Aplicada, Universidad Icesi,
+presentado para revisión del tutor. Repositorio:
+\url{https://github.com/1KVueltasAlCampo/llm-knowledge-management-wiki-agent}.}
+
+\noindent\textbf{Resumen —} Los sistemas de Recuperación Aumentada por Generación (RAG) responden
+cada consulta recuperando fragmentos y sintetizándolos de nuevo, sin conservar lo aprendido. En
+el patrón WikiLLM, en cambio, un agente compila las fuentes, una a una, en páginas markdown
+enlazadas que crecen y se corrigen con cada ingesta. Este anteproyecto plantea estudiar el WikiLLM como
+herramienta para construir una base de conocimiento incremental que reduzca el contexto que un
+modelo y una persona necesitan leer para responder correctamente. El estudio usa literatura abierta
+de inteligencia artificial publicada en arXiv después del corte de entrenamiento del modelo. Tras cada ingesta se guarda una copia del wiki y
+se mide, frente a una línea base RAG sobre el mismo corpus, la calidad de las respuestas, la
+cantidad de contexto consumido, el esfuerzo de lectura humana y el costo. Se espera aportar
+un protocolo de evaluación abierto y un primer conjunto de mediciones sobre cuándo conviene
+compilar el conocimiento en lugar de recuperarlo.
+
+\vspace{4pt}
+\noindent\textbf{Palabras clave —} Base de conocimiento incremental, ingeniería de contexto,
+modelos de lenguaje, recuperación aumentada por generación, WikiLLM.
+
+% ====================================================================
+\section{Planteamiento del problema}
+
+Buscar información consume tiempo de trabajo: en un estudio con 716 empleados públicos, el
+22,3\,\% dedicaba cerca de media jornada semanal a buscar la información que necesitaba
+(Nakash y Bouhnik, 2024). Los asistentes basados en RAG (Lewis et al., 2020) se adoptan para reducir ese costo:
+ante cada pregunta recuperan fragmentos por similitud semántica y el modelo redacta una respuesta
+a partir de ellos.
+
+Este diseño tiene tres límites. Primero, la síntesis se repite completa en cada consulta y no
+se conserva (Karpathy, 2026). Segundo, el modelo recibe fragmentos sueltos, sin fecha ni señales
+sobre la calidad de su fuente, y debe reconciliar en el momento datos obsoletos o
+contradictorios. Tercero, la persona que verifica la respuesta solo ve esos mismos fragmentos.
+En los tres casos el recurso escaso es el \textit{contexto}: los tokens que el modelo procesa
+en cada llamada, con su costo y su ruido, y el tiempo de lectura de la persona. Un contexto más
+grande no garantiza mejores respuestas (Liu et al., 2024); importa entregar la información pertinente en el menor
+texto posible.
+
+El patrón WikiLLM (Karpathy, 2026) mueve la síntesis desde la consulta hacia la ingesta: un
+agente lee cada fuente nueva, actualiza las páginas afectadas de un wiki en markdown y registra
+las contradicciones. Las consultas se responden sobre páginas ya redactadas, enlazadas y
+fechadas, que también puede leer una persona. La Tabla~\ref{tab:comparacion}
+resume la diferencia.
+
+\begin{table}[!ht]
+\centering
+\caption{Comparación entre RAG y el patrón WikiLLM}
+\label{tab:comparacion}
+\small
+\begin{tabular}{L{4.5cm} L{4.6cm} L{5.0cm}}
+\toprule
+ & \textbf{RAG (línea base)} & \textbf{WikiLLM (propuesta)} \\
+\midrule
+Momento de la síntesis & En cada consulta & Una vez, al ingerir cada fuente \\
+Qué se conserva & Fragmentos y vectores & Páginas redactadas y enlazadas \\
+Contexto para el modelo & Fragmentos crudos por similitud & Páginas consolidadas, con fuente \\
+Contexto para la persona & Fragmentos sueltos & Wiki navegable y versionado \\
+Manejo de contradicciones & Implícito, al responder & Explícito, marcado y fechado \\
+Falla característica & Recuperar un fragmento erróneo & Conservar un error de síntesis \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+El estudio usa literatura abierta de inteligencia artificial en arXiv, un caso exigente del
+problema: en febrero de 2026 llegaron más de 20.500 preprints de computación sin revisión por
+pares (arXiv, 2026), y el texto generado por modelos es casi seis veces más frecuente en los
+artículos que no son revisiones (Elazar y Antoniak, 2026). En un corpus así, cada afirmación
+débil que el modelo o la persona leen cuesta tokens y atención. Al ser público, el corpus permite
+replicar el experimento. La Tabla~\ref{tab:piramide} ordena el problema en cuatro niveles.
+
+\begin{table}[!ht]
+\centering
+\caption{Pirámide del problema}
+\label{tab:piramide}
+\small
+\begin{tabular}{L{3.4cm} L{10.7cm}}
+\toprule
+\textbf{Nivel} & \textbf{Planteamiento} \\
+\midrule
+1. Contexto global & Buscar información consume jornada laboral: el 22,3\,\% de 716 empleados públicos dedica cerca de media jornada semanal a ello (Nakash y Bouhnik, 2024), y la respuesta habitual son los asistentes RAG (Lewis et al., 2020). \\
+2. Soluciones actuales y sus fallas & RAG repite la síntesis en cada consulta (Karpathy, 2026), entrega fragmentos sin fecha ni señal de calidad y deja a la persona verificando solo fragmentos; el contexto es el recurso escaso (Liu et al., 2024). El WikiLLM, la alternativa emergente, tiene veinte trabajos cuyos resultados no coinciden (véase Antecedentes). \\
+3. Punto ciego & En la literatura abierta de IA, con más de 20.500 preprints de computación en febrero de 2026 y texto generado por modelos casi seis veces más frecuente en los artículos que no son revisiones (arXiv, 2026; Elazar y Antoniak, 2026), las fuentes llegan con calidad desigual. Según la revisión, ni RAG ni las comparaciones existentes examinan si compilar convierte afirmaciones débiles en prosa segura a medida que el wiki crece (H2). \\
+4. Brecha & Ningún trabajo mide, tras cada ingesta, cuánto contexto necesitan un modelo y una persona para responder correctamente, ni si esa cantidad mejora o empeora a medida que el wiki crece y recibe fuentes de calidad desigual. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ====================================================================
+\section{Antecedentes y vacío de investigación}
+
+La revisión del estado del arte identificó veinte trabajos de 2026 sobre el patrón, ninguno
+publicado en una sede de primer nivel, cuyos resultados frente a RAG no coinciden. Wright (2026) encuentra un empate en
+hechos puntuales y una ventaja del wiki en preguntas que cruzan unidades de un curso. En cambio,
+Zhang (2026) no observa ninguna variante del wiki que supere a RAG, y Huerta (2026b) reporta que
+compilar sin control pierde información en el 53--60\,\% de los casos, aunque el refinamiento
+iterativo recupera cerca del 80\,\% de la calidad perdida.
+
+El argumento económico, el más ligado al contexto, también está en disputa. Wen y Ku (2026) miden un 84,6\,\% menos de tokens acumulados que RAG en cuatro consultas, mientras que Cochran
+(2026b) mide que el wiki consume unas 21 veces más tokens por consulta. Cochran (2026a) muestra
+que la diferencia depende de cómo se accede al wiki: con acceso progresivo a las páginas, el
+costo baja en todas las condiciones probadas, con calidad no inferior dentro de un margen
+fijado de antemano. Por último, la organización
+del wiki tiende a deteriorarse a medida que crece (Zhou et al., 2026).
+
+Las comparaciones existentes miden la calidad y el costo de las respuestas, no el contexto
+necesario para obtenerlas. Hasta donde llega la revisión (corte al 3 de octubre de 2026),
+ningún trabajo mide, tras cada ingesta, cuánto contexto necesitan un modelo y una persona
+para responder correctamente, ni si esa cantidad mejora o empeora a medida que el wiki crece y
+recibe fuentes de calidad desigual.
+
+% ====================================================================
+\section{Pregunta, hipótesis y objetivos}
+
+\noindent\textbf{Pregunta de investigación.} \textit{¿En qué medida un WikiLLM mantenido de forma
+incremental reduce el contexto que un modelo de lenguaje y una persona necesitan para responder
+correctamente, y cómo evoluciona esa ventaja frente a un sistema RAG a medida que se ingieren
+nuevas fuentes?}
+
+\begin{itemize}[leftmargin=2.4em]
+\item[H1.] A partir de cierto número de fuentes ingeridas, el WikiLLM obtiene una exactitud igual
+o mayor que RAG con menos tokens de contexto por respuesta correcta, y una persona encuentra la
+respuesta en menos tiempo.
+\item[H2.] (Riesgo.) Compilar puede convertir afirmaciones débiles en prosa segura y conservar
+errores durante varias ingestas, lo que reduce o anula esa ventaja; si ocurre, se reportará.
+\end{itemize}
+
+\noindent\textbf{Objetivo general.} Evaluar el patrón WikiLLM como herramienta para construir una
+base de conocimiento incremental que optimice el contexto disponible para modelos de lenguaje y
+personas, en comparación con RAG.
+
+\textbf{Objetivos específicos:} (1)~construir un corpus versionado de 30 a 50 preprints y
+preguntas de control con respuesta verificable; (2)~implementar un agente WikiLLM que conserve la
+fuente de cada afirmación y someta sus cambios a revisión humana; (3)~implementar una línea base
+RAG reproducible sobre el mismo corpus; y (4)~medir tras cada ingesta la calidad, el contexto
+consumido, el esfuerzo humano y el costo de ambos sistemas.
+
+% ====================================================================
+\section{Metodología}
+
+\subsection{Corpus}
+Se selecciona una subárea de inteligencia artificial con tablas de clasificación activas y una
+ventana temporal posterior al corte de entrenamiento del modelo. Así, las afirmaciones son
+numéricas, fechadas y verificables, y el modelo no puede responder de memoria. Cada afirmación conserva su fuente y señales
+de respaldo: disponibilidad de código, estado de publicación y versión del preprint.
+
+\subsection{Sistema}
+El agente se implementa en Python con \texttt{litellm}, lo que permite cambiar de proveedor de
+modelo sin modificar el código y registrar los tokens de cada llamada. Ejecuta tres operaciones:
+\textit{ingesta} (leer una fuente y actualizar las páginas afectadas), \textit{consulta}
+(responder con citas a páginas del wiki) y \textit{revisión} o \textit{lint} (detectar
+contradicciones, datos obsoletos y páginas sin enlaces). El agente no escribe directamente: entrega
+sus cambios como \textit{Pull Request} en Git y un revisor los aprueba en Obsidian, lo que deja
+registrado el costo de la supervisión humana.
+
+\subsection{Protocolo experimental}
+Las fuentes se ordenan por fecha y se ingieren de a una. Tras cada ingesta se guarda una copia
+versionada del wiki, y sobre cada copia se responde el mismo conjunto de sesenta preguntas de
+control. Los dos autores fijan por separado cada respuesta correcta y se reporta su acuerdo. RAG usa el
+mismo corpus, modelo y preguntas. Se varían la frecuencia de la revisión automática y el grado de
+intervención humana, y se introducen a propósito errores y fuentes de baja calidad.
+
+\subsection{Métricas}
+En la Tabla~\ref{tab:metricas}, las dos primeras métricas responden a la pregunta; las demás
+controlan que la reducción de contexto no cueste calidad.
+
+\begin{table}[!ht]
+\centering
+\caption{Métricas de evaluación}
+\label{tab:metricas}
+\small
+\begin{tabular}{L{4.2cm} L{9.9cm}}
+\toprule
+\textbf{Métrica} & \textbf{Qué mide} \\
+\midrule
+Eficiencia de contexto & Respuestas correctas por cada mil tokens de contexto del modelo en la consulta; la ingesta se reporta aparte en Costo. \\
+Esfuerzo humano & Palabras y minutos de lectura para hallar la respuesta (15 preguntas) y minutos de revisión por cambio aprobado. \\
+Cobertura & Proporción de preguntas de control respondidas correctamente. \\
+Fundamentación & Proporción de afirmaciones rastreables hasta su fuente. \\
+Contradicciones & Si el wiki se corrige cuando una fuente nueva supera un dato. \\
+Persistencia del error & Ingestas que sobrevive un error introducido a propósito. \\
+Costo & Tokens y tiempo por ingesta y por consulta frente a RAG. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Se usan respuestas fijadas por los autores y no solo un modelo como juez, cuyo acuerdo es bajo
+(Cochran, 2026b) y que se confunde con contenido posterior a su corte (Huerta, 2026a).
+
+% ====================================================================
+\section{Resultados esperados y contribución}
+
+Se espera obtener una curva por métrica a lo largo de las ingestas para ambos sistemas y el
+punto de equilibrio: el número de consultas por fuente a partir del cual compilar resulta más
+barato que recuperar. Un resultado desfavorable al WikiLLM también es válido, porque delimita
+cuándo conviene cada arquitectura. La contribución es un protocolo de evaluación del
+mantenimiento incremental que incluye el contexto consumido por el modelo y por la persona, un
+primer conjunto de mediciones y una implementación abierta bajo licencia MIT.
+
+% ====================================================================
+\section{Plan de trabajo}
+
+La Tabla~\ref{tab:fases} cuenta las semanas desde la aprobación; las fechas se acordarán con el tutor.
+
+\begin{table}[!ht]
+\centering
+\caption{Fases y entregables}
+\label{tab:fases}
+\small
+\begin{tabular}{L{3.4cm} L{1.5cm} L{9.1cm}}
+\toprule
+\textbf{Fase} & \textbf{Semanas} & \textbf{Entregable} \\
+\midrule
+F0 Delimitación & 1 & Subárea, ventana temporal y criterio de inclusión. \\
+F1 Corpus & 2--3 & Corpus versionado con metadatos de calidad. \\
+F2 Protocolo & 4--5 & Preguntas de control y script de evaluación. \\
+F3 Agente WikiLLM & 6--7 & Ingesta, consulta y revisión con aprobación humana. \\
+F4 Línea base & 8--9 & RAG reproducible y registro de costos. \\
+F5 Experimento & 10--11 & Ingestas, variantes de revisión e inyección de errores. \\
+F6 Cierre & 12--13 & Informe, guía de reproducción y sustentación. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ante retrasos se recortan, en orden, las variantes de intervención humana, las de revisión y el
+número de fuentes; la línea base y la inyección de errores se mantienen.
+
+% ====================================================================
+\section{Alcance, riesgos y consideraciones éticas}
+
+El trabajo cubre un solo dominio y de 30 a 50 fuentes; su extensión a bases corporativas queda
+como trabajo futuro. Que los autores construyan las preguntas es un sesgo que se reduce,
+sin eliminarse, al responderlas por separado.
+
+En seguridad, una fuente puede traer instrucciones para el agente; por eso las fuentes se tratan
+como datos y toda escritura pasa por revisión humana. En sesgo, se mide si el sistema presenta afirmaciones débiles como seguras. En privacidad, el corpus es
+público y el sistema admite un modelo local.
+
+% ====================================================================
+\section{Cumplimiento de la rúbrica}
+
+La Tabla~\ref{tab:rubrica} indica cómo el proyecto atiende cada criterio de los resultados de
+aprendizaje R.6.1, R.6.2, R.7.1 y R.7.2; los de comunicación escrita y oral (RA1 y RA2) se evalúan
+sobre este documento y la sustentación.
+
+{\small
+\begin{longtable}{L{3.4cm} L{10.7cm}}
+\caption{Cumplimiento de la rúbrica}\label{tab:rubrica}\\
+\toprule
+\textbf{Criterio} & \textbf{Cómo se atiende} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Criterio} & \textbf{Cómo se atiende} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{2}{l}{\itshape R.6.1 Modelos de IA generativa para nuevos productos}\\
+Cr1 Formulación & Se parte de una ineficiencia medida (el 22,3\,\% de 716 empleados públicos dedica cerca de media jornada semanal a buscar información; Nakash y Bouhnik, 2024) y de los límites del RAG que hoy se usa para resolverla; el caso se estudia sobre literatura abierta de IA, su versión más exigente (Tabla~\ref{tab:piramide}). \\
+Cr2 Elección del modelo & Se compararán un modelo comercial grande, uno económico, uno abierto local y un modelo de \textit{embeddings} (solo para la línea base RAG) frente a cuatro requisitos: ventana de contexto amplia, obediencia al formato de salida, costo por token y ejecución local. Con \texttt{litellm} el modelo es una variable del experimento y se reporta la relación costo--calidad. \\
+Cr3 Integración & El modelo es el motor de un ciclo documental sobre Git: lee una fuente, propone cambios en varias páginas y los entrega como \textit{Pull Request}; ningún cambio entra al wiki sin aprobación humana (Metodología, Sistema). \\
+Cr4 Evaluación & Siete métricas medidas tras cada ingesta contra preguntas de control cuya respuesta fijan de antemano los dos autores, con su acuerdo reportado y no solo un modelo como juez (Tabla~\ref{tab:metricas}). La resolución de contradicciones y la persistencia del error miden si el sistema se corrige con el tiempo. \\
+\midrule
+\multicolumn{2}{l}{\itshape R.6.2 Automatización de tareas}\\
+Cr5 Tareas automatizables & Se automatiza leer, resumir y cruzar fuentes, que es lo repetitivo y costoso en tiempo; el juicio sobre qué información es válida queda en manos de una persona. \\
+Cr6 Eficiencia & Se mide el contexto y el costo frente a RAG sobre el mismo corpus y se calcula el número de consultas por fuente a partir del cual compilar resulta más barato que recuperar (Resultados esperados). \\
+Cr7 Riesgos éticos & Seguridad: las fuentes se tratan como datos y no como órdenes, toda escritura pasa por revisión humana y se prueba el sistema con documentos preparados para engañarlo, reportando cuántos se detienen. Sesgo: se mide si presenta afirmaciones débiles como seguras (H2). Privacidad: el corpus es público y el sistema admite un modelo local. \\
+Cr8 Documentación & Repositorio público con licencia MIT, guía de reproducción paso a paso, instrucciones del agente versionadas y registro de las decisiones de diseño (F6, Tabla~\ref{tab:fases}). \\
+\midrule
+\multicolumn{2}{l}{\itshape R.7.1 Gestión y preparación de datos}\\
+Cr1 Preprocesamiento & Una etapa extrae texto de PDF y LaTeX conservando la estructura, normaliza formatos, elimina duplicados y versiones repetidas del mismo preprint, y descarta documentos malformados antes de gastar una llamada al modelo (F1). \\
+Cr2 Herramientas & Python con \texttt{litellm} (cambiar de proveedor sin tocar código), \texttt{pydantic} (verificar la forma de la salida del modelo) y \texttt{pytest}, más la API de arXiv y Git con Obsidian para la revisión humana. \\
+Cr3 Pipeline & Seis pasos reejecutables por separado: traer la fuente, extraer afirmaciones con su origen, unificar entidades, actualizar páginas, revisar el wiki y guardar una copia versionada. \\
+\midrule
+\multicolumn{2}{l}{\itshape R.7.2 Automatización del despliegue (MLOps)}\\
+Cr4 Despliegue & La ejecución del pipeline se automatiza por calendario o a demanda, con seguimiento del costo y el tiempo de cada paso y aviso automático si una métrica se degrada. \\
+Cr5 Robustez & La ingesta es idempotente (procesar dos veces la misma fuente no la duplica), reintenta ante fallos del proveedor y guarda el avance por fuente. Se reporta cómo crece el tiempo de respuesta a medida que crece el wiki. \\
+Cr6 Prácticas MLOps & Las instrucciones del agente se versionan como código, cada operación deja registro y las preguntas de control sirven de prueba de regresión. Como el sistema no entrena pesos, el equivalente al reentrenamiento es recompilar las páginas que una fuente nueva deja obsoletas. \\
+\end{longtable}
+}
+
+% ====================================================================
+\section*{Referencias}
+
+\footnotesize\sloppy
+
+\refhang{arXiv. (2026). \textit{Monthly submissions}. \url{https://arxiv.org/stats/monthly_submissions}}
+
+\refhang{Cochran, T. O. (2026a). \textit{Progressive disclosure for LLM-maintained wiki knowledge bases: A preregistered ablation} (arXiv:2607.04576). arXiv. \url{https://arxiv.org/abs/2607.04576}}
+
+\refhang{Cochran, T. O. (2026b). \textit{Single-round vector RAG vs an LLM-compiled wiki: A preregistered comparison on a small multi-domain research corpus} (arXiv:2605.18490). arXiv. \url{https://arxiv.org/abs/2605.18490}}
+
+\refhang{Elazar, Y., y Antoniak, M. (2026). \textit{LLM-generated or human-written? Comparing review and non-review papers on arXiv} (arXiv:2601.17036). arXiv. \url{https://arxiv.org/abs/2601.17036}}
+
+\refhang{Huerta, J. M. (2026a). \textit{Streaming knowledge compilation: Proactive materiality-scored pinning for time-evolving LLM wikis} (arXiv:2606.09877). arXiv. \url{https://arxiv.org/abs/2606.09877}}
+
+\refhang{Huerta, J. M. (2026b). \textit{WiCER: Wiki-memory compile, evaluate, refine. Iterative knowledge compilation for LLM wiki systems} (arXiv:2605.07068). arXiv. \url{https://arxiv.org/abs/2605.07068}}
+
+\refhang{Karpathy, A. (2026, 4 de abril). \textit{LLM wiki: A pattern for building personal knowledge bases using LLMs} [Gist]. GitHub. \url{https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f}}
+
+\refhang{Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., et al. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks. En \textit{Advances in Neural Information Processing Systems 33 (NeurIPS 2020)}. \url{https://arxiv.org/abs/2005.11401}}
+
+\refhang{Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., y Liang, P. (2024). Lost in the middle: How language models use long contexts. \textit{Transactions of the Association for Computational Linguistics}, \textit{12}, 157--173. \url{https://doi.org/10.1162/tacl_a_00638}}
+
+\refhang{Nakash, M., y Bouhnik, D. (2024). How much time does the workforce spend searching for information in the ``new normal''? En \textit{iConference 2024 Proceedings}. \url{https://www.ideals.illinois.edu/items/129980}}
+
+\refhang{Wen, S., y Ku, B. (2026). \textit{Knowledge compounding: An empirical economic analysis of self-evolving knowledge wikis under the agentic ROI framework} (arXiv:2604.11243). arXiv. \url{https://arxiv.org/abs/2604.11243}}
+
+\refhang{Wright, B. (2026). \textit{Potential for enhanced learning in machine learning classes by using wiki LLM indexing} (arXiv:2609.25303). arXiv. \url{https://arxiv.org/abs/2609.25303}}
+
+\refhang{Zhang, B. (2026). \textit{Does the wiki grow smarter? A pilot evaluation of LLM-maintained knowledge bases in an exception-dense decision-support task} [Preprint]. SciErXiv. \url{https://doi.org/10.20517/scierxiv202605.0291.v1}}
+
+\refhang{Zhou, S., Yu, S., Wei, H., Wu, J., Ouyang, S., Jiao, Y., et al. (2026). \textit{Filesystem-based memory for LLM agents: Organization, evolution, and sustainability} (arXiv:2607.26637). arXiv. \url{https://arxiv.org/abs/2607.26637}}
+
+\normalsize
+
+\end{document}

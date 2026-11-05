@@ -5,8 +5,12 @@ description = "Comparación experimental entre RAG y WikiLLM sobre un corpus de 
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "beautifulsoup4>=4.15.0",
+    "lxml>=6.1.3",
     "openai>=3.46.0",
     "python-dotenv>=1.0",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
 ]
 
 [dependency-groups]

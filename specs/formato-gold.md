@@ -36,7 +36,7 @@ autores: ["Theodore O. Cochran"]
 fecha_publicacion: 2026-05-18
 fecha_version: 2026-08-16
 categoria: cs.CL
-estado_publicacion: preprint
+estado_publicacion: desconocido
 sources: ["https://arxiv.org/html/2605.18490v2"]
 extraccion: html
 fecha_captura: 2026-11-10
@@ -58,7 +58,7 @@ Los valores de `hash` y `tokens` son ejemplos; el scraper los calcula.
 | `fecha_publicacion` | Sí | Fecha de la primera versión. | **Ordena la ingesta cronológica** y define qué paper es "más reciente" en las preguntas de recencia. |
 | `fecha_version` | No | Fecha de la versión capturada. | Distinguir un paper actualizado. |
 | `categoria` | Sí | Categoría principal de arXiv. | Filtrar el corpus por tema. |
-| `estado_publicacion` | No | `preprint` o `revisado`. | Señal ligera de respaldo; no entra al ranking. |
+| `estado_publicacion` | No | `preprint`, `revisado` o `desconocido` (por defecto: arXiv no lo informa de forma fiable). | Señal ligera de respaldo; no entra al ranking. |
 | `sources` | Sí | URL exacta de donde sale el texto. | **Trazabilidad:** la métrica de fundamentación comprueba que cada afirmación llegue a una fuente. |
 | `extraccion` | Sí | `html` o `pdf`. | Control de calidad: los PDF son el plan B y salen peor. |
 | `fecha_captura` | Sí | Día en que se descargó. | Saber qué volver a descargar si arXiv actualiza el paper. |
@@ -86,7 +86,8 @@ genera al terminar el Gold y es lo que se versiona.
 ## 5. Reglas del scraper (de la Clase 2)
 
 - Leer `robots.txt` y respetar `Disallow`.
-- 1–2 segundos entre peticiones y `User-Agent` identificable.
+- Esperar entre peticiones lo que declare el `Crawl-delay` de `robots.txt` (15 segundos en
+  arXiv) y usar un `User-Agent` genérico, sin datos personales.
 - Guardar siempre el crudo además del limpio.
 - Cada paso debe poder volver a correrse sin repetir los anteriores.
 

@@ -5,6 +5,7 @@ description = "Comparación experimental entre RAG y WikiLLM sobre un corpus de 
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "openai>=3.46.0",
     "python-dotenv>=1.0",
 ]
 

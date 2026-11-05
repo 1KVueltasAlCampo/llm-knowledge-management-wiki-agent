@@ -31,3 +31,6 @@ __pycache__/
 Thumbs.db
 .idea/
 .vscode/
+
+# Registros de llamadas al modelo: contienen texto de papers, no se versionan
+results/**/llamadas*.jsonl

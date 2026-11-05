@@ -1,0 +1,35 @@
+[project]
+name = "wikillm"
+version = "0.1.0"
+description = "Comparación experimental entre RAG y WikiLLM sobre un corpus de arXiv, con el mismo modelo en ambos sistemas."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/wikillm"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/W: estilo, F: errores, I: orden de imports, UP: sintaxis moderna, B: errores comunes
+select = ["E", "W", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

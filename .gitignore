@@ -1,0 +1,33 @@
+# Secretos: nunca se suben. La plantilla pública es .env.example
+.env
+.env.*
+!.env.example
+
+# Datos del corpus (los textos de arXiv tienen licencias propias).
+# Se versionan solo la lista de identificadores y el manifiesto de metadatos.
+data/raw/
+data/processed/
+data/gold/*
+!data/gold/corpus.jsonl
+
+# Índices vectoriales y cachés locales
+chroma/
+.chroma/
+*.sqlite3
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Registros locales de depuración
+*.log
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -31,7 +31,13 @@ CAMPOS_OBLIGATORIOS = (
     "idioma",
 )
 MARGEN_TOKENS = 0.10
-PATRON_HTML = re.compile(r"</?[A-Za-z][^>\n]*>")
+# Solo nombres de etiqueta HTML reales: los papers traen marcadores como `results/<name>/`.
+ETIQUETAS_HTML = (
+    "a|abbr|article|b|br|caption|cite|code|dd|div|dl|dt|em|figcaption|figure|h[1-6]|hr|i|img|"
+    "li|math|mi|mn|mo|mrow|nav|ol|p|pre|section|small|span|strong|sub|sup|svg|table|tbody|td|"
+    "tfoot|th|thead|tr|u|ul"
+)
+PATRON_HTML = re.compile(rf"</?(?:{ETIQUETAS_HTML})(?:\s[^>\n]*)?/?>", re.IGNORECASE)
 PATRON_CODIGO = re.compile(r"```.*?```|`[^`\n]*`", re.DOTALL)
 PATRON_MATEMATICA = re.compile(r"\$\$.*?\$\$|\$[^$\n]*\$", re.DOTALL)
 

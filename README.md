@@ -68,7 +68,7 @@ Las ablaciones varían la frecuencia de la revisión automática (*lint*) y la p
 - **Procedencia como metadato de primera clase:** cada afirmación conserva su fuente y sus señales de respaldo.
 - **Human-in-the-loop verificable:** el agente no escribe en producción; propone los cambios como *Pull Request* y un humano los aprueba. Cada aprobación queda registrada, y por tanto es medible.
 - **Implementación fuera de un runtime de agente cerrado**, en Python con el SDK de OpenAI contra la API de DeepSeek (`wikillm.common.modelo.ClienteModelo`), para conservar el control sobre semillas, temperatura y contabilidad de tokens que exige la reproducibilidad.
-- **Mismo modelo en ambos sistemas:** RAG y wiki usan `deepseek-flash`. El juez de correctitud es Gemini (`gemini-3.8-flash`) y los borradores de preguntas los redacta `deepseek-v4-pro`, para que ningún modelo se evalúe a sí mismo (decisión 0003).
+- **Mismo modelo en ambos sistemas:** RAG y wiki usan `deepseek-flash`. El juez de correctitud es Gemini (`gemini-3.1-flash-lite`) y los borradores de preguntas los redacta `deepseek-v4-pro`, para que ningún modelo se evalúe a sí mismo (decisión 0003).
 
 ## Cómo reproducir
 

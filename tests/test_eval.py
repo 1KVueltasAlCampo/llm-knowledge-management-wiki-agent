@@ -183,3 +183,28 @@ def test_metricas_de_punta_a_punta_con_sinteticos():
     assert claves == {("rag", 1), ("rag", 3), ("wiki", 1), ("wiki", 3)}
     paso1 = next(a for a in agregados if a["system"] == "wiki" and a["ingest_step"] == 1)
     assert paso1["n_respondibles"] == 0 and paso1["cobertura"] is None
+
+
+def test_libro_cerrado_produce_el_contrato_y_detecta_abstencion():
+    from wikillm.eval.libro_cerrado import correr
+    from wikillm.eval.metricas import OBLIGATORIOS_RESULTADO
+
+    @dataclass
+    class _R:
+        texto: str
+        tokens_entrada_sin_cache: int = 10
+        tokens_entrada_cache: int = 0
+        tokens_salida: int = 5
+        segundos: float = 0.1
+        usd: float = 0.0
+
+    class _Cliente:
+        def generar(self, mensajes, etiqueta, max_tokens):
+            assert len(mensajes) == 2  # sin contexto del corpus
+            return _R("I don’t know.")
+
+    banco = [_pregunta(), _pregunta(id="A-T5-001", tipo="T5")]
+    filas = correr(banco, _Cliente(), "m", 50, "r")
+    assert len(filas) == 1  # T5 no aplica
+    assert filas[0]["abstained"] is True
+    assert all(c in filas[0] for c in OBLIGATORIOS_RESULTADO)

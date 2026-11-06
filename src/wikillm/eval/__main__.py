@@ -93,6 +93,26 @@ def _borradores(args: argparse.Namespace) -> int:
     return 0
 
 
+def _libro_cerrado(args: argparse.Namespace) -> int:
+    from wikillm.common.config import load_settings
+    from wikillm.common.modelo import ClienteModelo
+    from wikillm.eval.libro_cerrado import correr, estimar
+
+    banco = leer_banco(Path(args.banco))
+    ajustes = load_settings()
+    entrada, salida = estimar(banco)
+    costo = (entrada * ajustes.price_input_cache_miss + salida * ajustes.price_output) / 1e6
+    print(f"{len(banco)} preguntas, ~{entrada:,} + {salida:,} tokens, ~{2 * costo:.4f} USD máx.")
+    if not args.ejecutar:
+        return 0
+    destino = Path(args.salida)
+    cliente = ClienteModelo(ajustes, ruta_registro=destino.parent / "llamadas.jsonl")
+    filas = correr(banco, cliente, ajustes.model, args.paso, destino.parent.name)
+    escribir_jsonl(destino, filas)
+    print(f"{len(filas)} respuestas en {destino}; gasto {cliente.gasto_acumulado:.4f} USD")
+    return 0
+
+
 def main() -> int:
     analizador = argparse.ArgumentParser(description="Banco de preguntas y métricas de calidad.")
     ordenes = analizador.add_subparsers(dest="orden", required=True)
@@ -113,6 +133,11 @@ def main() -> int:
     borradores.add_argument("--datos", default="data")
     borradores.add_argument("--ejecutar", action="store_true", help="llamar al redactor (gasta)")
     borradores.add_argument("--confirmo-usd", type=float, default=0.0, help="acepta gasto mayor")
+    cerrado = ordenes.add_parser("libro-cerrado", help="control de contaminación (gasta)")
+    cerrado.add_argument("--banco", default=BANCO)
+    cerrado.add_argument("--paso", type=int, default=50, help="paso en que todo es respondible")
+    cerrado.add_argument("--salida", default="results/libro_cerrado/respuestas.jsonl")
+    cerrado.add_argument("--ejecutar", action="store_true")
     acuerdo = ordenes.add_parser("acuerdo")
     acuerdo.add_argument("--a", required=True)
     acuerdo.add_argument("--b", required=True)
@@ -127,6 +152,8 @@ def main() -> int:
 
     if args.orden == "borradores":
         return _borradores(args)
+    if args.orden == "libro-cerrado":
+        return _libro_cerrado(args)
 
     banco = leer_banco(Path(args.banco))
     orden = _orden(args.manifest)

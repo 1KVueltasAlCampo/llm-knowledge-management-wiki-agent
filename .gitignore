@@ -9,6 +9,7 @@ data/raw/
 data/processed/
 data/gold/*
 !data/gold/corpus.jsonl
+!data/gold/spans.jsonl
 
 # Índices vectoriales y cachés locales
 chroma/

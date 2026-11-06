@@ -1,0 +1,22 @@
+# Preselección manual (por título) de los resultados de búsqueda de 2026, el 6-nov-2026.
+# Criterio: estudios que comparan, evalúan o compilan memoria/wiki frente a RAG, o que tratan
+# conflictos, actualizaciones y procedencia (útiles para preguntas T3/T4).
+2610.30755  # Is Complex Agentic Memory Always Needed? Naive RAG Is Stronger Than We Thought
+2606.25656  # Is GraphRAG Needed? From Basic RAG to Graph-/Agentic Solutions with Context Optimization
+2608.08995  # Muscle Memory for Agents: Compile not Merely Retrieve
+2610.23313  # From Memory Hits to Answerable Evidence: Query-Conditioned Memory Compilation
+2610.02472  # APDMem: Agent-Controlled Progressive Disclosure for Query-Adaptive Long-Term Memory
+2610.03902  # When Evidence Changes: Evaluating Memory Repair and Re-reading in LM Agents
+2609.16073  # The Immutable Past: State Mutability and Conflict Resolution in Mutable RAG
+2608.07429  # TEPA: Revoking Stale Memories for Conflict-Robust Language Agents
+2610.05732  # PACMI: Provenance-Aware Cascading Memory Invalidation for Long-Term LLM Agents
+2608.13883  # MemoryLake on MemoryArena: A Matched Study of Agent Memory Backends
+2608.15008  # Harness the Memory: A Holistic Evaluation of Memory Substrates in Memory Agents
+2610.22209  # Beyond Downstream QA: Rethinking How We Evaluate Agent Memory
+2611.02361  # Agent Memory as Rate-Limited Filtering: Explicit State Outlasts Long Context
+2608.12888  # Agent-Controlled Search over Raw Chat Logs Rivals Structured Memory
+2603.02473  # Diagnosing Retrieval vs. Utilization Bottlenecks in LLM Agent Memory
+2610.09348  # Relevance Is Not Sufficiency: What Actually Closes the Evidence Gap in Memory QA
+2609.24971  # DolphinBench: Mapping the Pareto Frontier of Agent Memory
+2608.29606  # Agent Zero Memory: Provenance-Aware Long-Term Memory for LLM Agents
+2610.04794  # Knowing the Store: What a Memory Backend Must Write Down Before an Agent Can Read It

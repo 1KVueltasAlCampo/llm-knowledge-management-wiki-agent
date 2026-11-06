@@ -31,6 +31,6 @@ Las métricas SHALL calcularse por sistema y paso de ingesta; antes de `ingesta_
 ### Requirement: Cost estimate before spending
 Toda corrida que llame a una API de pago SHALL imprimir antes una estimación de tokens y costo y SHALL detenerse si supera 5 USD sin confirmación explícita.
 
-#### Scenario: Tarifa desconocida
+#### Scenario: Tarifa no verificada
 - **WHEN** faltan las tarifas del redactor en `.env`
-- **THEN** no se ejecuta ninguna llamada
+- **THEN** la estimación usa una cota superior (4 veces las tarifas de Flash) y lo indica

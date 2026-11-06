@@ -46,12 +46,12 @@ def _escribir_csv(ruta: Path, filas: list[dict[str, Any]]) -> None:
 def _borradores(args: argparse.Namespace) -> int:
     from dotenv import load_dotenv
 
+    from wikillm.eval.modelos import precios_redactor
     from wikillm.eval.plan_borradores import (
         TOPE_CONFIRMACION_USD,
         ejecutar,
         escribir_hoja,
         planear,
-        precios_redactor,
     )
 
     load_dotenv()
@@ -62,11 +62,12 @@ def _borradores(args: argparse.Namespace) -> int:
         f"Autor {args.autor}: {len(plan.tareas)} llamadas, {pedidas} preguntas pedidas, "
         f"~{plan.tokens_entrada:,} tokens de entrada y ~{plan.tokens_salida:,} de salida"
     )
-    precios = precios_redactor()
-    if precios is None:
-        print("Sin tarifas del redactor en .env (DRAFT_PRICE_*): no se puede estimar el costo.")
-        return 1
-    costo = plan.costo(*precios)
+    entrada, _, salida = precios_redactor()
+    origen = (
+        "de .env" if os.environ.get("DRAFT_PRICE_OUTPUT_USD_PER_M") else "cota superior 4x Flash"
+    )
+    print(f"Tarifas del redactor ({origen}): {entrada:.3f} entrada, {salida:.3f} salida USD/M")
+    costo = plan.costo(entrada, salida)
     print(f"Costo estimado: {costo:.2f} USD (hora pico: hasta {2 * costo:.2f} USD)")
     if not args.ejecutar:
         return 0

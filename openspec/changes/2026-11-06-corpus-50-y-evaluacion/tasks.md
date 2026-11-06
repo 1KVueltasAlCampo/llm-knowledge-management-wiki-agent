@@ -7,19 +7,19 @@
 ## 2. Selección del corpus (G4)
 
 - [x] 2.1 Cliente de la API de arXiv y reunión de candidatos (`uv run python -m wikillm.corpus candidatos`). Verificación: pruebas `tests/test_corpus_arxiv_api.py`; 61/61 ids del `.bib` encontrados en la API.
-- [ ] 2.2 Descargar Bronze de los candidatos y medir `html_available` y referencias cruzadas. Verificación: `capture.jsonl` por candidato.
-- [ ] 2.3 Elegir los 50 con los criterios de `docs/corpus.md` y escribir `data/corpus_ids.txt`. Verificación: 50 ids, las 5 semillas incluidas.
+- [x] 2.2 Descargar Bronze de los candidatos y medir `html_available` y referencias cruzadas. Verificación: `capture.jsonl` por candidato; 52/53 con HTML.
+- [x] 2.3 Elegir los 50 con los criterios de `docs/corpus.md` y escribir `data/corpus_ids.txt`. Verificación: 50 ids, las 5 semillas incluidas (commit 941aaae).
 
 ## 3. Gold, manifest y fragmentos (G1–G3)
 
 - [x] 3.1 Fragmentos citables (`spans`). Verificación: `tests/test_corpus_spans.py`.
 - [x] 3.2 Manifest con orden, mitad y señales. Verificación: `tests/test_corpus_manifest.py`.
-- [ ] 3.3 Ingesta de los 50, validación, `corpus.jsonl`, `manifest_corpus.jsonl` y `spans.jsonl`. Verificación: `uv run python -m wikillm.ingest` sin errores y `manifest` con 50 filas y todas con HTML.
+- [x] 3.3 Ingesta de los 50, validación, `corpus.jsonl`, `manifest_corpus.jsonl` y `spans.jsonl`. Verificación: `uv run python -m wikillm.ingest` sin errores y `manifest` con 50 filas y todas con HTML.
 
 ## 4. Métricas (G6)
 
 - [x] 4.1 Contrato `specs/contrato-resultados.md` y módulo `wikillm.eval` (capa 1, juez, fundamentación, cobertura, acuerdo). Verificación: `tests/test_eval.py`.
-- [ ] 4.2 Corrida de métricas sobre resultados sintéticos con el banco real. Verificación: `results/sintetico/metricas_por_paso.csv`.
+- [x] 4.2 Corrida de métricas sobre resultados sintéticos con un banco sintético de 3 preguntas (el banco real aún no existe). Verificación: `results/sintetico/metricas_por_paso.csv`.
 
 ## 5. Banco de preguntas (G5)
 

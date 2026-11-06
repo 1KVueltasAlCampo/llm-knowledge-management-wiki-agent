@@ -164,3 +164,36 @@ def test_ejecutar_y_hoja_de_anotacion(tmp_path):
     filas = list(csv.DictReader(hoja.open(encoding="utf-8")))
     assert filas[0]["decision"] == ""
     assert "accuracy of 0.71" in filas[0]["cita_literal"]
+
+
+def test_ejecutar_conserva_lo_redactado_si_se_alcanza_el_tope(tmp_path):
+    from wikillm.common.modelo import TopeDeGastoError
+
+    escribir_gold(tmp_path / "2601.1.md", {"arxiv_id": "2601.1", "version": "v1"}, CUERPO_1)
+    escribir_gold(tmp_path / "2603.1.md", {"arxiv_id": "2603.1", "version": "v1"}, CUERPO_1)
+    buena = _salida(
+        {
+            "type": "T1",
+            "question": "q?",
+            "answer": "0.71",
+            "answer_keys": ["0.71"],
+            "evidence": [
+                {"arxiv_id": "2601.1", "evidence_quote": "accuracy of 0.71 on the benchmark"}
+            ],
+        }
+    )
+
+    class _Cliente:
+        llamadas = 0
+
+        def generar(self, mensajes, etiqueta):
+            self.llamadas += 1
+            if self.llamadas > 1:
+                raise TopeDeGastoError("tope")
+            return _Resp(buena)
+
+    manifest = [MANIFEST[0], {**MANIFEST[2], "referencias_en_corpus": []}]
+    plan = planear(manifest, "A")
+    preguntas, _, descartes = ejecutar(plan, manifest, tmp_path, _Cliente(), "r", lambda _m: None)
+    assert len(preguntas) == 1
+    assert any("detenida" in d for d in descartes)

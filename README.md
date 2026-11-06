@@ -58,7 +58,23 @@ Las fuentes se ordenan por fecha, se ingieren de a una, y tras cada ingesta se g
 | Supervivencia del error | ¿Cuántas ingestas sobrevive un error introducido a propósito? |
 | Costo | Tokens y tiempo por ingesta y por consulta, frente a RAG. |
 
-El banco tiene 60 preguntas (30 por autor) de cinco tipos: hecho puntual (T1), síntesis entre fuentes (T2), contradicción o superación (T3), dato que una fuente posterior actualiza (T4) y pregunta no respondible con lo ingerido (T5). Cada una indica el primer paso de ingesta en que ya es respondible. Los borradores los redacta un LLM con evidencia anclada a fragmentos reales del corpus, pero solo cuentan cuando los dos autores los verifican; se reporta su acuerdo con kappa de Cohen.
+### Preguntas de control: cinco tipos
+
+El banco tiene **60 preguntas** (30 por autor). Cada tipo mide una capacidad distinta, y juntos responden la pregunta de investigación:
+
+| Tipo | Qué pregunta | Qué mide | Ejemplo |
+|---|---|---|---|
+| **T1 · Hecho puntual** | Un dato concreto de **un solo paper** | Si el sistema recupera y reporta bien un hecho | "¿Qué umbral de sinonimia τ usa HippoRAG por defecto?" → 0,8 |
+| **T2 · Síntesis** | Algo que exige **combinar dos o más papers** | Si conecta información repartida entre fuentes | "¿En qué difieren STALE y TEPA en su manejo de memorias obsoletas?" |
+| **T3 · Contradicción o superación** | Qué estudio **supera o contradice** a otro, y por cuánto | Si detecta conflictos en vez de mezclar las fuentes | "¿Qué framework rinde mejor en QA multi-salto, HippoRAG o SSGM?" |
+| **T4 · Actualización** | Un dato que **cambia** cuando llega un paper posterior | Si actualiza lo que sabe: la respuesta correcta cambia en ese paso | Una cifra que un trabajo posterior mejora |
+| **T5 · No respondible** | Algo del tema que **no está en el corpus** | Si sabe abstenerse en lugar de inventar | "¿Qué puntaje logra EdgeMem en LoCoMo?" (EdgeMem no está en el corpus) |
+
+- **T1 y T2** miden **cobertura**: si el sistema tiene y encuentra la información.
+- **T3 y T4** son donde se espera la ventaja del WikiLLM: al mantenerse de forma incremental debería resolver contradicciones y actualizar cifras, mientras que RAG puede recuperar el fragmento desactualizado.
+- **T5** mide **alucinación**. Además, cualquier pregunta se comporta como T5 **antes de su `ingesta_minima`** (el primer paso en que ya es respondible): en esos pasos lo correcto es abstenerse, así que la abstención se mide en todo el experimento.
+
+**Respuestas fijadas por humanos.** Los borradores los redacta un LLM con la evidencia anclada a fragmentos reales del corpus. Solo entran al experimento cuando los dos autores los verificaron por separado contra el paper. Se reporta su acuerdo con kappa de Cohen y los desacuerdos se resuelven en conjunto. La revisión comprueba que la respuesta salga de la cita, que tenga una sola respuesta correcta, que se responda solo con sus fuentes, que el tipo sea el correcto y que las claves de corrección sean justas. Por diseño, al menos 20 de las 30 preguntas de cada autor son respondibles en las primeras 30 ingestas, para que el experimento sea válido también con 30 fuentes.
 
 Las ablaciones varían la frecuencia de la revisión automática (*lint*) y la profundidad de la intervención humana. Ambas variables están enunciadas en la literatura y ninguna ha sido medida.
 

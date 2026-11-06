@@ -103,6 +103,16 @@ def test_html_dentro_de_codigo_o_matematicas_no_cuenta_como_residual(tmp_path):
     assert validar_gold(tmp_path) == []
 
 
+def test_marcadores_entre_angulos_del_paper_no_cuentan_como_html(tmp_path):
+    cuerpo = (
+        CUERPO
+        + "Each command writes under results/<name>/run_*/ and replies FACT_NUMBER: <number or"
+        " 0 if no fact matches>.\n"
+    )
+    escribir(tmp_path, cuerpo=cuerpo, encabezado=encabezado_valido(cuerpo=cuerpo))
+    assert validar_gold(tmp_path) == []
+
+
 def test_falta_un_campo_obligatorio(tmp_path):
     encabezado = encabezado_valido()
     del encabezado["sources"]

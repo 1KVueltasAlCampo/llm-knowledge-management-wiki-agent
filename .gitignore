@@ -9,6 +9,7 @@ data/raw/
 data/processed/
 data/gold/*
 !data/gold/corpus.jsonl
+!data/gold/spans.jsonl
 
 # Índices vectoriales y cachés locales
 chroma/
@@ -34,3 +35,6 @@ Thumbs.db
 
 # Registros de llamadas al modelo: contienen texto de papers, no se versionan
 results/**/llamadas*.jsonl
+
+# Hojas de anotación y citas literales: contienen texto de arXiv
+data/preguntas/anotacion/

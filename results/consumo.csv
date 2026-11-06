@@ -3,3 +3,4 @@ fecha,corrida,modelo,llamadas,tokens_entrada_sin_cache,tokens_entrada_cache,toke
 2026-11-06,libro_cerrado_A,deepseek-flash,102,7219,0,765,0.0015,tarifas de Flash verificadas (4-nov-2026),False
 2026-11-06,juez_libro_cerrado_A,gemini-3.1-flash-lite,5,1718,0,329,0.00092,"tarifas de Gemini (aistudio.google.com/docs/pricing, 6-nov-2026), con recargo de hora pico de DeepSeek aplicado de más",False
 2026-11-06,juez_libro_cerrado_A,gemini-3.8-flash,1,345,0,14,0.00031,"tarifas de Gemini (aistudio.google.com/docs/pricing, 6-nov-2026), con recargo de hora pico de DeepSeek aplicado de más",False
+2026-11-06,borradores_A_T5,deepseek-v4-pro,1,7553,0,1294,0.0076,cota superior 4x Flash (tarifa de deepseek-v4-pro no verificada),False

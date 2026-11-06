@@ -17,10 +17,12 @@ from wikillm.corpus.candidatos import (
     reunir,
 )
 from wikillm.corpus.manifest import construir_manifest
+from wikillm.corpus.seleccion import seleccionar
 from wikillm.corpus.spans import spans_de_carpeta
 from wikillm.ingest.arxiv import leer_ids
 
 SALIDA_CANDIDATOS = "data/raw/api/candidatos.jsonl"
+SEMILLAS = ["2405.14831", "2502.14802", "2605.25480", "2605.18490", "2607.04576"]
 
 
 def main() -> int:
@@ -45,6 +47,14 @@ def main() -> int:
     spans.add_argument("--datos", default="data")
     spans.add_argument("--salida", default="data/gold/spans.jsonl")
 
+    seleccion = ordenes.add_parser("seleccionar", help="elegir los N papers y escribir la lista")
+    seleccion.add_argument("--candidatos", default=SALIDA_CANDIDATOS)
+    seleccion.add_argument("--semillas", nargs="+", default=SEMILLAS)
+    seleccion.add_argument("--preseleccion", default="data/preseleccion_busqueda.txt")
+    seleccion.add_argument("--datos", default="data")
+    seleccion.add_argument("--n", type=int, default=50)
+    seleccion.add_argument("--salida", default="data/corpus_ids.txt")
+
     argumentos = analizador.parse_args()
     if argumentos.orden == "candidatos":
         ids = ids_de_bib(Path(argumentos.bib).read_text(encoding="utf-8")) + argumentos.extra
@@ -66,7 +76,42 @@ def main() -> int:
         filas = spans_de_carpeta(datos / "gold", leer_ids(argumentos.ids))
         escribir_jsonl(Path(argumentos.salida), filas)
         print(f"{len(filas)} fragmentos en {argumentos.salida}")
+    elif argumentos.orden == "seleccionar":
+        return _seleccionar(argumentos)
     return 0
+
+
+def _seleccionar(argumentos: argparse.Namespace) -> int:
+    from wikillm.corpus.manifest import html_disponible
+    from wikillm.ingest.gold import leer_gold
+
+    datos = Path(argumentos.datos)
+    candidatos = {f["arxiv_id"]: f for f in leer_jsonl(Path(argumentos.candidatos))}
+    preseleccion = leer_ids(argumentos.preseleccion)
+    referencias: dict[str, list[str]] = {}
+    for arxiv_id in candidatos:
+        ruta = datos / "gold" / f"{arxiv_id}.md"
+        if ruta.exists():
+            referencias[arxiv_id] = leer_gold(ruta)[0].get("referencias_en_corpus") or []
+    elegidos, reservas = seleccionar(
+        candidatos,
+        argumentos.semillas,
+        preseleccion,
+        referencias,
+        lambda i: html_disponible(datos / "raw", i),
+        argumentos.n,
+    )
+    lineas = [
+        f"# Corpus de {len(elegidos)} papers. Generado con `uv run python -m wikillm.corpus "
+        "seleccionar`; criterios en docs/corpus.md.",
+        "# Un identificador de arXiv por línea. Las líneas que empiezan con # se ignoran.",
+    ]
+    for arxiv_id in sorted(elegidos, key=lambda i: (candidatos[i]["fecha_publicacion"], i)):
+        registro = candidatos[arxiv_id]
+        lineas.append(f"{arxiv_id}  # {registro['fecha_publicacion']} {registro['titulo'][:80]}")
+    Path(argumentos.salida).write_text("\n".join(lineas) + "\n", encoding="utf-8")
+    print(f"{len(elegidos)} elegidos en {argumentos.salida}; reservas: {reservas or 'ninguna'}")
+    return 0 if len(elegidos) == argumentos.n else 1
 
 
 if __name__ == "__main__":

@@ -1,0 +1,13 @@
+# Consultas a la API de arXiv para completar el corpus con papers de 2026.
+# Sintaxis de la API: https://info.arxiv.org/help/api/user-manual.html
+# Una consulta por línea. Se filtran después por fecha de primera versión >= 2026-01-01.
+abs:"LLM wiki"
+abs:"LLM-wiki"
+abs:"LLM-maintained wiki"
+abs:"LLM-compiled wiki"
+abs:"knowledge compilation" AND abs:"language model"
+abs:"agent memory" AND abs:"retrieval"
+abs:"memory for LLM agents"
+abs:"long-term memory" AND abs:"agents"
+abs:"GraphRAG"
+abs:"knowledge base" AND abs:"LLM agent" AND abs:"maintain"

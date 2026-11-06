@@ -21,6 +21,8 @@ Judge only against the reference, not against your own knowledge.
 Reply with JSON only: {"veredicto": "correcta|incorrecta|indeterminada", "motivo": "..."}"""
 
 VEREDICTOS = {CORRECTA, INCORRECTA, INDETERMINADA}
+# Holgura para modelos que razonan en oculto: con 300 tokens Gemini cortaba el JSON.
+TOKENS_JUEZ = 1024
 
 
 def construir_mensajes(
@@ -62,7 +64,7 @@ class Juez:
     def __call__(self, pregunta: dict[str, Any], resultado: dict[str, Any], esperado: Any) -> str:
         mensajes = construir_mensajes(pregunta, resultado["answer"], esperado)
         respuesta = self._cliente.generar(
-            mensajes, etiqueta=f"juez:{pregunta['id']}", max_tokens=300
+            mensajes, etiqueta=f"juez:{pregunta['id']}", max_tokens=TOKENS_JUEZ
         )
         veredicto, motivo = interpretar(respuesta.texto)
         clave = (pregunta["id"], resultado["system"], int(resultado["ingest_step"]))

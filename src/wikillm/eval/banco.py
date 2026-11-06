@@ -52,6 +52,8 @@ def calcular_ingesta_minima(fuentes: list[str], orden: dict[str, int]) -> int | 
 
 def validar_banco(preguntas: list[dict[str, Any]], orden: dict[str, int]) -> list[str]:
     """Problemas del banco frente al contrato y al manifest. Lista vacía = válido."""
+    from wikillm.eval.correctitud import normalizar_texto  # evita el import circular
+
     problemas: list[str] = []
     vistos: set[str] = set()
     for p in preguntas:
@@ -93,6 +95,14 @@ def validar_banco(preguntas: list[dict[str, Any]], orden: dict[str, int]) -> lis
                 problemas.append(
                     f"{pid}: ingesta_minima {p.get('ingesta_minima')} y debería ser {esperado}"
                 )
+        claves = list(p.get("respuesta_clave") or [])
+        for tramo in p.get("respuesta_por_paso") or []:
+            claves += tramo.get("respuesta_clave") or []
+        texto = normalizar_texto(str(p.get("texto", "")))
+        en_pregunta = [c for c in claves if normalizar_texto(c) in texto]
+        if en_pregunta:
+            # Una clave que ya está en la pregunta se acierta repitiendo la pregunta.
+            problemas.append(f"{pid}: respuesta_clave presente en la pregunta {en_pregunta}")
         if p.get("tipo") == "T2" and len(fuentes) < 2:
             problemas.append(f"{pid}: una pregunta T2 necesita al menos dos fuentes")
     return problemas

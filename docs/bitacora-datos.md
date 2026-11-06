@@ -51,7 +51,7 @@ B, 42 llamadas y ~1,71 M. El costo depende de las tarifas de `deepseek-v4-pro`, 
 - Juan Diego: completar `.env` con `GEMINI_API_KEY` y las tarifas `DRAFT_PRICE_*`
   (`DEEPSEEK_API_KEY` ya está).
 - Juan Diego: añadir a `.env.example` (los permisos del asistente no le dejan editarlo):
-  `DRAFT_MODEL=deepseek-v4-pro`, `GEMINI_API_KEY=`, `JUDGE_MODEL=gemini-3.8-flash`.
+  `DRAFT_MODEL=deepseek-v4-pro`, `GEMINI_API_KEY=`, `JUDGE_MODEL=gemini-3.1-flash-lite`.
 - Juan David: revisar decisión 0003 y `specs/propuesta-gold-v1.md`.
 - Juan David: revisar el cambio del validador en `src/wikillm/ingest/gold.py` (`ETIQUETAS_HTML`).
 - Juan David: revisar `AGENTS.md` (guía única para agentes), el `CLAUDE.md` reducido y las reglas

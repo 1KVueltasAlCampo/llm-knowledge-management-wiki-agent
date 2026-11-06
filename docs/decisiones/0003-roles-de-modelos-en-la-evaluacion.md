@@ -9,7 +9,7 @@ Juan David. **Modifica:** la decisión 0001 solo en el rol de juez.
 |---|---|---|
 | Responder (RAG y wiki) | `deepseek-flash` (DeepSeek-V4.1-Flash-1017) | DeepSeek |
 | Redactar borradores de preguntas | `deepseek-v4-pro` | DeepSeek |
-| Juez de correctitud (capa 2) | `gemini-3.8-flash` | Google |
+| Juez de correctitud (capa 2) | `gemini-3.1-flash-lite` (antes `gemini-3.8-flash`, ver abajo) | Google |
 
 La regla 1 de la constitución no cambia: RAG y wiki usan el mismo modelo.
 
@@ -26,6 +26,19 @@ La regla 1 de la constitución no cambia: RAG y wiki usan el mismo modelo.
   Flash cuesta 0,75 / 3,75 USD por millón (entrada / salida) frente a 2,00 / 10,00 de Argon
   (tarifas hasta el 30-nov y el 31-dic-2026; suben después). La calibración contra etiquetas
   humanas dirá si basta; si no, se sube a Argon.
+
+## Cambio del 6-nov-2026: juez `gemini-3.1-flash-lite`
+
+- **Motivo:** el 6-nov `gemini-3.8-flash` devolvió errores 500 o no respondió en 120 s, y
+  rechazó `reasoning_effort="minimal"` (HTTP 400). Además razona por dentro: con 300 tokens de
+  salida cortaba el JSON. `gemini-3.1-flash-lite` respondió en 1–12 s en una prueba de punta a
+  punta (5 veredictos, 0,0009 USD).
+- **Costo:** 0,25 / 1,50 USD por millón (entrada / salida), frente a 0,75 / 3,75. Con un saldo
+  de 6 USD alcanza para evaluar miles de respuestas.
+- **Riesgo:** un juez más pequeño puede ser más generoso. En la prueba marcó como correctas 3
+  respuestas a libro cerrado de preguntas T2 sobre papers de 2026, lo cual es sospechoso. La
+  calibración contra etiquetas humanas decide si basta; si no, se cambia `JUDGE_MODEL` sin
+  tocar el código.
 
 ## Fuentes (consultadas el 6-nov-2026)
 

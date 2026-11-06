@@ -19,9 +19,11 @@ from wikillm.common.config import Settings, load_settings
 from wikillm.common.modelo import ClienteModelo, ErrorDeModelo
 
 URL_GEMINI_OPENAI = "https://generativelanguage.googleapis.com/v1beta/openai/"
-# Tarifas de gemini-3.8-flash, USD por millón, vigentes hasta el 31-dic-2026.
-# Fuente: https://aistudio.google.com/docs/pricing (consultado el 6-nov-2026).
-PRECIOS_JUEZ_POR_DEFECTO = (0.75, 0.75, 3.75)
+# Tarifas de gemini-3.1-flash-lite, USD por millón (entrada, entrada con caché, salida).
+# Fuente: https://aistudio.google.com/docs/pricing (consultado el 6-nov-2026). La tarifa con
+# caché no se verificó: se usa la de entrada, que es la cota superior.
+PRECIOS_JUEZ_POR_DEFECTO = (0.25, 0.25, 1.50)
+JUEZ_POR_DEFECTO = "gemini-3.1-flash-lite"
 # deepseek-v4-pro no tiene tarifa verificada. Cota superior: 4 veces las tarifas de Flash
 # (decisión 0001 y .env.example: "3-4 veces más caro"; Flash verificado el 4-nov-2026).
 FACTOR_PRO_SOBRE_FLASH = 4.0
@@ -81,7 +83,7 @@ def crear_redactor(ruta_registro: Path | str, cliente: Any = None) -> ClienteMod
 
 
 def crear_juez(ruta_registro: Path | str, cliente: Any = None) -> ClienteModelo:
-    """Gemini (JUDGE_MODEL, por defecto gemini-3.8-flash) con temperatura 0."""
+    """Gemini (JUDGE_MODEL, por defecto gemini-3.1-flash-lite) con temperatura 0."""
     load_dotenv()
     base = load_settings()
     entrada, cache, salida = PRECIOS_JUEZ_POR_DEFECTO
@@ -89,7 +91,7 @@ def crear_juez(ruta_registro: Path | str, cliente: Any = None) -> ClienteModelo:
         base,
         api_key=os.environ.get("GEMINI_API_KEY", ""),
         base_url=URL_GEMINI_OPENAI,
-        model=os.environ.get("JUDGE_MODEL", "gemini-3.8-flash"),
+        model=os.environ.get("JUDGE_MODEL", JUEZ_POR_DEFECTO),
         thinking="disabled",
         temperature=0.0,
         price_input_cache_miss=_precio("JUDGE_PRICE_INPUT_USD_PER_M", entrada),

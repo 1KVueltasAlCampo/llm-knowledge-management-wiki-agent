@@ -234,3 +234,16 @@ def test_precios_del_redactor_usan_cota_superior_o_env(monkeypatch):
 def test_validar_banco_rechaza_claves_que_ya_estan_en_la_pregunta():
     mala = _pregunta(texto="¿Qué supera a HippoRAG?", respuesta_clave=["hipporag"])
     assert any("presente en la pregunta" in p for p in validar_banco([mala], ORDEN))
+
+
+def test_juez_por_defecto_es_flash_lite_y_respeta_judge_model(monkeypatch):
+    from wikillm.eval.modelos import crear_juez
+
+    monkeypatch.setattr("wikillm.eval.modelos.load_dotenv", lambda: None)
+    monkeypatch.setattr("wikillm.common.config.load_dotenv", lambda: None)  # sin leer .env
+    monkeypatch.delenv("JUDGE_MODEL", raising=False)
+    juez = crear_juez("/dev/null", cliente=object())
+    assert juez._ajustes.model == "gemini-3.1-flash-lite"
+    assert juez._ajustes.temperature == 0.0
+    monkeypatch.setenv("JUDGE_MODEL", "otro-modelo")
+    assert crear_juez("/dev/null", cliente=object())._ajustes.model == "otro-modelo"

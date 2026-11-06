@@ -22,7 +22,7 @@ todo lo nuevo está en `src/wikillm/corpus/` y `src/wikillm/eval/`.
    Todo es aditivo.
 2. `specs/contrato-resultados.md`: el JSONL que propongo que escriba el arnés. Lo crítico:
    `ingest_step`, `abstained`, `citations` como `span_id` y `context_tokens`.
-3. `docs/decisiones/0003-…`: el juez pasa a Gemini (`gemini-3.8-flash`) y los borradores a
+3. `docs/decisiones/0003-…`: el juez pasa a Gemini (`gemini-3.1-flash-lite`) y los borradores a
    `deepseek-v4-pro`. RAG y wiki siguen con `deepseek-flash` (la regla 1 no cambia).
 4. Qué pasos evaluamos: con 60 preguntas × 50 pasos × 2 sistemas son 6.000 respuestas;
    propongo cada 5 ingestas (1.200) y el paso 0 sin corpus.

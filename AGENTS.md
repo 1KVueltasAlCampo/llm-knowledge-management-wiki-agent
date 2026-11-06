@@ -53,7 +53,7 @@ uv run python -m wikillm.eval metricas --respuestas results/<corrida>/respuestas
 |---|---|---|
 | Responde (RAG y wiki) | `deepseek-flash` | 0001 |
 | Redacta borradores | `deepseek-v4-pro` | 0003 |
-| Juez de correctitud | `gemini-3.8-flash` | 0003 |
+| Juez de correctitud | `gemini-3.1-flash-lite` | 0003 |
 
 - Toda llamada pasa por `wikillm.common.modelo.ClienteModelo` (o `wikillm.eval.modelos`), que
   registra tokens, tiempo y dólares y respeta `MAX_USD_PER_RUN`.

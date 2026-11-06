@@ -6,8 +6,18 @@ context: |
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
   Proyecto: comparación experimental RAG vs WikiLLM sobre un corpus de arXiv, con el mismo
   modelo (DeepSeek V4.1 Flash) en ambos sistemas. Reglas del proyecto en CONSTITUTION.md.
-  Los contratos compartidos con el otro autor están en specs/ (formato del Gold, interfaz
-  responder(pregunta)).
+  Los contratos compartidos con el otro autor están en specs/ (formato del Gold y contrato de
+  resultados del arnés). Guía de trabajo para agentes en AGENTS.md.
+
+rules:
+  proposal:
+    - Indicar qué contrato de specs/ toca el cambio y quién es su dueño.
+    - Declarar si el cambio gasta saldo de API y su estimación de costo.
+  specs:
+    - Cada requisito con al menos un escenario verificable sin llamar a APIs reales.
+  tasks:
+    - Cada tarea termina con su verificación (comando, archivo o prueba).
+    - La última tarea ejecuta ruff check, ruff format --check y pytest.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

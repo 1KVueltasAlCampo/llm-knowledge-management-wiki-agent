@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisión de preguntas · mitad __AUTOR__</title>
+<style>
+  :root { --borde:#d0d7de; --suave:#f6f8fa; --texto:#1f2328; --tenue:#59636e;
+          --ok:#1a7f37; --corr:#9a6700; --desc:#cf222e; --sel:#0969da; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; color:var(--texto); background:#fff; }
+  header { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--borde);
+           padding:10px 20px; display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; }
+  header h1 { font-size:17px; margin:0 8px 0 0; }
+  .meta { display:flex; gap:14px; flex-wrap:wrap; font-size:13px; }
+  .meta b { font-variant-numeric: tabular-nums; }
+  .meta .ok b { color:var(--ok); } .meta .mal b { color:var(--desc); }
+  .filtros { display:flex; gap:8px; flex-wrap:wrap; align-items:center; font-size:13px; }
+  select, input[type=text], input[type=search], textarea { font:inherit; border:1px solid var(--borde);
+           border-radius:6px; padding:4px 8px; }
+  button { font:inherit; border:1px solid var(--borde); background:var(--suave); border-radius:6px;
+           padding:4px 10px; cursor:pointer; }
+  button.prim { background:var(--sel); color:#fff; border-color:var(--sel); }
+  main { max-width:980px; margin:0 auto; padding:16px 20px 80px; }
+  .ayuda { font-size:13px; color:var(--tenue); background:var(--suave); border-radius:8px;
+           padding:10px 14px; margin-bottom:16px; }
+  kbd { border:1px solid var(--borde); border-bottom-width:2px; border-radius:4px; padding:0 5px;
+        font-size:12px; background:#fff; }
+  article { border:1px solid var(--borde); border-left:5px solid var(--borde); border-radius:8px;
+            padding:14px 16px; margin-bottom:14px; scroll-margin-top:110px; }
+  article.foco { outline:2px solid var(--sel); outline-offset:2px; }
+  article[data-d=aceptar] { border-left-color:var(--ok); }
+  article[data-d=corregir] { border-left-color:var(--corr); }
+  article[data-d=descartar] { border-left-color:var(--desc); opacity:.75; }
+  .cab { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:13px; color:var(--tenue); }
+  .chip { border-radius:999px; padding:1px 8px; font-size:12px; background:var(--suave);
+          border:1px solid var(--borde); color:var(--texto); }
+  .chip.t1{background:#ddf4ff} .chip.t2{background:#fbefff} .chip.t3{background:#ffebe9}
+  .chip.t4{background:#fff8c5} .chip.t5{background:#eaeef2}
+  .pregunta { font-size:16px; font-weight:600; margin:8px 0 6px; }
+  dl { display:grid; grid-template-columns:150px 1fr; gap:4px 12px; margin:8px 0; font-size:14px; }
+  dt { color:var(--tenue); }
+  dd { margin:0; }
+  blockquote { margin:6px 0; padding:6px 10px; border-left:3px solid var(--sel); background:var(--suave);
+               font-size:14px; white-space:pre-wrap; }
+  blockquote small { display:block; color:var(--tenue); font-size:12px; margin-bottom:2px; }
+  .problemas { color:var(--desc); font-size:13px; margin:6px 0; }
+  .decision { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 6px; align-items:center; }
+  .decision label { border:1px solid var(--borde); border-radius:6px; padding:3px 10px; cursor:pointer; }
+  .decision input { margin-right:4px; }
+  .decision label.on-aceptar { background:#dafbe1; border-color:var(--ok); }
+  .decision label.on-corregir { background:#fff8c5; border-color:var(--corr); }
+  .decision label.on-descartar { background:#ffebe9; border-color:var(--desc); }
+  .elegir { margin-left:auto; font-weight:600; }
+  .correcciones { display:grid; grid-template-columns:150px 1fr; gap:6px 12px; margin-top:8px; }
+  .correcciones textarea, .correcciones input { width:100%; }
+  .correcciones[hidden] { display:none; }
+  a { color:var(--sel); }
+  .vacio { color:var(--tenue); text-align:center; padding:40px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Revisión · mitad __AUTOR__</h1>
+  <div class="meta" id="meta"></div>
+  <div class="filtros">
+    <label>Revisor
+      <select id="revisor"><option value="A">A · Juan Diego</option><option value="B">B · Juan David</option></select>
+    </label>
+    <select id="fTipo"><option value="">Todos los tipos</option><option>T1</option><option>T2</option>
+      <option>T3</option><option>T4</option><option>T5</option></select>
+    <select id="fEstado"><option value="">Todos</option><option value="pendiente">Pendientes</option>
+      <option value="aceptar">Aceptadas</option><option value="corregir">A corregir</option>
+      <option value="descartar">Descartadas</option><option value="elegida">Elegidas</option>
+      <option value="problema">Con problemas</option></select>
+    <input type="search" id="fTexto" placeholder="Buscar…" size="14">
+    <button id="bCsv" class="prim">Exportar CSV</button>
+    <button id="bJson">Exportar JSON</button>
+    <button id="bImport">Importar</button>
+    <input type="file" id="fileImport" accept=".json" hidden>
+  </div>
+</header>
+<main>
+  <div class="ayuda">
+    Para cada pregunta: lee la cita, confirma que la respuesta sale de ahí y marca una decisión. Si
+    la corriges, escribe la versión buena en los campos que aparecen. Marca <b>Elegir</b> en las que
+    entran al banco: la meta es 25 de T1–T4 (al menos 20 con ingesta ≤ 30) y 5 de T5. Todo se
+    guarda solo en este navegador; al terminar, exporta el CSV y el JSON.
+    Atajos: <kbd>j</kbd>/<kbd>k</kbd> moverse, <kbd>1</kbd> aceptar, <kbd>2</kbd> corregir,
+    <kbd>3</kbd> descartar, <kbd>e</kbd> elegir.
+  </div>
+  <div id="lista"></div>
+</main>
+<script>
+const ITEMS = __DATOS__;
+const AUTOR = "__AUTOR__";
+const META_T14 = 25, META_T5 = 5, META_PREFIJO = 20;
+const CLAVE = () => `revision-${AUTOR}-por-${document.getElementById("revisor").value}`;
+let estado = {};
+let foco = 0;
+
+function cargar() { estado = JSON.parse(localStorage.getItem(CLAVE()) || "{}"); }
+function guardar() { localStorage.setItem(CLAVE(), JSON.stringify(estado)); pintarMeta(); }
+function de(id) { return estado[id] || (estado[id] = {}); }
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function pintarMeta() {
+  const elegidas = ITEMS.filter(i => de(i.id).elegida && de(i.id).decision !== "descartar");
+  const t14 = elegidas.filter(i => i.tipo !== "T5");
+  const t5 = elegidas.filter(i => i.tipo === "T5");
+  const prefijo = t14.filter(i => i.ingesta_minima !== null && i.ingesta_minima <= 30);
+  const revisadas = ITEMS.filter(i => de(i.id).decision).length;
+  const m = (txt, n, meta) => `<span class="${n >= meta ? "ok" : "mal"}">${txt} <b>${n}/${meta}</b></span>`;
+  document.getElementById("meta").innerHTML =
+    `<span>Revisadas <b>${revisadas}/${ITEMS.length}</b></span>` +
+    m("Elegidas T1–T4", t14.length, META_T14) + m("con ingesta ≤ 30", prefijo.length, META_PREFIJO) +
+    m("T5", t5.length, META_T5);
+}
+
+function visible(i) {
+  const t = document.getElementById("fTipo").value, e = document.getElementById("fEstado").value;
+  const q = document.getElementById("fTexto").value.toLowerCase(), s = de(i.id);
+  if (t && i.tipo !== t) return false;
+  if (e === "pendiente" && s.decision) return false;
+  if (["aceptar","corregir","descartar"].includes(e) && s.decision !== e) return false;
+  if (e === "elegida" && !s.elegida) return false;
+  if (e === "problema" && !i.problemas.length) return false;
+  if (q && !(i.id + " " + i.texto + " " + i.respuesta).toLowerCase().includes(q)) return false;
+  return true;
+}
+
+function tarjeta(i) {
+  const s = de(i.id);
+  const fuentes = i.fuentes.map(f => `<div><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.arxiv_id)}</a>
+     ${f.orden ? `· ingesta ${f.orden}` : ""} · ${esc(f.titulo)}</div>`).join("");
+  const evid = i.evidencias.map(e => `<blockquote><small>${esc(e.span_id)}</small>${esc(e.cita)}</blockquote>`).join("")
+     || `<div class="problemas">Sin cita literal disponible.</div>`;
+  const pasos = i.por_paso.map(p => `<div>desde la ingesta ${p.desde}: ${esc(p.respuesta_oraculo)}</div>`).join("");
+  const radio = v => `<label class="${s.decision === v ? "on-" + v : ""}"><input type="radio" name="d-${i.id}" value="${v}"
+      ${s.decision === v ? "checked" : ""}>${{aceptar:"Aceptar",corregir:"Corregir",descartar:"Descartar"}[v]}</label>`;
+  return `<article id="q-${esc(i.id)}" data-id="${esc(i.id)}" data-d="${s.decision || ""}">
+    <div class="cab"><span class="chip ${i.tipo.toLowerCase()}">${i.tipo}</span><span>${esc(i.id)}</span>
+      <span>ingesta mínima: ${i.ingesta_minima ?? "nunca (abstenerse)"}</span></div>
+    <div class="pregunta">${esc(i.texto)}</div>
+    <dl><dt>Respuesta borrador</dt><dd>${esc(i.respuesta)}${pasos ? "<br>" + pasos : ""}</dd>
+      <dt>Claves</dt><dd>${i.claves.map(esc).join(" · ") || "—"}</dd>
+      <dt>Fuentes</dt><dd>${fuentes || "—"}</dd></dl>
+    ${i.problemas.length ? `<div class="problemas">⚠ ${i.problemas.map(esc).join("<br>⚠ ")}</div>` : ""}
+    ${evid}
+    <div class="decision">${radio("aceptar")}${radio("corregir")}${radio("descartar")}
+      <label class="elegir"><input type="checkbox" class="elige" ${s.elegida ? "checked" : ""}> Elegir para el banco</label></div>
+    <div class="correcciones" ${s.decision === "corregir" ? "" : "hidden"}>
+      <span>Pregunta corregida</span><textarea data-k="pregunta" rows="2" placeholder="${esc(i.texto)}">${esc(s.pregunta)}</textarea>
+      <span>Respuesta correcta</span><textarea data-k="respuesta" rows="2" placeholder="${esc(i.respuesta)}">${esc(s.respuesta)}</textarea>
+      <span>Claves (separadas por |)</span><input type="text" data-k="claves" placeholder="${esc(i.claves.join(" | "))}" value="${esc(s.claves)}">
+    </div>
+    <div class="correcciones"><span>Notas</span><input type="text" data-k="notas" value="${esc(s.notas)}"></div>
+  </article>`;
+}
+
+function pintar() {
+  const lista = ITEMS.filter(visible);
+  document.getElementById("lista").innerHTML = lista.map(tarjeta).join("") ||
+    `<div class="vacio">Nada con estos filtros.</div>`;
+  foco = Math.min(foco, Math.max(lista.length - 1, 0));
+  marcarFoco(false);
+  pintarMeta();
+}
+
+function articulos() { return [...document.querySelectorAll("article")]; }
+function marcarFoco(desplazar = true) {
+  articulos().forEach((a, n) => a.classList.toggle("foco", n === foco));
+  const a = articulos()[foco];
+  if (a && desplazar) a.scrollIntoView({behavior:"smooth", block:"start"});
+}
+function decidir(id, v) {
+  de(id).decision = v; guardar();
+  const a = document.querySelector(`article[data-id="${CSS.escape(id)}"]`);
+  const nuevo = document.createElement("div"); nuevo.innerHTML = tarjeta(ITEMS.find(i => i.id === id));
+  a.replaceWith(nuevo.firstElementChild); marcarFoco(false);
+}
+
+document.getElementById("lista").addEventListener("change", ev => {
+  const a = ev.target.closest("article"); if (!a) return;
+  const id = a.dataset.id;
+  if (ev.target.type === "radio") decidir(id, ev.target.value);
+  else if (ev.target.classList.contains("elige")) { de(id).elegida = ev.target.checked; guardar(); }
+});
+document.getElementById("lista").addEventListener("input", ev => {
+  const a = ev.target.closest("article"); const k = ev.target.dataset.k;
+  if (a && k) { de(a.dataset.id)[k] = ev.target.value; guardar(); }
+});
+document.getElementById("lista").addEventListener("click", ev => {
+  const a = ev.target.closest("article"); if (a) { foco = articulos().indexOf(a); marcarFoco(false); }
+});
+document.addEventListener("keydown", ev => {
+  if (["INPUT","TEXTAREA","SELECT"].includes(ev.target.tagName)) return;
+  const a = articulos()[foco];
+  if (ev.key === "j") { foco = Math.min(foco + 1, articulos().length - 1); marcarFoco(); }
+  else if (ev.key === "k") { foco = Math.max(foco - 1, 0); marcarFoco(); }
+  else if (a && ["1","2","3"].includes(ev.key)) decidir(a.dataset.id, ["aceptar","corregir","descartar"][+ev.key - 1]);
+  else if (a && ev.key === "e") { const s = de(a.dataset.id); s.elegida = !s.elegida; guardar();
+    a.querySelector(".elige").checked = s.elegida; }
+});
+["fTipo","fEstado","fTexto"].forEach(id => document.getElementById(id).addEventListener("input", () => { foco = 0; pintar(); }));
+document.getElementById("revisor").addEventListener("change", () => { cargar(); pintar(); });
+
+function descargar(nombre, texto, tipo) {
+  const url = URL.createObjectURL(new Blob([texto], {type: tipo}));
+  const a = document.createElement("a"); a.href = url; a.download = nombre; a.click(); URL.revokeObjectURL(url);
+}
+function exportacion() {
+  const revisor = document.getElementById("revisor").value;
+  return ITEMS.map(i => { const s = de(i.id); return {
+    question_id: i.id, tipo: i.tipo, revisor, decision: s.decision || "", elegida: !!s.elegida,
+    pregunta_corregida: s.pregunta || "", respuesta_corregida: s.respuesta || "",
+    claves_corregidas: s.claves || "", notas: s.notas || "" }; });
+}
+document.getElementById("bCsv").onclick = () => {
+  const filas = exportacion(), cols = Object.keys(filas[0]);
+  const celda = v => `"${String(v).replace(/"/g, '""')}"`;
+  const csv = [cols.join(","), ...filas.map(f => cols.map(c => celda(f[c])).join(","))].join("\n");
+  descargar(`revision_${AUTOR}_por_${document.getElementById("revisor").value}.csv`, csv, "text/csv");
+};
+document.getElementById("bJson").onclick = () => descargar(
+  `revision_${AUTOR}_por_${document.getElementById("revisor").value}.json`,
+  JSON.stringify(exportacion(), null, 1), "application/json");
+document.getElementById("bImport").onclick = () => document.getElementById("fileImport").click();
+document.getElementById("fileImport").onchange = async ev => {
+  const filas = JSON.parse(await ev.target.files[0].text());
+  for (const f of filas) estado[f.question_id] = { decision: f.decision || undefined, elegida: f.elegida,
+    pregunta: f.pregunta_corregida, respuesta: f.respuesta_corregida, claves: f.claves_corregidas, notas: f.notas };
+  guardar(); pintar();
+};
+cargar(); pintar();
+</script>
+</body>
+</html>

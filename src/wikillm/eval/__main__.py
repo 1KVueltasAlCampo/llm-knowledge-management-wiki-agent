@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -42,6 +43,56 @@ def _escribir_csv(ruta: Path, filas: list[dict[str, Any]]) -> None:
         escritor.writerows(filas)
 
 
+def _borradores(args: argparse.Namespace) -> int:
+    from dotenv import load_dotenv
+
+    from wikillm.eval.plan_borradores import (
+        TOPE_CONFIRMACION_USD,
+        ejecutar,
+        escribir_hoja,
+        planear,
+        precios_redactor,
+    )
+
+    load_dotenv()
+    manifest = leer_jsonl(Path(args.manifest))
+    plan = planear(manifest, args.autor)
+    pedidas = sum(sum(t.pedidos.values()) for t in plan.tareas)
+    print(
+        f"Autor {args.autor}: {len(plan.tareas)} llamadas, {pedidas} preguntas pedidas, "
+        f"~{plan.tokens_entrada:,} tokens de entrada y ~{plan.tokens_salida:,} de salida"
+    )
+    precios = precios_redactor()
+    if precios is None:
+        print("Sin tarifas del redactor en .env (DRAFT_PRICE_*): no se puede estimar el costo.")
+        return 1
+    costo = plan.costo(*precios)
+    print(f"Costo estimado: {costo:.2f} USD (hora pico: hasta {2 * costo:.2f} USD)")
+    if not args.ejecutar:
+        return 0
+    if 2 * costo > max(TOPE_CONFIRMACION_USD, args.confirmo_usd):
+        print(f"Supera {TOPE_CONFIRMACION_USD} USD: repetir con --confirmo-usd {2 * costo:.2f}")
+        return 1
+    from wikillm.eval.modelos import crear_redactor
+
+    datos = Path(args.datos)
+    carpeta = datos / "preguntas"
+    cliente = crear_redactor(Path("results/borradores") / f"llamadas_{args.autor}.jsonl")
+    redactor = os.environ.get("DRAFT_MODEL", "deepseek-v4-pro")
+    preguntas, citas, descartes = ejecutar(plan, manifest, datos / "gold", cliente, redactor)
+    escribir_jsonl(carpeta / f"borradores_{args.autor}.jsonl", preguntas)
+    escribir_jsonl(carpeta / "anotacion" / f"citas_{args.autor}.jsonl", citas)
+    escribir_hoja(carpeta / "anotacion" / f"hoja_{args.autor}.csv", preguntas, citas)
+    (carpeta / "anotacion" / f"descartes_{args.autor}.txt").write_text(
+        "\n".join(descartes) + "\n", encoding="utf-8"
+    )
+    print(
+        f"{len(preguntas)} borradores, {len(descartes)} descartes; "
+        f"gasto real {cliente.gasto_acumulado:.4f} USD"
+    )
+    return 0
+
+
 def main() -> int:
     analizador = argparse.ArgumentParser(description="Banco de preguntas y métricas de calidad.")
     ordenes = analizador.add_subparsers(dest="orden", required=True)
@@ -56,6 +107,12 @@ def main() -> int:
         if nombre == "metricas":
             sub.add_argument("--respuestas", required=True)
             sub.add_argument("--juez", action="store_true", help="capa 2 con Gemini (gasta)")
+    borradores = ordenes.add_parser("borradores", help="plan y redacción de borradores")
+    borradores.add_argument("--autor", required=True, choices=["A", "B"])
+    borradores.add_argument("--manifest", default=MANIFEST)
+    borradores.add_argument("--datos", default="data")
+    borradores.add_argument("--ejecutar", action="store_true", help="llamar al redactor (gasta)")
+    borradores.add_argument("--confirmo-usd", type=float, default=0.0, help="acepta gasto mayor")
     acuerdo = ordenes.add_parser("acuerdo")
     acuerdo.add_argument("--a", required=True)
     acuerdo.add_argument("--b", required=True)
@@ -67,6 +124,9 @@ def main() -> int:
         kappa = "n/d" if resultado.kappa is None else f"{resultado.kappa:.3f}"
         print(f"n={resultado.n} acuerdo={resultado.porcentaje:.1%} kappa={kappa}")
         return 0
+
+    if args.orden == "borradores":
+        return _borradores(args)
 
     banco = leer_banco(Path(args.banco))
     orden = _orden(args.manifest)

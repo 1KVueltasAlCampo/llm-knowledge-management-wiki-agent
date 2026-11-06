@@ -77,7 +77,15 @@ def validar_banco(preguntas: list[dict[str, Any]], orden: dict[str, int]) -> lis
             fuente = str(evidencia.get("span_id", "")).split("#")[0]
             if fuente not in fuentes:
                 problemas.append(f"{pid}: evidencia de {fuente} no está en fuentes_requeridas")
-        if p.get("tipo") != "T5":
+        if p.get("tipo") == "T4" and p.get("respuesta_por_paso"):
+            # T4: válida desde la fuente anterior; cambia al ingerir la posterior
+            esperado_min = min(orden[f] for f in fuentes)
+            if p.get("ingesta_minima") != esperado_min:
+                problemas.append(f"{pid}: T4 con ingesta_minima distinta de {esperado_min}")
+            ultimo = max(int(t["desde"]) for t in p["respuesta_por_paso"])
+            if ultimo != calcular_ingesta_minima(fuentes, orden):
+                problemas.append(f"{pid}: el último tramo de T4 no empieza en la fuente posterior")
+        elif p.get("tipo") != "T5":
             esperado = calcular_ingesta_minima(fuentes, orden)
             if esperado is None:
                 problemas.append(f"{pid}: una pregunta {p.get('tipo')} necesita fuentes")

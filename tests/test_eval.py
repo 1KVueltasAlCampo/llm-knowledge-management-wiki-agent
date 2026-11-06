@@ -229,3 +229,8 @@ def test_precios_del_redactor_usan_cota_superior_o_env(monkeypatch):
     assert precios_redactor(base) == pytest.approx((0.6, 0.012, 2.4))
     monkeypatch.setenv("DRAFT_PRICE_OUTPUT_USD_PER_M", "1.5")
     assert precios_redactor(base)[2] == 1.5
+
+
+def test_validar_banco_rechaza_claves_que_ya_estan_en_la_pregunta():
+    mala = _pregunta(texto="¿Qué supera a HippoRAG?", respuesta_clave=["hipporag"])
+    assert any("presente en la pregunta" in p for p in validar_banco([mala], ORDEN))

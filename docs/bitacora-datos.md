@@ -31,9 +31,26 @@ no lo reemplaza.
 **Propuesta escrita para Juan David:** `specs/propuesta-gold-v1.md` (versión en `sources`,
 `spans.jsonl`, campos nuevos del manifest).
 
+**Corpus cerrado (tarde del 6-nov).** 53 candidatos descargados a Bronze; 2604.11243 no
+tiene HTML. Se eligieron 50 con la regla reproducible (`docs/corpus.md` §5). El validador
+del Gold daba falsos positivos con marcadores como `<name>`; con la aprobación de Juan Diego se
+restringió a etiquetas HTML reales (commit con prueba). Se generaron
+`data/manifest_corpus.jsonl` (50 filas) y `data/gold/spans.jsonl` (8.387 fragmentos). Las
+métricas corren de punta a punta con un banco sintético (`results/sintetico/`).
+
+**Modelos confirmados por API (`GET /models`, 6-nov):** `deepseek-flash` y `deepseek-v4-pro`.
+
+**Plan de borradores (sin gastar):** autor A, 54 llamadas y ~1,75 M tokens de entrada; autor
+B, 42 llamadas y ~1,71 M. El costo depende de las tarifas de `deepseek-v4-pro`, que faltan en
+`.env`.
+
+**Preguntas en inglés**, el idioma del corpus, salvo que los autores decidan otra cosa.
+
 ## Pendiente
 
-- Juan Diego: crear `.env` con `DEEPSEEK_API_KEY` y `GEMINI_API_KEY`.
+- Juan Diego: completar `.env` con `GEMINI_API_KEY` y las tarifas `DRAFT_PRICE_*`
+  (`DEEPSEEK_API_KEY` ya está).
 - Juan Diego: añadir a `.env.example` (los permisos del asistente no le dejan editarlo):
   `DRAFT_MODEL=deepseek-v4-pro`, `GEMINI_API_KEY=`, `JUDGE_MODEL=gemini-3.8-flash`.
 - Juan David: revisar decisión 0003 y `specs/propuesta-gold-v1.md`.
+- Juan David: revisar el cambio del validador en `src/wikillm/ingest/gold.py` (`ETIQUETAS_HTML`).

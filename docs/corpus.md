@@ -63,6 +63,27 @@ fuente de preguntas T1. Las otras tres (2605.25480, 2605.18490, 2607.04576) son 
 sin contexto. Las preguntas que acierta así se reportan como contaminadas y se analizan
 aparte. Cuesta centavos (unos 60 × 200 tokens).
 
-## 5. Resultado
+## 5. Resultado (6-nov-2026)
 
-Se completa en la sección siguiente al cerrar la selección.
+Selección: `uv run python -m wikillm.corpus seleccionar` (regla en `src/wikillm/corpus/seleccion.py`).
+
+- **Candidatos descargados:** 53 (2 semillas anteriores al corte, 32 referencias de 2026 del `.bib`
+  y 19 preseleccionados por título de las búsquedas, `data/preseleccion_busqueda.txt`).
+- **Sin HTML:** 2604.11243 (*Knowledge Compounding*), con HTTP 404 en `/html/`. Queda excluido.
+- **Elegidos: 50** = 5 semillas + 30 referencias de 2026 del `.bib` + 15 de búsqueda.
+  Reservas, en orden: 2610.09348 y 2610.23313.
+- **Antes del corte:** solo las semillas 2405.14831 y 2502.14802 (`pre_corte=true`).
+- **Orden de las semillas:** HippoRAG en el paso 1, HippoRAG 2 en el 2, 2605.18490 en el 13,
+  2605.25480 en el 15 y 2607.04576 en el 24. Todas caen dentro de las primeras 30 ingestas,
+  que llegan hasta el 2-ago-2026.
+- **Mitades:** 25 y 25; en las primeras 30 ingestas, 15 y 15.
+- **Tamaño:** unos 1,08 M tokens en total. El más largo es 2610.04794 (~112 k tokens, 9.325
+  ecuaciones).
+- **Citas cruzadas:** 46 enlaces dentro del corpus; 28 papers citan a otro del corpus y 17 no
+  tienen ningún enlace (ni citan ni son citados). Los más citados: HippoRAG (15), 2605.06527
+  STALE (8) y HippoRAG 2 (7).
+- **Señales:** 22 con enlace a código y 19 con más de una versión. Ninguno tiene `journal_ref`
+  ni DOI en arXiv, así que `estado_publicacion` es `preprint` en todos. Es un límite de la
+  señal, no un hallazgo.
+- **Validación del Gold:** sin errores, después de corregir un falso positivo del validador:
+  los marcadores entre ángulos como `<name>` se contaban como HTML.

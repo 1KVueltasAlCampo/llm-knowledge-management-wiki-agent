@@ -94,6 +94,51 @@ def _borradores(args: argparse.Namespace) -> int:
     return 0
 
 
+def _borradores_t5(args: argparse.Namespace) -> int:
+    from wikillm.eval.modelos import crear_redactor, precios_redactor
+    from wikillm.eval.plan_borradores import escribir_hoja
+    from wikillm.eval.t5 import construir_mensajes, elegir_externos, interpretar
+    from wikillm.ingest.gold import aproximar_tokens, leer_gold
+
+    datos = Path(args.datos)
+    corpus = {f["arxiv_id"] for f in leer_jsonl(Path(args.manifest))}
+    semilla = 0 if args.autor == "A" else 1  # cada autor recibe resúmenes distintos
+    candidatos = leer_jsonl(Path(args.candidatos))
+    externos = elegir_externos(candidatos, corpus, 2 * args.n, semilla)
+    if args.autor == "B":
+        de_a = {c["arxiv_id"] for c in elegir_externos(candidatos, corpus, 2 * args.n, 0)}
+        externos = [c for c in externos if c["arxiv_id"] not in de_a]
+    mensajes = construir_mensajes(externos, args.n)
+    entrada = sum(aproximar_tokens(m["content"]) for m in mensajes)
+    salida = 150 * args.n
+    precio_entrada, _, precio_salida = precios_redactor()
+    costo = (entrada * precio_entrada + salida * precio_salida) / 1e6
+    print(f"{len(externos)} resúmenes externos, 1 llamada, ~{entrada:,} + {salida:,} tokens")
+    print(f"Costo estimado: {costo:.4f} USD (hora pico: hasta {2 * costo:.4f} USD)")
+    if not args.ejecutar:
+        return 0
+    cuerpos = [leer_gold(datos / "gold" / f"{i}.md")[1] for i in sorted(corpus)]
+    carpeta = datos / "preguntas"
+    cliente = crear_redactor(Path("results/borradores") / f"llamadas_{args.autor}_T5.jsonl")
+    respuesta = cliente.generar(mensajes, etiqueta=f"borrador_t5:{args.autor}")
+    redactor = os.environ.get("DRAFT_MODEL", "deepseek-v4-pro")
+    preguntas, citas, descartes = interpretar(
+        respuesta.texto, externos, cuerpos, args.autor, redactor, prefijo_id=f"{args.autor}T5"
+    )
+    escribir_jsonl(carpeta / f"borradores_{args.autor}_T5.jsonl", preguntas)
+    escribir_jsonl(carpeta / "anotacion" / f"citas_{args.autor}_T5.jsonl", citas)
+    escribir_hoja(carpeta / "anotacion" / f"hoja_{args.autor}_T5.csv", preguntas, citas)
+    (carpeta / "anotacion" / f"descartes_{args.autor}_T5.txt").write_text(
+        "\n".join(descartes) + "\n", encoding="utf-8"
+    )
+    print(
+        f"{len(preguntas)} borradores T5, {len(descartes)} descartes; gasto {respuesta.usd:.4f} USD"
+    )
+    for d in descartes:
+        print("  descarte:", d)
+    return 0
+
+
 def _libro_cerrado(args: argparse.Namespace) -> int:
     from wikillm.common.config import load_settings
     from wikillm.common.modelo import ClienteModelo
@@ -134,6 +179,13 @@ def main() -> int:
     borradores.add_argument("--datos", default="data")
     borradores.add_argument("--ejecutar", action="store_true", help="llamar al redactor (gasta)")
     borradores.add_argument("--confirmo-usd", type=float, default=0.0, help="acepta gasto mayor")
+    t5 = ordenes.add_parser("borradores-t5", help="preguntas no respondibles (T5)")
+    t5.add_argument("--autor", required=True, choices=["A", "B"])
+    t5.add_argument("--n", type=int, default=12, help="preguntas pedidas")
+    t5.add_argument("--candidatos", default="data/raw/api/candidatos.jsonl")
+    t5.add_argument("--manifest", default=MANIFEST)
+    t5.add_argument("--datos", default="data")
+    t5.add_argument("--ejecutar", action="store_true")
     cerrado = ordenes.add_parser("libro-cerrado", help="control de contaminación (gasta)")
     cerrado.add_argument("--banco", default=BANCO)
     cerrado.add_argument("--paso", type=int, default=50, help="paso en que todo es respondible")
@@ -153,6 +205,8 @@ def main() -> int:
 
     if args.orden == "borradores":
         return _borradores(args)
+    if args.orden == "borradores-t5":
+        return _borradores_t5(args)
     if args.orden == "libro-cerrado":
         return _libro_cerrado(args)
 

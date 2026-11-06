@@ -1,9 +1,52 @@
-# Mini-corpus de 5 papers (memoria de agentes, RAG y wikis de LLM).
+# Corpus de 50 papers. Generado con `uv run python -m wikillm.corpus seleccionar`; criterios en docs/corpus.md.
 # Un identificador de arXiv por línea. Las líneas que empiezan con # se ignoran.
-# Cadena 1: HippoRAG -> HippoRAG 2 -> LLM-Wiki (que lo supera en sus experimentos)
-2405.14831  # HippoRAG: Neurobiologically Inspired Long-Term Memory for LLMs (2024)
-2502.14802  # From RAG to Memory: Non-Parametric Continual Learning for LLMs (HippoRAG 2, 2025)
-2605.25480  # Retrieval as Reasoning: Self-Evolving Agent-Native Retrieval via LLM-Wiki (2026)
-# Cadena 2: wiki frente a RAG -> el seguimiento que matiza su costo
-2605.18490  # Single-Round Vector RAG vs an LLM-Compiled Wiki (2026)
-2607.04576  # Progressive Disclosure for LLM-Maintained Wiki Knowledge Bases (2026)
+2405.14831  # 2024-05-23 HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models
+2502.14802  # 2025-02-20 From RAG to Memory: Non-Parametric Continual Learning for Large Language Models
+2602.06052  # 2026-01-14 A Survey of Agent Memory in the Second Half: Towards Self-Evolving and Long-Hori
+2603.02473  # 2026-03-02 Diagnosing Retrieval vs. Utilization Bottlenecks in LLM Agent Memory
+2603.11768  # 2026-03-12 Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the Stability an
+2603.23848  # 2026-03-25 BeliefShift: Benchmarking Temporal Belief Consistency and Opinion Drift in LLM A
+2604.11364  # 2026-04-13 The Missing Knowledge Layer in Cognitive Architectures for AI Agents
+2604.12034  # 2026-04-13 Memory as Metabolism: A Design for Companion Knowledge Systems
+2605.06527  # 2026-05-07 STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?
+2605.07068  # 2026-05-08 WiCER: Wiki-memory Compile, Evaluate, Refine Iterative Knowledge Compilation for
+2605.10488  # 2026-05-11 DeepRefine: Agentic Knowledge Refinement via Reinforcement Learning
+2605.17596  # 2026-05-17 NeuSymMS: A Hybrid Neuro-Symbolic Memory System for Persistent, Self-Curating LL
+2605.18490  # 2026-05-18 Single-Round Vector RAG vs an LLM-Compiled Wiki: A Preregistered Comparison on a
+2605.20926  # 2026-05-20 MemConflict: Evaluating Long-Term Memory Systems Under Memory Conflicts
+2605.25480  # 2026-05-25 Retrieval as Reasoning: Self-Evolving Agent-Native Retrieval via LLM-Wiki
+2607.24759  # 2026-05-29 Beyond Memory: A Templated Substrate for Heterogeneous Collaborative Knowledge W
+2606.09877  # 2026-06-03 Streaming Knowledge Compilation: Proactive Materiality-Scored Pinning for Time-E
+2606.06240  # 2026-06-04 TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in LLM-Agent Pe
+2606.09090  # 2026-06-08 Context Rot in AI-Assisted Software Development: Repurposing Documentation Consi
+2606.22528  # 2026-06-21 Governance Decay: How Context Compaction Silently Erases Safety Constraints in L
+2606.25656  # 2026-06-24 Is GraphRAG Needed? From Basic RAG to Graph-/Agentic Solutions with Context Opti
+2606.26511  # 2026-06-25 Temporal Validity in Retrieval Memory: Eliminating Stale-Fact Errors for AI Agen
+2607.02609  # 2026-07-01 Knowledge-Centric Information Systems
+2607.04576  # 2026-07-06 Progressive Disclosure for LLM-Maintained Wiki Knowledge Bases: a Preregistered 
+2607.12893  # 2026-07-14 MemOps: Benchmarking Lifecycle Memory Operations in Long-Horizon Conversations
+2609.05441  # 2026-07-26 When Does Memory Help? A Cost-Aware Evaluation of Long-Term Memory in Tool-Using
+2607.26604  # 2026-07-29 WikiLoop: Jointly Learning to Build and Navigate Agent-Native Wikis with Downstr
+2607.26637  # 2026-07-29 Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainabil
+2607.27773  # 2026-07-30 ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent 
+2608.00967  # 2026-08-02 TrajWiki: Source-Grounded Memory Trajectories for Long-Horizon Dialogue Agents
+2608.07429  # 2026-08-07 TEPA: Revoking Stale Memories for Conflict-Robust Language Agents
+2608.08995  # 2026-08-10 Muscle Memory for Agents: Compile not Merely Retrieve
+2608.10502  # 2026-08-11 From Faulty Memories to Corrected Actions: Dependency-Guided Rollback Repair for
+2608.12888  # 2026-08-13 When Your Agent Opens the Chat App: Agent-Controlled Search over Raw Chat Logs R
+2608.13883  # 2026-08-14 MemoryLake on MemoryArena: A Matched Study of Agent Memory Backends
+2608.15008  # 2026-08-15 Harness the Memory: A Holistic Evaluation of Memory Substrates in Memory Agents
+2608.29606  # 2026-08-30 Agent Zero Memory: Provenance-Aware Long-Term Memory for LLM Agents
+2608.29612  # 2026-08-30 LLMs Interpret, Embeddings Organize, Graphs Emerge: Agent-Driven Compilation of 
+2609.01852  # 2026-09-01 The Memory Trust Gap: Capability-Dependent Failures in Persistent-Memory Agents
+2609.16073  # 2026-09-13 The Immutable Past: Formalizing State Mutability and Conflict Resolution in Muta
+2609.18182  # 2026-09-16 WFM: Wiki Foundation Model for Complex Agentic Reasoning
+2609.24971  # 2026-09-21 DolphinBench: Mapping the Pareto Frontier of Agent Memory
+2609.25303  # 2026-09-21 Potential for Enhanced Learning in Machine Learning Classes by Using Wiki LLM In
+2610.02472  # 2026-10-01 APDMem: Agent-Controlled Progressive Disclosure for Query-Adaptive Long-Term Mem
+2610.03902  # 2026-10-02 When Evidence Changes: Evaluating Memory Repair and Re-reading in Language-Model
+2610.04794  # 2026-10-03 Knowing the Store: What a Memory Backend Must Write Down Before an Agent Can Rea
+2610.05732  # 2026-10-05 PACMI: Provenance-Aware Cascading Memory Invalidation for Long-Term LLM Agents
+2610.22209  # 2026-10-15 Beyond Downstream QA: Rethinking How We Evaluate Agent Memory
+2610.30755  # 2026-10-22 Is Complex Agentic Memory Always Needed? Naive RAG Is Stronger Than We Thought
+2611.02361  # 2026-11-02 Agent Memory as Rate-Limited Filtering: Explicit State Outlasts Long Context Bey

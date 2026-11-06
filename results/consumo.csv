@@ -1,0 +1,2 @@
+fecha,corrida,modelo,llamadas,tokens_entrada_sin_cache,tokens_entrada_cache,tokens_salida,usd_estimado,base_tarifa,hora_pico
+2026-11-06,borradores_A,deepseek-v4-pro,54,1289735,445440,31181,0.854,cota superior 4x Flash (tarifa de deepseek-v4-pro no verificada),False

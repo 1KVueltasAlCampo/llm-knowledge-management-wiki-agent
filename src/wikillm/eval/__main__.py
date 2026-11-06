@@ -94,6 +94,28 @@ def _borradores(args: argparse.Namespace) -> int:
     return 0
 
 
+def _revision(args: argparse.Namespace) -> int:
+    from wikillm.eval.revision import escribir_html, preparar_items
+
+    carpeta = Path(args.datos) / "preguntas"
+    preguntas: list[dict[str, Any]] = []
+    citas: list[dict[str, Any]] = []
+    for sufijo in ("", "_T5"):
+        banco = carpeta / f"borradores_{args.autor}{sufijo}.jsonl"
+        if banco.exists():
+            preguntas += leer_jsonl(banco)
+        archivo_citas = carpeta / "anotacion" / f"citas_{args.autor}{sufijo}.jsonl"
+        if archivo_citas.exists():
+            citas += leer_jsonl(archivo_citas)
+    items = preparar_items(preguntas, citas, leer_jsonl(Path(args.manifest)))
+    destino = carpeta / "anotacion" / f"revision_{args.autor}.html"
+    escribir_html(destino, items, args.autor)
+    sin_cita = sum(1 for i in items if not i["evidencias"])
+    print(f"{len(items)} preguntas en {destino} ({sin_cita} sin cita local)")
+    print(f"Ábrela con: xdg-open {destino}")
+    return 0
+
+
 def _borradores_t5(args: argparse.Namespace) -> int:
     from wikillm.eval.modelos import crear_redactor, precios_redactor
     from wikillm.eval.plan_borradores import escribir_hoja
@@ -186,6 +208,10 @@ def main() -> int:
     t5.add_argument("--manifest", default=MANIFEST)
     t5.add_argument("--datos", default="data")
     t5.add_argument("--ejecutar", action="store_true")
+    revision = ordenes.add_parser("revision", help="página HTML local para revisar borradores")
+    revision.add_argument("--autor", required=True, choices=["A", "B"])
+    revision.add_argument("--manifest", default=MANIFEST)
+    revision.add_argument("--datos", default="data")
     cerrado = ordenes.add_parser("libro-cerrado", help="control de contaminación (gasta)")
     cerrado.add_argument("--banco", default=BANCO)
     cerrado.add_argument("--paso", type=int, default=50, help="paso en que todo es respondible")
@@ -205,6 +231,8 @@ def main() -> int:
 
     if args.orden == "borradores":
         return _borradores(args)
+    if args.orden == "revision":
+        return _revision(args)
     if args.orden == "borradores-t5":
         return _borradores_t5(args)
     if args.orden == "libro-cerrado":

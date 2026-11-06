@@ -19,7 +19,7 @@
 ## 4. Métricas (G6)
 
 - [x] 4.1 Contrato `specs/contrato-resultados.md` y módulo `wikillm.eval` (capa 1, juez, fundamentación, cobertura, acuerdo). Verificación: `tests/test_eval.py`.
-- [x] 4.2 Corrida de métricas sobre resultados sintéticos con el banco real. Verificación: `results/sintetico/metricas_por_paso.csv`.
+- [x] 4.2 Corrida de métricas sobre resultados sintéticos con un banco sintético de 3 preguntas (el banco real aún no existe). Verificación: `results/sintetico/metricas_por_paso.csv`.
 
 ## 5. Banco de preguntas (G5)
 

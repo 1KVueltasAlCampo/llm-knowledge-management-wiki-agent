@@ -15,13 +15,16 @@ from typing import Any
 import openai
 from dotenv import load_dotenv
 
-from wikillm.common.config import load_settings
+from wikillm.common.config import Settings, load_settings
 from wikillm.common.modelo import ClienteModelo, ErrorDeModelo
 
 URL_GEMINI_OPENAI = "https://generativelanguage.googleapis.com/v1beta/openai/"
 # Tarifas de gemini-3.8-flash, USD por millón, vigentes hasta el 31-dic-2026.
 # Fuente: https://aistudio.google.com/docs/pricing (consultado el 6-nov-2026).
 PRECIOS_JUEZ_POR_DEFECTO = (0.75, 0.75, 3.75)
+# deepseek-v4-pro no tiene tarifa verificada. Cota superior: 4 veces las tarifas de Flash
+# (decisión 0001 y .env.example: "3-4 veces más caro"; Flash verificado el 4-nov-2026).
+FACTOR_PRO_SOBRE_FLASH = 4.0
 
 
 class _SinExtraBody:
@@ -37,25 +40,42 @@ class _SinExtraBody:
         return self._cliente.chat.completions.create(**argumentos)
 
 
-def _precio(nombre: str, por_defecto: float | None) -> float:
+def _precio(nombre: str, por_defecto: float) -> float:
     valor = os.environ.get(nombre, "")
-    if valor:
-        return float(valor)
-    if por_defecto is None:
-        raise ErrorDeModelo(f"Falta {nombre} en .env: no se estima costo con tarifas inventadas")
-    return por_defecto
+    return float(valor) if valor else por_defecto
+
+
+def precios_redactor(base: Settings | None = None) -> tuple[float, float, float]:
+    """(entrada sin caché, entrada con caché, salida) en USD por millón.
+
+    Usa las tarifas de .env si existen; si no, la cota superior de 4 veces Flash.
+    """
+    load_dotenv()
+    base = base or load_settings()
+    return (
+        _precio(
+            "DRAFT_PRICE_INPUT_CACHE_MISS_USD_PER_M",
+            base.price_input_cache_miss * FACTOR_PRO_SOBRE_FLASH,
+        ),
+        _precio(
+            "DRAFT_PRICE_INPUT_CACHE_HIT_USD_PER_M",
+            base.price_input_cache_hit * FACTOR_PRO_SOBRE_FLASH,
+        ),
+        _precio("DRAFT_PRICE_OUTPUT_USD_PER_M", base.price_output * FACTOR_PRO_SOBRE_FLASH),
+    )
 
 
 def crear_redactor(ruta_registro: Path | str, cliente: Any = None) -> ClienteModelo:
-    """`deepseek-v4-pro` (o DRAFT_MODEL). Exige sus tarifas en .env: no están verificadas."""
+    """`deepseek-v4-pro` (o DRAFT_MODEL), con tarifas de .env o la cota superior."""
     load_dotenv()
     base = load_settings()
+    entrada, cache, salida = precios_redactor(base)
     ajustes = replace(
         base,
         model=os.environ.get("DRAFT_MODEL", "deepseek-v4-pro"),
-        price_input_cache_miss=_precio("DRAFT_PRICE_INPUT_CACHE_MISS_USD_PER_M", None),
-        price_input_cache_hit=_precio("DRAFT_PRICE_INPUT_CACHE_HIT_USD_PER_M", None),
-        price_output=_precio("DRAFT_PRICE_OUTPUT_USD_PER_M", None),
+        price_input_cache_miss=entrada,
+        price_input_cache_hit=cache,
+        price_output=salida,
     )
     return ClienteModelo(ajustes, ruta_registro=ruta_registro, cliente=cliente)
 

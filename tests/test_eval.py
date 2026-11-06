@@ -208,3 +208,24 @@ def test_libro_cerrado_produce_el_contrato_y_detecta_abstencion():
     assert len(filas) == 1  # T5 no aplica
     assert filas[0]["abstained"] is True
     assert all(c in filas[0] for c in OBLIGATORIOS_RESULTADO)
+
+
+def test_precios_del_redactor_usan_cota_superior_o_env(monkeypatch):
+    from dataclasses import replace as reemplazar
+
+    from wikillm.common.config import load_settings
+    from wikillm.eval.modelos import precios_redactor
+
+    for nombre in (
+        "DRAFT_PRICE_INPUT_CACHE_MISS_USD_PER_M",
+        "DRAFT_PRICE_INPUT_CACHE_HIT_USD_PER_M",
+        "DRAFT_PRICE_OUTPUT_USD_PER_M",
+    ):
+        monkeypatch.delenv(nombre, raising=False)
+    monkeypatch.setattr("wikillm.eval.modelos.load_dotenv", lambda: None)
+    base = reemplazar(
+        load_settings(), price_input_cache_miss=0.15, price_input_cache_hit=0.003, price_output=0.6
+    )
+    assert precios_redactor(base) == pytest.approx((0.6, 0.012, 2.4))
+    monkeypatch.setenv("DRAFT_PRICE_OUTPUT_USD_PER_M", "1.5")
+    assert precios_redactor(base)[2] == 1.5

@@ -7,12 +7,12 @@ estimación quede por debajo del tope o una confirmación explícita.
 from __future__ import annotations
 
 import csv
-import os
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from wikillm.common.modelo import TopeDeGastoError
 from wikillm.eval.redaccion import Fuente, construir_mensajes, interpretar
 from wikillm.ingest.gold import leer_gold
 
@@ -78,14 +78,6 @@ def planear(manifest: list[dict[str, Any]], autor: str, por_par: int = 1) -> Pla
     return plan
 
 
-def precios_redactor() -> tuple[float, float] | None:
-    entrada = os.environ.get("DRAFT_PRICE_INPUT_CACHE_MISS_USD_PER_M", "")
-    salida = os.environ.get("DRAFT_PRICE_OUTPUT_USD_PER_M", "")
-    if not entrada or not salida:
-        return None
-    return float(entrada), float(salida)
-
-
 def ejecutar(
     plan: Plan,
     manifest: list[dict[str, Any]],
@@ -106,7 +98,13 @@ def ejecutar(
                 Fuente(arxiv_id, por_id[arxiv_id]["orden_ingesta"], cuerpo, encabezado["version"])
             )
         mensajes = construir_mensajes(fuentes, tarea.pedidos)
-        respuesta = cliente.generar(mensajes, etiqueta=f"borrador:{tarea.etiqueta}")
+        try:
+            respuesta = cliente.generar(mensajes, etiqueta=f"borrador:{tarea.etiqueta}")
+        except TopeDeGastoError as error:
+            # Se conserva lo ya redactado; las tareas restantes quedan para otra corrida.
+            descartes.append(f"corrida detenida en la tarea {numero}: {error}")
+            avisar(f"Tope de gasto alcanzado en la tarea {numero}: se guarda lo redactado")
+            break
         nuevas, literales, rechazos = interpretar(
             respuesta.texto,
             set(tarea.pedidos),

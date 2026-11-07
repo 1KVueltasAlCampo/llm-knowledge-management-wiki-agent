@@ -24,8 +24,8 @@
 ## 5. Banco de preguntas (G5)
 
 - [x] 5.1 Redactor anclado al Gold, plan con estimación y hojas de anotación. Verificación: `tests/test_eval_redaccion.py`.
-- [ ] 5.2 Borradores de la mitad A (requiere `.env` con claves y tarifas `DRAFT_PRICE_*`). Verificación: `data/preguntas/borradores_A.jsonl` y `validar-banco` sin problemas.
-- [ ] 5.3 Verificación humana y acuerdo (Juan Diego y Juan David). Verificación: `acuerdo` sobre las dos hojas.
+- [x] 5.2 Borradores de la mitad A. Verificación: 102 borradores T1–T4 y 12 T5, `validar-banco` sin problemas de formato (18 avisos de claves corregidos en la revisión).
+- [ ] 5.3 Verificación humana y acuerdo. Hecho: mitad A verificada por Juan Diego (`banco_A.jsonl`, 30 preguntas). Falta: la verificación de Juan David sobre las mismas preguntas, `acuerdo` y la mitad B.
 
 ## 6. Cierre
 

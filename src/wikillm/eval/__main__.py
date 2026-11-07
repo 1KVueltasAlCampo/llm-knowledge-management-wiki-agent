@@ -94,6 +94,51 @@ def _borradores(args: argparse.Namespace) -> int:
     return 0
 
 
+def _aplicar_revision(args: argparse.Namespace) -> int:
+    from collections import Counter
+
+    from wikillm.eval.aplicar_revision import aplicar
+
+    carpeta = Path(args.datos) / "preguntas"
+    borradores: list[dict[str, Any]] = []
+    for sufijo in ("", "_T5"):
+        ruta = carpeta / f"borradores_{args.autor}{sufijo}.jsonl"
+        if ruta.exists():
+            borradores += leer_jsonl(ruta)
+    revision = json.loads(
+        (carpeta / f"revision_{args.autor}_por_{args.autor}.json").read_text(encoding="utf-8")
+    )
+    ajustes_ruta = carpeta / f"ajustes_{args.autor}.json"
+    ajustes = (
+        json.loads(ajustes_ruta.read_text(encoding="utf-8"))
+        if ajustes_ruta.exists()
+        else {"autor": args.autor, "revisor": "", "fecha": "", "ajustes": []}
+    )
+    orden = _orden(args.manifest)
+    banco = aplicar(borradores, revision, ajustes, orden, _spans(args.spans))
+    problemas = validar_banco(banco, orden)
+    for problema in problemas:
+        print(problema)
+    if problemas:
+        return 1
+    escribir_jsonl(carpeta / f"banco_{args.autor}.jsonl", banco)
+    completo = []
+    for parte in ("A", "B"):
+        ruta = carpeta / f"banco_{parte}.jsonl"
+        if ruta.exists():
+            completo += leer_jsonl(ruta)
+    escribir_jsonl(carpeta / "banco.jsonl", completo)
+    tipos = Counter(p["tipo"] for p in banco)
+    prefijo = sum(
+        1 for p in banco if p["tipo"] != "T5" and p["ingesta_minima"] and p["ingesta_minima"] <= 30
+    )
+    print(
+        f"banco_{args.autor}: {len(banco)} preguntas {dict(sorted(tipos.items()))}; "
+        f"T1–T4 con ingesta ≤ 30: {prefijo}; banco.jsonl: {len(completo)}"
+    )
+    return 0
+
+
 def _revision(args: argparse.Namespace) -> int:
     from wikillm.eval.revision import escribir_html, preparar_items
 
@@ -212,6 +257,11 @@ def main() -> int:
     revision.add_argument("--autor", required=True, choices=["A", "B"])
     revision.add_argument("--manifest", default=MANIFEST)
     revision.add_argument("--datos", default="data")
+    aplicar = ordenes.add_parser("aplicar-revision", help="pasa al banco lo revisado")
+    aplicar.add_argument("--autor", required=True, choices=["A", "B"])
+    aplicar.add_argument("--manifest", default=MANIFEST)
+    aplicar.add_argument("--spans", default=SPANS)
+    aplicar.add_argument("--datos", default="data")
     cerrado = ordenes.add_parser("libro-cerrado", help="control de contaminación (gasta)")
     cerrado.add_argument("--banco", default=BANCO)
     cerrado.add_argument("--paso", type=int, default=50, help="paso en que todo es respondible")
@@ -231,6 +281,8 @@ def main() -> int:
 
     if args.orden == "borradores":
         return _borradores(args)
+    if args.orden == "aplicar-revision":
+        return _aplicar_revision(args)
     if args.orden == "revision":
         return _revision(args)
     if args.orden == "borradores-t5":

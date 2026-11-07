@@ -1,0 +1,158 @@
+{
+ "autor": "A",
+ "revisor": "Juan David Cruz García",
+ "fecha": "2026-11-07",
+ "procedencia": "Revisión de Juan David Cruz García sobre las 30 preguntas de banco_A.jsonl, verificada el 7-nov-2026. Se mezcla con ajustes_A.json: para una misma pregunta, los campos de este archivo sustituyen a los de ese; A013-T3-02 conserva la acción «agregar».",
+ "ajustes": [
+  {
+   "question_id": "A003-T2-01",
+   "accion": "corregir",
+   "respuesta": "Both treat the graph as a structured memory: HippoRAG turns the corpus into a schemaless knowledge graph that acts as its hippocampal index and runs Personalized PageRank (PPR) over it, while the survey classifies graph-based memory as one kind of structural store.",
+   "motivo": "La respuesta guardada era una nota del revisor (campo de respuesta corregida), no una respuesta."
+  },
+  {
+   "question_id": "A003-T3-02",
+   "accion": "corregir",
+   "claves": [
+    "20.9",
+    "89.1",
+    "68.2"
+   ],
+   "motivo": "La clave 20.9 es una resta; se añaden las dos cifras de la tabla para que una respuesta correcta con otra redacción también cumpla."
+  },
+  {
+   "question_id": "A005-T3-02",
+   "accion": "descartar",
+   "motivo": "Compara un método con resultados y un framework conceptual sin ellos; la respuesta depende de una afirmación negativa que no se puede comprobar con un pasaje. La cifra de HippoRAG ya está cubierta por otras T1."
+  },
+  {
+   "question_id": "A008-T2-01",
+   "accion": "corregir",
+   "pregunta": "How does CUPMem handle older memories when new evidence arrives?",
+   "respuesta": "CUPMem treats new evidence as a potential state update and decides at write time, before query time, whether older memories remain usable, should be revised, or should be blocked, marking them STALE or UNKNOWN_CURRENT.",
+   "claves": [
+    "STALE",
+    "before query time"
+   ],
+   "tipo": "T1",
+   "fuentes_requeridas": [
+    "2605.06527"
+   ],
+   "evidencia_quitar": [
+    "2502.14802#s1.p1"
+   ],
+   "motivo": "El lado de HippoRAG 2 era una afirmación negativa sin respaldo en el pasaje. Se reduce a una pregunta sobre STALE (misma ingesta mínima)."
+  },
+  {
+   "question_id": "A013-T3-02",
+   "accion": "agregar",
+   "respuesta": "WiCER reports that full-context KV-cache inference over a compiled wiki beats RAG on curated knowledge (4.38 vs 4.08 of 5) but degrades below RAG at larger scale, whereas the single-round study finds that its tool-browsing wiki organizes multi-paper evidence better than single-round RAG at about 21 times the per-query LLM-token use. The latter paper says the results are not directly contradictory because the operating points differ (corpus, task, generator, retrieval baseline, scale, metrics) and singles out serving strategy (a cached context window versus a tool-using agent that pays for its own traversal) as an especially salient difference, though it cannot isolate that factor.",
+   "claves": [
+    "4.38",
+    "serving strategy"
+   ],
+   "evidencia_agregar": [
+    "2605.18490#s8.p1"
+   ],
+   "motivo": "La explicación del desacuerdo sí está en el Gold, pero en 2605.18490#s8.p1, que la pregunta no citaba. Se añade esa evidencia y se cambia la clave débil '21' por 'serving strategy'."
+  },
+  {
+   "question_id": "A016-T3-02",
+   "accion": "corregir",
+   "claves": [
+    "0.739",
+    "0.624"
+   ],
+   "motivo": "La clave 11.5 es una resta que no aparece en la tabla; se usan las dos cifras reales."
+  },
+  {
+   "question_id": "A018-T3-02",
+   "accion": "corregir",
+   "pregunta": "Which evaluation approach does the Streaming Knowledge Compilation paper say is confounded for post-training facts, and what metric does it propose instead for compiled knowledge systems?",
+   "respuesta": "It says LLM-as-judge evaluation is confounded on post-training facts, because the judge rates surface fluency rather than factual accuracy, and it proposes regret analysis on matched pairs as the reliable metric.",
+   "claves": [
+    "LLM-as-judge",
+    "regret analysis",
+    "matched pairs"
+   ],
+   "tipo": "T1",
+   "fuentes_requeridas": [
+    "2606.09877"
+   ],
+   "evidencia_quitar": [
+    "2605.07068#s22.p1"
+   ],
+   "motivo": "El paper posterior critica el LLM-as-judge en general y no menciona a WiCER; atribuírselo era una inferencia. Se reformula sobre lo que sí dice."
+  },
+  {
+   "question_id": "A018-T4-03",
+   "accion": "corregir",
+   "pregunta": "What share of the quality lost by blind compilation does WiCER recover on average across its 17 topics, and what cumulative regret does Online WiCER reach over 173 matched finance pairs?",
+   "respuesta": "WiCER recovers 80% of the quality lost by blind compilation across its 17 topics, and Online WiCER reaches a cumulative regret of -20.0 over the 173 matched finance pairs.",
+   "motivo": "El 80% de WiCER es un promedio de sus 17 temas, no un dato de finanzas; la pregunta lo mezclaba con el dominio del otro paper."
+  },
+  {
+   "question_id": "A044-T3-02",
+   "accion": "corregir",
+   "tipo": "T1",
+   "fuentes_requeridas": [
+    "2608.07429"
+   ],
+   "evidencia_quitar": [
+    "2610.03902#s6.p1"
+   ],
+   "motivo": "Se contesta solo con el paper de TEPA (ingesta 31). La segunda evidencia era de trabajos relacionados y subía la ingesta mínima a 45."
+  },
+  {
+   "question_id": "A053-T2-01",
+   "accion": "corregir",
+   "claves": [
+    "keyword",
+    "cross-encoder"
+   ],
+   "evidencia_agregar": [
+    "2610.30755#s6.p3"
+   ],
+   "motivo": "La respuesta cita el reordenamiento con cross-encoder, que está en 2610.30755#s6.p3 y no estaba entre las evidencias; las claves eran frases parafraseadas."
+  },
+  {
+   "question_id": "A054-T2-01",
+   "accion": "corregir",
+   "claves": [
+    "timeline",
+    "reader"
+   ],
+   "motivo": "Las claves eran frases parafraseadas que no aparecen en los pasajes; se usan términos literales."
+  },
+  {
+   "question_id": "AT5-T5-07",
+   "accion": "corregir",
+   "respuesta": "The ingested corpus does not contain this information.",
+   "motivo": "En una T5 la respuesta de referencia es la frase de abstención exacta (decisión 0004)."
+  },
+  {
+   "question_id": "AT5-T5-09",
+   "accion": "corregir",
+   "respuesta": "The ingested corpus does not contain this information.",
+   "motivo": "En una T5 la respuesta de referencia es la frase de abstención exacta (decisión 0004)."
+  },
+  {
+   "question_id": "AT5-T5-10",
+   "accion": "corregir",
+   "respuesta": "The ingested corpus does not contain this information.",
+   "motivo": "En una T5 la respuesta de referencia es la frase de abstención exacta (decisión 0004)."
+  },
+  {
+   "question_id": "AT5-T5-11",
+   "accion": "corregir",
+   "respuesta": "The ingested corpus does not contain this information.",
+   "motivo": "En una T5 la respuesta de referencia es la frase de abstención exacta (decisión 0004)."
+  },
+  {
+   "question_id": "AT5-T5-12",
+   "accion": "corregir",
+   "respuesta": "The ingested corpus does not contain this information.",
+   "motivo": "En una T5 la respuesta de referencia es la frase de abstención exacta (decisión 0004)."
+  }
+ ]
+}

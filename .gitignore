@@ -38,3 +38,6 @@ results/**/llamadas*.jsonl
 
 # Hojas de anotación y citas literales: contienen texto de arXiv
 data/preguntas/anotacion/
+
+# Wikis generados por el brazo WikiLLM: texto derivado de arXiv, con su propio Git
+data/wiki/

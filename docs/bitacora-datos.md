@@ -46,6 +46,25 @@ B, 42 llamadas y ~1,71 M. El costo depende de las tarifas de `deepseek-v4-pro`, 
 
 **Preguntas en inglés**, el idioma del corpus, salvo que los autores decidan otra cosa.
 
+**Banco de la mitad A cerrado (noche del 6-nov).** Juan Diego revisó 33 borradores en la
+página local (`wikillm.eval revision`) y eligió 31. En una revisión asistida se acordaron 17
+ajustes, registrados con su motivo en `data/preguntas/ajustes_A.json`:
+- 4 descartes: una contradicción elegida/descartada y tres preguntas sin respuesta única o mal
+  planteadas.
+- Correcciones de respuestas imprecisas y de claves que ya estaban en la pregunta.
+- 2 reclasificaciones: A016-T3-02 pasa a T1 y A018-T4-03 a T2.
+- 3 reemplazos (A039-T4-03, A016-T4-03 y A013-T3-02), con las cifras verificadas en el Gold.
+- Las T5 se aceptan: abstenerse es lo correcto por diseño.
+
+Resultado: `data/preguntas/banco_A.jsonl` con 30 preguntas en `verificado_a` (10 T1, 7 T2,
+6 T3, 2 T4 y 5 T5; 21 de T1–T4 con ingesta ≤ 30). Las decisiones originales del revisor
+están en `data/preguntas/revision_A_por_A.json`.
+
+**Hallazgo sobre las T4:** el redactor escribía "According to the later paper…", y así la
+pregunta no tiene respuesta antes de esa ingesta. Las T4 se redactan en forma neutral ("…has
+been reported…; give the most recent report") para que la respuesta cambie de un tramo al
+otro.
+
 ## Pendiente
 
 - Juan Diego: completar `.env` con `GEMINI_API_KEY` y las tarifas `DRAFT_PRICE_*`
@@ -56,6 +75,8 @@ B, 42 llamadas y ~1,71 M. El costo depende de las tarifas de `deepseek-v4-pro`, 
 - Juan David: revisar el cambio del validador en `src/wikillm/ingest/gold.py` (`ETIQUETAS_HTML`).
 - Juan David: revisar `AGENTS.md` (guía única para agentes), el `CLAUDE.md` reducido y las reglas
   11–13 propuestas en `CONSTITUTION.md`.
+- Juan David: verificar las mismas 30 preguntas de la mitad A con la página (revisor B) para
+  calcular el acuerdo, y redactar y revisar su mitad (B).
 
 ## 2026-11-06 (Juan David): T4 neutras y medida de respuesta obsoleta
 

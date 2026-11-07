@@ -73,27 +73,44 @@ def test_interpretar_acepta_solo_evidencia_literal_y_marca_borrador():
     assert validar_banco(preguntas, {"2601.1": 1}) == []
 
 
+T4 = {
+    "type": "T4",
+    "question": "What is the best reported wiki accuracy?",
+    "answer": "0.80",
+    "answer_keys": ["0.80"],
+    "answer_before": "0.71",
+    "answer_before_keys": ["0.71"],
+    "evidence": [
+        {"arxiv_id": "2601.1", "evidence_quote": "accuracy of 0.71 on the benchmark"},
+        {"arxiv_id": "2602.1", "evidence_quote": "the wiki accuracy rises to 0.80"},
+    ],
+}
+
+
 def test_t4_queda_con_respuesta_por_paso_valida():
-    t4 = {
-        "type": "T4",
-        "question": "What is the best reported wiki accuracy?",
-        "answer": "0.80",
-        "answer_before": "0.71",
-        "answer_keys": ["0.80"],
-        "evidence": [
-            {"arxiv_id": "2601.1", "evidence_quote": "accuracy of 0.71 on the benchmark"},
-            {"arxiv_id": "2602.1", "evidence_quote": "the wiki accuracy rises to 0.80"},
-        ],
-    }
-    una_fuente = {**t4, "evidence": t4["evidence"][:1]}
+    una_fuente = {**T4, "evidence": T4["evidence"][:1]}
     preguntas, _, descartes = interpretar(
-        _salida(t4, una_fuente), {"T4"}, [F1, F2], "B", "r", "B001"
+        _salida(T4, una_fuente), {"T4"}, [F1, F2], "B", "r", "B001"
     )
     assert len(preguntas) == 1 and len(descartes) == 1
     p = preguntas[0]
     assert p["ingesta_minima"] == 1
+    assert p["respuesta_clave"] == ["0.71"]  # las claves previas ya no se borran
     assert p["respuesta_por_paso"][0]["desde"] == 2
+    assert p["respuesta_por_paso"][0]["respuesta_clave"] == ["0.80"]
     assert validar_banco(preguntas, {"2601.1": 1, "2602.1": 2}) == []
+
+
+def test_t4_se_descarta_si_menciona_el_orden_o_le_faltan_las_claves_previas():
+    con_orden = {**T4, "question": "According to the later paper, what is the wiki accuracy?"}
+    sin_claves = {**T4, "answer_before_keys": []}
+    sin_antes = {k: v for k, v in T4.items() if k != "answer_before"}
+    preguntas, _, descartes = interpretar(
+        _salida(con_orden, sin_claves, sin_antes), {"T4"}, [F1, F2], "B", "r", "B001"
+    )
+    assert preguntas == []
+    assert any("menciona el orden" in d and "later" in d for d in descartes)
+    assert sum("respuesta previa" in d for d in descartes) == 2
 
 
 MANIFEST = [

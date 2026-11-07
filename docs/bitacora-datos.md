@@ -56,3 +56,20 @@ B, 42 llamadas y ~1,71 M. El costo depende de las tarifas de `deepseek-v4-pro`, 
 - Juan David: revisar el cambio del validador en `src/wikillm/ingest/gold.py` (`ETIQUETAS_HTML`).
 - Juan David: revisar `AGENTS.md` (guía única para agentes), el `CLAUDE.md` reducido y las reglas
   11–13 propuestas en `CONSTITUTION.md`.
+
+## 2026-11-06 (Juan David): T4 neutras y medida de respuesta obsoleta
+
+Acordado con Juan Diego por mensaje. Los T4 deben poder contestarse en cualquier paso, así que
+la pregunta no menciona el orden de los papers y trata de un solo dato; lo que cambia es la
+respuesta correcta con el paso. Cambios (cambio OpenSpec `t4-neutras`):
+
+- `src/wikillm/eval/redaccion.py`: nueva instrucción de T4 y descarte de borradores que mencionen
+  el orden o no traigan `answer_before` con `answer_before_keys`. Las claves previas ya no se
+  borran: pasan a ser `respuesta_clave` del tramo inicial.
+- `src/wikillm/eval/banco.py`: `validar-banco` marca las T4 que mencionen el orden o no tengan
+  claves previas. Sobre los 102 borradores de A marca 13 y 18.
+- `src/wikillm/eval/metricas.py`: nueva medida `obsoleta` (tras el cambio, no es correcta y repite
+  las claves previas) y, por sistema y paso, `obsoletas` y `tasa_obsoleta`.
+- Los borradores de A no se regeneran: los T4 con problema se corrigen o descartan en la página
+  de revisión. Los de B se generan ya con la instrucción nueva.
+- `.env.example` ya incluye `DRAFT_*`, `GEMINI_API_KEY` y `JUDGE_MODEL` (decisión 0003).

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from wikillm.eval.banco import esperado_en_paso
-from wikillm.eval.correctitud import CORRECTA, INDETERMINADA, evaluar
+from wikillm.eval.correctitud import CORRECTA, INDETERMINADA, clave_presente, evaluar
 
 OBLIGATORIOS_RESULTADO = (
     "run_id",
@@ -60,6 +60,20 @@ def fundamentacion(
     return validas / len(citas)
 
 
+def tras_cambio(pregunta: dict[str, Any], paso: int) -> bool:
+    """Una T4 cuya respuesta ya cambió: el paso alcanzó al primer tramo de `respuesta_por_paso`."""
+    tramos = pregunta.get("respuesta_por_paso") or []
+    return bool(tramos) and paso >= min(int(t["desde"]) for t in tramos)
+
+
+def es_obsoleta(pregunta: dict[str, Any], paso: int, respuesta: str, veredicto: str) -> bool:
+    """Tras el cambio, no es correcta y repite todas las claves de la respuesta previa."""
+    claves = pregunta.get("respuesta_clave") or []
+    if veredicto == CORRECTA or not claves or not tras_cambio(pregunta, paso):
+        return False
+    return all(clave_presente(c, respuesta) for c in claves)
+
+
 def evaluar_resultados(
     resultados: list[dict[str, Any]],
     banco: dict[str, dict[str, Any]],
@@ -84,6 +98,8 @@ def evaluar_resultados(
                 "veredicto_capa1": capa1,
                 "veredicto": veredicto,
                 "origen_veredicto": origen,
+                "tras_cambio": tras_cambio(pregunta, int(r["ingest_step"])),
+                "obsoleta": es_obsoleta(pregunta, int(r["ingest_step"]), r["answer"], veredicto),
                 "fundamentacion": fundamentacion(
                     r["citations"], int(r["ingest_step"]), spans, orden
                 ),
@@ -108,6 +124,8 @@ def agregar(evaluados: list[dict[str, Any]]) -> list[dict[str, Any]]:
         correctas = [e for e in respondibles if e["veredicto"] == CORRECTA]
         fundadas = [e["fundamentacion"] for e in grupo if e["fundamentacion"] is not None]
         contexto = [float(e["context_tokens"]) for e in grupo]
+        actualizadas = [e for e in grupo if e["tras_cambio"]]
+        obsoletas = sum(e["obsoleta"] for e in actualizadas)
         filas.append(
             {
                 "system": sistema,
@@ -121,6 +139,9 @@ def agregar(evaluados: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     if no_respondibles
                     else None
                 ),
+                "n_t4_actualizadas": len(actualizadas),
+                "obsoletas": obsoletas,
+                "tasa_obsoleta": obsoletas / len(actualizadas) if actualizadas else None,
                 "fundamentacion_media": _media(fundadas),
                 "context_tokens_media": _media(contexto),
                 "context_tokens_mediana": statistics.median(contexto) if contexto else None,

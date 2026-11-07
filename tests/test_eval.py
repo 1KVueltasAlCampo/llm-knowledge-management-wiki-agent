@@ -14,7 +14,7 @@ from wikillm.eval.correctitud import (
     extraer_numeros,
 )
 from wikillm.eval.juez import Juez, interpretar
-from wikillm.eval.metricas import agregar, evaluar_resultados, fundamentacion
+from wikillm.eval.metricas import agregar, es_obsoleta, evaluar_resultados, fundamentacion
 from wikillm.eval.modelos import _SinExtraBody
 from wikillm.eval.sinteticos import generar
 
@@ -62,6 +62,60 @@ def test_t4_cambia_la_respuesta_esperada_con_el_paso():
     )
     assert esperado_en_paso(pregunta, 2).respuesta_clave == ["0.71"]
     assert esperado_en_paso(pregunta, 3).respuesta_clave == ["0.80"]
+
+
+def _t4(**cambios):
+    base = {
+        "tipo": "T4",
+        "id": "A-T4-001",
+        "texto": "What is the best accuracy?",
+        "fuentes_requeridas": ["2601.1", "2603.1"],
+        "evidencia": [
+            {"span_id": "2601.1#s1.p1", "sha256": "x"},
+            {"span_id": "2603.1#s1.p1", "sha256": "x"},
+        ],
+        "ingesta_minima": 1,
+        "respuesta_por_paso": [
+            {"desde": 3, "respuesta_oraculo": "0,80", "respuesta_clave": ["0.80"]}
+        ],
+    }
+    return _pregunta(**{**base, **cambios})
+
+
+def test_validar_banco_exige_t4_neutras_y_con_claves_previas():
+    assert validar_banco([_t4()], ORDEN) == []
+    con_orden = _t4(texto="According to the later paper, what is the accuracy?")
+    sin_claves = _t4(id="A-T4-002", respuesta_clave=[])
+    problemas = " | ".join(validar_banco([con_orden, sin_claves], ORDEN))
+    assert "menciona el orden de los papers ('later')" in problemas
+    assert "A-T4-002: T4 sin claves en la respuesta previa" in problemas
+
+
+def test_respuesta_obsoleta_tras_el_cambio_de_una_t4():
+    t4 = _t4()
+    assert es_obsoleta(t4, 3, "La exactitud es 0,71.", INDETERMINADA)
+    assert not es_obsoleta(t4, 2, "La exactitud es 0,71.", INDETERMINADA)  # antes del cambio
+    assert not es_obsoleta(t4, 3, "Ahora es 0,80.", CORRECTA)
+    assert not es_obsoleta(t4, 3, "Subió bastante.", INDETERMINADA)  # no repite el valor viejo
+
+
+def test_el_agregado_cuenta_las_obsoletas_de_las_t4_ya_actualizadas():
+    base = {
+        "question_id": "A-T4-001",
+        "ingest_step": 3,
+        "abstained": False,
+        "citations": [],
+        "context_tokens": 10,
+        "cost_usd": 0.0,
+    }
+    resultados = [
+        {**base, "system": "rag", "answer": "Fue 0,71."},
+        {**base, "system": "wiki", "answer": "Ahora es 0,80."},
+    ]
+    evaluados = evaluar_resultados(resultados, {"A-T4-001": _t4()}, {}, ORDEN)
+    por_sistema = {a["system"]: a for a in agregar(evaluados)}
+    assert por_sistema["rag"]["obsoletas"] == 1 and por_sistema["rag"]["tasa_obsoleta"] == 1.0
+    assert por_sistema["wiki"]["obsoletas"] == 0 and por_sistema["wiki"]["tasa_obsoleta"] == 0.0
 
 
 def test_validar_banco_detecta_problemas():

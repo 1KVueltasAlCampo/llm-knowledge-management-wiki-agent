@@ -6,6 +6,7 @@ Contrato en `specs/contrato-resultados.md` §2.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,13 @@ from typing import Any
 TIPOS = {"T1", "T2", "T3", "T4", "T5"}
 ESTADOS = ("borrador", "verificado_a", "verificado_b", "acordado")
 AUTORES = {"A", "B"}
+# Una T4 se hace en cualquier paso, así que no puede decir qué paper es anterior o posterior.
+# «update/updated» no están: en este corpus son palabras normales («memory update»).
+PATRON_ORDEN = re.compile(
+    r"\b(?:later|earlier|newer|older|subsequent|follow-up|previous|prior|original|revised"
+    r"|supersed\w*)\b",
+    re.IGNORECASE,
+)
 OBLIGATORIOS = (
     "id",
     "texto",
@@ -87,6 +95,13 @@ def validar_banco(preguntas: list[dict[str, Any]], orden: dict[str, int]) -> lis
             ultimo = max(int(t["desde"]) for t in p["respuesta_por_paso"])
             if ultimo != calcular_ingesta_minima(fuentes, orden):
                 problemas.append(f"{pid}: el último tramo de T4 no empieza en la fuente posterior")
+            if not p.get("respuesta_clave"):
+                problemas.append(f"{pid}: T4 sin claves en la respuesta previa")
+            palabra = PATRON_ORDEN.search(str(p.get("texto", "")))
+            if palabra:
+                problemas.append(
+                    f"{pid}: T4 menciona el orden de los papers ({palabra.group(0)!r})"
+                )
         elif p.get("tipo") != "T5":
             esperado = calcular_ingesta_minima(fuentes, orden)
             if esperado is None:

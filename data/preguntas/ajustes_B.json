@@ -1,0 +1,178 @@
+{
+ "autor": "B",
+ "revisor": "Juan David Cruz García",
+ "fecha": "2026-11-07",
+ "procedencia": "Selección de la mitad B aprobada por Juan David Cruz García el 7-nov-2026 (25 de T1–T4 y 5 de T5), tras contrastar cuatro revisiones independientes de las 76 candidatas T1–T4 y 9 T5 con el texto del Gold. Las correcciones las redactó Claude a partir del Gold. Falta la verificación humana de cada respuesta contra su paper, por eso las preguntas quedan en estado borrador. Nueve de las T3/T4 las redactó Claude (campo redactado_por).",
+ "ajustes": [
+  {
+   "question_id": "B002-T3-02",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B013-T3-05",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B020-T3-05",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B017-T3-05",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B011-T3-05",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B001-T4-06",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B022-T4-05",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B023-T2-01",
+   "accion": "agregar",
+   "claves": [
+    "schemaless",
+    "Memory Wiki"
+   ],
+   "motivo": "Las claves «knowledge graph» y «wiki pages» ya estaban en la pregunta (se acertaban repitiéndola); se sustituyen por términos que solo aparecen en las fuentes."
+  },
+  {
+   "question_id": "B012-T2-01",
+   "accion": "agregar",
+   "pregunta": "How does the mechanism HippoRAG uses to associate information across passages differ from the mechanism TOKI uses to resolve contradictions in LLM-agent memory?",
+   "claves": [
+    "Personalized PageRank",
+    "bitemporal operators"
+   ],
+   "motivo": "La pregunta atribuía a HippoRAG el manejo de información conflictiva, que no es su objetivo; se reformula como contraste de mecanismos y se quita la clave «knowledge graph», que estaba en la pregunta."
+  },
+  {
+   "question_id": "B014-T2-01",
+   "accion": "agregar",
+   "pregunta": "How do 'The Missing Knowledge Layer in Cognitive Architectures for AI Agents' and the TOKI paper characterize the relationship between contradiction resolution and persistence semantics in LLM-agent memory?",
+   "motivo": "La pregunta no nombraba los papers."
+  },
+  {
+   "question_id": "B034-T2-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B031-T3-02",
+   "accion": "agregar",
+   "tipo": "T2",
+   "pregunta": "Do the survey of foundation agent memory and the 'Harness the Memory' evaluation agree on whether a single memory substrate dominates?",
+   "respuesta": "Yes: both state that no single substrate dominates.",
+   "claves": [
+    "no single substrate"
+   ],
+   "motivo": "No es una contradicción (T3) sino un acuerdo entre dos papers: pasa a T2. Se quitan las claves «reverses» y «regime-dependent», que no están en el pasaje de la survey."
+  },
+  {
+   "question_id": "B001-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B003-T1-01",
+   "accion": "agregar",
+   "pregunta": "In the paper 'Diagnosing Retrieval vs. Utilization Bottlenecks in LLM Agent Memory', what is the accuracy of Basic RAG under hybrid reranking in the 3x3 study?",
+   "motivo": "Se ancla la pregunta al título del paper: «the 3x3 study» sola es ambigua en un corpus con varios papers."
+  },
+  {
+   "question_id": "B004-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B006-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B007-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B008-T1-02",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B010-T1-02",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B011-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B016-T1-01",
+   "accion": "agregar",
+   "claves": [
+    "30%"
+   ],
+   "motivo": "Se quita la clave «30», un entero aislado; basta «30%»."
+  },
+  {
+   "question_id": "B018-T1-02",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B020-T1-02",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B021-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "B022-T1-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "BT5-T5-06",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "BT5-T5-07",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "BT5-T5-12",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "BT5-T5-01",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  },
+  {
+   "question_id": "BT5-T5-08",
+   "accion": "agregar",
+   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+  }
+ ]
+}

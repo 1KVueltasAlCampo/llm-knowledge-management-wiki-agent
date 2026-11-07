@@ -77,3 +77,7 @@ class BrazoRag:
             self._reloj() - inicio,
             contexto=contexto,
         )
+
+    @property
+    def ingeridos(self) -> list[str]:
+        return list(self._indice.ingeridos)

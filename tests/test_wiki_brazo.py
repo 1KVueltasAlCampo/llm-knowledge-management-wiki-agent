@@ -144,3 +144,37 @@ def test_un_json_invalido_dos_veces_devuelve_codigo_1_y_deja_el_wiki_intacto(ent
     codigo, _, _ = cli(tmp_path, gold, manifest, ["x", "y"], "ingerir", "--paso", "1")
     assert codigo == 1 and "wiki-plan" in capsys.readouterr().err
     assert Wiki(tmp_path / "wiki").ingeridos == []
+
+
+def test_la_traza_esta_vacia_antes_de_preguntar_y_describe_la_ultima_pregunta(entorno):
+    tmp_path, gold, _ = entorno
+    leer_pagina = json.dumps({"action": "read", "pages": [SLUG1]})
+    textos = [
+        *plan_y_escritura(),
+        json.dumps({"action": "search", "query": "HippoRAG"}),
+        json.dumps({"action": "read", "pages": [SLUG1]}),
+        json.dumps({"action": "answer", "answer": f"Threshold 0.8 [{S1}]."}),
+        leer_pagina,
+        json.dumps({"action": "answer", "answer": "Again."}),
+    ]
+    modelo, _ = modelo_guionado(tmp_path, textos)
+    brazo = BrazoWiki(modelo, Wiki(tmp_path / "wiki"), gold, spans_validos={S1})
+    assert brazo.traza() == {
+        "acciones": 0,
+        "busquedas": 0,
+        "lecturas": 0,
+        "paginas_leidas": [],
+        "incidencias": [],
+    }
+    brazo.ingerir(P1)
+    brazo.responder("What threshold?")
+    assert brazo.traza() == {
+        "acciones": 2,
+        "busquedas": 1,
+        "lecturas": 1,
+        "paginas_leidas": [SLUG1],
+        "incidencias": [],
+    }
+    brazo.responder("Second question?")  # la traza se reinicia: solo una lectura
+    assert brazo.traza()["acciones"] == 1 and brazo.traza()["busquedas"] == 0
+    assert brazo.ingeridos == [P1]

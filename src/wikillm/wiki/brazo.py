@@ -45,3 +45,18 @@ class BrazoWiki:
 
     def responder(self, pregunta: str) -> ResultadoBrazo:
         return self.consulta.responder(pregunta)
+
+    @property
+    def ingeridos(self) -> list[str]:
+        return list(self.wiki.ingeridos)
+
+    def traza(self) -> dict[str, object]:
+        """Qué hizo el agente en la última pregunta (vacía antes de la primera)."""
+        traza = self.consulta.traza
+        return {
+            "acciones": traza.acciones,
+            "busquedas": traza.busquedas,
+            "lecturas": traza.lecturas,
+            "paginas_leidas": list(traza.paginas_leidas),
+            "incidencias": list(traza.incidencias),
+        }

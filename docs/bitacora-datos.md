@@ -199,3 +199,45 @@ tokens de salida.
 - La proyección a 50 papers baja con la media de `dev2` (0,0056 USD y 40 s por paper): 0,3–0,8 USD
   y unos 35–60 min. Sigue siendo extrapolación: el costo sube con el tamaño del wiki.
 - El contador de líneas con cifra sin cita sigue siendo grueso (cuenta números descriptivos).
+
+## 2026-11-07 (Juan David): arnés de comparación, piloto real
+
+Cambio OpenSpec `arnes-comparacion`: `python -m wikillm.arnes correr`. Piloto `piloto-1` con
+`deepseek-flash`, fuera de hora pico, sábado. **No vale para el informe**: usa borradores
+(`--estado-minimo borrador`) y `corrida.json` lo marca con `valida_para_informe: false`.
+
+- Configuración: 17 preguntas del banco (T1, T4 y T5), pasos 0 y 5, RAG con k = 5 y wiki con tope de
+  8 acciones: 68 respuestas, 5 papers ingeridos en cada brazo.
+- Los brazos reales (índice de Chroma en GPU y wiki en disco) arrancan y responden desde el paso 0.
+  Los archivos pasan `leer_resultados` y `python -m wikillm.eval metricas` corre sobre ellos.
+
+| | RAG | Wiki |
+|---|---|---|
+| Respuestas / abstenciones | 34 / 32 | 34 / 27 (28 tras la reanudación) |
+| Costo de ingesta | 0 USD, 10 s | 0,0363 USD, 222 s |
+| Costo de las 34 preguntas | 0,0040 USD, 36 s | 0,0136 USD, 134 s |
+| Contexto mediano | 384 tokens | 1.021 tokens |
+
+- Gasto registrado en `respuestas` e `ingestas`: 0,052 USD; contando la tanda repetida, unos 0,056 USD.
+  La estimación del arnés (cota alta) era 0,31 USD: queda unas 6 veces por encima del gasto real.
+- Costo por respuesta: 0,00012 USD el RAG y 0,0004 USD el wiki con 5 papers (unas 3 veces más). Con
+  las cifras de la cota, la corrida completa saldría por debajo de 5 USD y no pediría confirmación.
+- **Solo 6 de las 17 preguntas eran respondibles en el paso 5** (el resto necesita papers que aún no
+  entran, o es T5). En esas, `eval metricas` da cobertura 0,33 en el RAG (2 de 6) y 0,83 en el wiki
+  (5 de 6), con una respuesta indeterminada que necesitaría el juez. Con n = 6 no es evidencia de
+  nada: solo muestra que la cadena arnés → métricas funciona.
+- **Reanudación probada con los brazos reales**: se recortaron a mano los últimos 10 resultados y las
+  5 trazas del wiki, y se repitió la misma orden. Salió «Paso 0: ya estaba completo» y «Paso 5: 10
+  respuestas por hacer de 34». No hubo ingestas repetidas ni costo de ingesta nuevo, y el archivo
+  quedó con 68 claves únicas en 68 líneas, 10 ingestas y 34 trazas.
+- **Con temperatura 0, el wiki no repitió una respuesta**: AT5-T5-12 (T5) se contestó con una cita
+  en la primera tanda y con la abstención en la segunda («No page mentions a method called
+  "HyperAddress"…»). El texto de la primera respuesta no se conservó, así que no se pudo comprobar
+  si era una alucinación. El modelo del proveedor no es determinista: una sola corrida por pregunta
+  tiene ruido, y el informe debe decirlo o repetir las corridas.
+- Las preguntas repetidas parecen abaratarse por la caché de prefijo del proveedor (no se verificó; el RAG pasó de 0,0040 a
+  0,0032 USD en las 34 respuestas al repetir 5): los costos de una repetición no se pueden comparar
+  con los de una primera corrida.
+- Tiempos medidos: el wiki tarda 3,9 s por respuesta y el RAG 1,1 s; ingerir cuesta 44 s por paper en
+  el wiki. Para la corrida completa (60 preguntas, 11 pasos, 50 papers) la extrapolación es de 2 a 3
+  horas, y 1 a 2,5 USD. Es una extrapolación: el wiki crece y cada consulta se encarece.

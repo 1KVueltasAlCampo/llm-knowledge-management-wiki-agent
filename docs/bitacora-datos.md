@@ -241,3 +241,30 @@ Cambio OpenSpec `arnes-comparacion`: `python -m wikillm.arnes correr`. Piloto `p
 - Tiempos medidos: el wiki tarda 3,9 s por respuesta y el RAG 1,1 s; ingerir cuesta 44 s por paper en
   el wiki. Para la corrida completa (60 preguntas, 11 pasos, 50 papers) la extrapolación es de 2 a 3
   horas, y 1 a 2,5 USD. Es una extrapolación: el wiki crece y cada consulta se encarece.
+
+## 2026-11-07 (Juan David): banco de la mitad B
+
+- **Candidatas.** Los 67 borradores T1–T4 de B no tenían ninguna T4 real (una comparaba dos
+  datasets, dos no cambiaban de valor y la cuarta daba el valor de otro sistema) y solo una T3
+  válida: las demás comparaban sistemas que nunca se midieron en lo mismo o dependían de
+  afirmaciones negativas. Se añadieron 9 candidatas (6 T3 y 3 T4) a `borradores_B.jsonl`,
+  redactadas por Claude (`redactado_por`) a partir de cifras que el corpus repite o contradice y
+  verificadas contra el Gold: huella de cada fragmento, cada clave literal en la evidencia y
+  `validar_banco` sin problemas.
+- **La T4 de B es estructuralmente escasa.** Exige que un paper posterior repita la cifra y que
+  ese paper sea de B (orden par): solo ocurre con HippoRAG → HippoRAG 2 y con LongMemEval-S
+  (ReFind → APDMem). Las demás repeticiones las hacen papers de la mitad A.
+- **Selección.** Cuatro revisores independientes evaluaron las 76 candidatas T1–T4 y las 9 T5 sobre
+  un paquete con códigos neutros y orden aleatorio. Uno aceptó 78 de 85, incluidas todas las T3 con
+  afirmaciones negativas que los otros tres descartaban, y con dos «correcciones» sobre contenido
+  que no está en el paquete; no se tuvo en cuenta. Con los otros tres se contrastó cada
+  desacuerdo contra el Gold. Cambios respecto a la primera elección: se quitó la comparación
+  ReFind–APDMem (50 frente a 500 preguntas y backbones distintos) y una T5 demasiado fácil, y se
+  recuperó una T2 que se había descartado por error porque su respaldo estaba en pasajes que el
+  paquete no ofrecía.
+- **Resultado.** `banco_B.jsonl` tiene 30 preguntas: 13 T1, 5 T2, 5 T3, 2 T4 y 5 T5, con 20 de las 25
+  de T1–T4 en ingesta ≤ 30. Seis llevan corrección (ajustes en `ajustes_B.json`, con motivo).
+  `banco.jsonl` queda con las 60 (30 de A y 30 de B) y `validar-banco` no reporta problemas.
+- **Estado.** Las de B quedan en `borrador`: la selección y las correcciones están aprobadas, pero
+  falta la verificación humana de cada respuesta contra su paper. El material de la selección
+  (paquete, respuestas de los revisores, votos) lleva texto de arXiv y vive fuera del repo.

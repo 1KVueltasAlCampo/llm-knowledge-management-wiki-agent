@@ -6,11 +6,16 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.15.0",
+    "langchain-chroma>=1.1.0",
+    "langchain-huggingface>=1.2.3",
+    "langchain-text-splitters>=1.1.3",
     "lxml>=6.1.3",
     "openai>=3.46.0",
     "python-dotenv>=1.0",
     "pyyaml>=6.0.3",
     "requests>=2.34.2",
+    "sentence-transformers>=6.2.0",
+    "torch>=2.14.1",
 ]
 
 [dependency-groups]
@@ -38,3 +43,13 @@ select = ["E", "W", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+# PyTorch con CUDA 12.6 en Windows y Linux (decisión 0002). El mismo paquete funciona sin GPU
+# poniendo EMBEDDING_DEVICE=cpu. En macOS se usa el paquete por defecto.
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu126", marker = "sys_platform == 'win32' or sys_platform == 'linux'" }]

@@ -73,3 +73,28 @@ respuesta correcta con el paso. Cambios (cambio OpenSpec `t4-neutras`):
 - Los borradores de A no se regeneran: los T4 con problema se corrigen o descartan en la página
   de revisión. Los de B se generan ya con la instrucción nueva.
 - `.env.example` ya incluye `DRAFT_*`, `GEMINI_API_KEY` y `JUDGE_MODEL` (decisión 0003).
+
+## 2026-11-07 (Juan David): RAG v2 sobre el contrato de resultados
+
+Cambio OpenSpec `contrato-brazo-v2`. El RAG ya cumple `specs/contrato-resultados.md`: ingiere un
+paper a la vez en `orden_ingesta`, cita `span_id`, se abstiene con una frase común y reporta
+`context_tokens`. Los fragmentos salen de los spans de `data/gold/spans.jsonl`, y al ingerir se
+comprueba que el hash del Gold local coincide con `data/gold/corpus.jsonl`.
+
+- **Ingesta real de los 50 papers** (GPU, bge-small): 5.430 fragmentos en 159 s, sin errores de hash.
+  Una segunda ingesta tarda 0,4 s y no recalcula ningún embedding.
+- **Recuperación sobre los 102 borradores de A** (k = 5, sin gastar saldo). Ahora se compara por
+  `span_id` exacto de la evidencia:
+
+| Tipo | Papers requeridos, todos en el top-5 | `span_id` de la evidencia, todos | alguno |
+|---|---|---|---|
+| T1 (46) | 78 % | 52 % | 52 % |
+| T2 (19) | 32 % | 0 % | 42 % |
+| T3 (19) | 16 % | 5 % | 26 % |
+| T4 (18) | 11 % | 0 % | 44 % |
+
+  Con el RAG v1 (6-nov, por pasaje aproximado) las T1 daban 78 % de papers y 48 % de pasaje; las de
+  dos fuentes, 26–28 % de papers con ambos. Es comparable. Lo esperado de un RAG de una ronda:
+  casi nunca trae a la vez las dos fuentes de una pregunta T2–T4.
+- Para el wiki, `ingerir` queda definido en la interfaz y el registro `ingestas.jsonl` (costo por
+  ingesta) es un añadido propuesto al contrato de resultados.

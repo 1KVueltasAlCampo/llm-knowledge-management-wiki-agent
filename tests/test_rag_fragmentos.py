@@ -1,9 +1,9 @@
-"""Fragmentación del Gold con un medidor falso (palabras): sin modelos ni red."""
+"""Fragmentación a partir de spans con un medidor falso (palabras): sin modelos ni red."""
 
 import pytest
 import yaml
 
-from wikillm.rag.fragmentos import dividir_paper, leer_fragmentos
+from wikillm.rag.fragmentos import dividir_paper, fragmentos_de_gold
 
 
 def palabras(texto: str) -> int:
@@ -14,77 +14,88 @@ def parrafo(n: int, marca: str = "x") -> str:
     return " ".join(f"{marca}{i}" for i in range(n))
 
 
-def cuerpo(*secciones: tuple[str, str]) -> str:
+def cuerpo(*secciones: tuple[str, list[str]]) -> str:
     partes = ["# Título del paper\n"]
-    partes += [f"## {nombre}\n\n{texto}\n" for nombre, texto in secciones]
+    for nombre, parrafos in secciones:
+        partes.append(f"## {nombre}\n")
+        partes += [f"{p}\n" for p in parrafos]
     return "\n".join(partes)
 
 
 def dividir(texto, **kwargs):
-    kwargs.setdefault("max_tokens", 50)
+    kwargs.setdefault("max_tokens", 60)
     kwargs.setdefault("solapamiento", 5)
-    return dividir_paper("2401.00001", "Paper", texto, medir=palabras, **kwargs)
+    return dividir_paper("2401.00001", "Paper", "v1", texto, medir=palabras, **kwargs)
 
 
-def test_seccion_corta_es_un_fragmento_con_titulo_y_seccion():
-    fragmentos = dividir(cuerpo(("1 Intro", "Texto corto de la introducción.")))
+def test_spans_cortos_de_una_seccion_van_juntos_y_rotulados():
+    fragmentos = dividir(cuerpo(("1 Intro", ["Primer párrafo.", "Segundo párrafo.", "Tercero."])))
     assert len(fragmentos) == 1
     f = fragmentos[0]
+    assert f.span_ids == ("2401.00001#s1.p1", "2401.00001#s1.p2", "2401.00001#s1.p3")
     assert f.texto.startswith("Paper — 1 Intro\n\n")
-    assert (f.arxiv_id, f.titulo, f.seccion, f.posicion) == ("2401.00001", "Paper", "1 Intro", 0)
-    assert f.id == "2401.00001-0"
+    assert "[2401.00001#s1.p2] Segundo párrafo." in f.texto
+    assert (f.arxiv_id, f.titulo, f.seccion, f.posicion, f.id) == (
+        "2401.00001",
+        "Paper",
+        "1 Intro",
+        0,
+        "2401.00001-0",
+    )
 
 
-def test_la_seccion_larga_se_subdivide_y_conserva_sus_metadatos():
-    texto = "\n\n".join(parrafo(20, f"p{i}_") for i in range(6))
-    fragmentos = dividir(cuerpo(("2 Método", texto)))
+def test_una_seccion_larga_se_reparte_sin_repetir_spans():
+    texto = cuerpo(("2 Método", [parrafo(20, f"p{i}_") for i in range(6)]))
+    fragmentos = dividir(texto)
     assert len(fragmentos) > 1
-    assert {f.seccion for f in fragmentos} == {"2 Método"}
+    todos = [s for f in fragmentos for s in f.span_ids]
+    assert sorted(todos) == sorted(set(todos))  # cada span, en un solo fragmento
+    assert len(todos) == 6
     assert [f.posicion for f in fragmentos] == list(range(len(fragmentos)))
-    assert all(f.texto.startswith("Paper — 2 Método\n\n") for f in fragmentos)
 
 
-def test_un_parrafo_gigante_se_parte_respetando_el_maximo():
-    fragmentos = dividir(cuerpo(("3 Anexo", parrafo(300))))
+def test_los_spans_de_secciones_distintas_no_se_mezclan():
+    fragmentos = dividir(cuerpo(("1 A", ["Uno."]), ("2 B", ["Dos."])))
+    assert [f.seccion for f in fragmentos] == ["1 A", "2 B"]
+    assert fragmentos[0].span_ids == ("2401.00001#s1.p1",)
+    assert fragmentos[1].span_ids == ("2401.00001#s2.p1",)
+
+
+def test_un_span_gigante_se_parte_y_conserva_su_span_id():
+    fragmentos = dividir(cuerpo(("3 Anexo", [parrafo(300)])))
     assert len(fragmentos) > 5
-    assert all(palabras(f.texto) <= 50 for f in fragmentos)
+    assert {s for f in fragmentos for s in f.span_ids} == {"2401.00001#s1.p1"}
+    assert all(palabras(f.texto) <= 60 for f in fragmentos)
+    assert all("[2401.00001#s1.p1]" in f.texto for f in fragmentos)
 
 
 def test_ningun_fragmento_supera_el_maximo():
-    texto = "\n\n".join(parrafo(33, f"q{i}_") for i in range(10))
-    fragmentos = dividir(cuerpo(("1 A", texto), ("2 B", parrafo(120))))
-    assert all(palabras(f.texto) <= 50 for f in fragmentos)
+    texto = cuerpo(("1 A", [parrafo(33, f"q{i}_") for i in range(10)]), ("2 B", [parrafo(150)]))
+    assert all(palabras(f.texto) <= 60 for f in dividir(texto))
 
 
-def test_las_subsecciones_quedan_dentro_de_su_seccion():
-    texto = "Intro de la sección.\n\n### 1.1 Detalle\n\nTexto del detalle."
-    fragmentos = dividir(cuerpo(("1 Intro", texto)))
-    assert len(fragmentos) == 1
-    assert "### 1.1 Detalle" in fragmentos[0].texto
-
-
-def test_se_descarta_lo_anterior_al_primer_encabezado_y_las_secciones_vacias():
-    fragmentos = dividir(cuerpo(("Vacía", ""), ("Con texto", "Hola mundo.")))
-    assert [f.seccion for f in fragmentos] == ["Con texto"]
-    assert all("Título del paper" not in f.texto for f in fragmentos)
+def test_el_titulo_no_cuenta_como_span_ni_sale_en_el_texto_del_cuerpo():
+    fragmentos = dividir(cuerpo(("1 A", ["Solo este párrafo."])))
+    assert all("#s0" not in s for f in fragmentos for s in f.span_ids)
 
 
 def test_un_titulo_que_no_deja_espacio_al_texto_falla():
     with pytest.raises(ValueError, match="no dejan espacio"):
         dividir_paper(
-            "2401.00001", parrafo(60), cuerpo(("A", "texto")), medir=palabras, max_tokens=50
+            "2401.00001",
+            parrafo(70),
+            "v1",
+            cuerpo(("A", ["texto"])),
+            medir=palabras,
+            max_tokens=60,
         )
 
 
-def escribir_gold_minimo(carpeta, arxiv_id, titulo, texto):
-    encabezado = yaml.safe_dump({"arxiv_id": arxiv_id, "titulo": titulo})
-    (carpeta / f"{arxiv_id}.md").write_text(f"---\n{encabezado}---\n\n{texto}", encoding="utf-8")
-
-
-def test_leer_fragmentos_recorre_todos_los_gold_en_orden(tmp_path):
-    escribir_gold_minimo(tmp_path, "2502.00002", "Segundo", cuerpo(("1 A", "Texto B.")))
-    escribir_gold_minimo(tmp_path, "2401.00001", "Primero", cuerpo(("1 A", "Texto A.")))
-    (tmp_path / "corpus.jsonl").write_text("{}", encoding="utf-8")
-    fragmentos = leer_fragmentos(tmp_path, medir=palabras, max_tokens=50, solapamiento=5)
-    assert [f.arxiv_id for f in fragmentos] == ["2401.00001", "2502.00002"]
-    assert fragmentos[1].titulo == "Segundo"
+def test_fragmentos_de_gold_lee_el_encabezado(tmp_path):
+    encabezado = yaml.safe_dump({"arxiv_id": "2502.00002", "titulo": "Segundo", "version": "v2"})
+    ruta = tmp_path / "2502.00002.md"
+    ruta.write_text(f"---\n{encabezado}---\n\n{cuerpo(('1 A', ['Texto B.']))}", encoding="utf-8")
+    fragmentos = fragmentos_de_gold(ruta, medir=palabras, max_tokens=60, solapamiento=5)
+    assert fragmentos[0].arxiv_id == "2502.00002"
+    assert fragmentos[0].titulo == "Segundo"
+    assert fragmentos[0].span_ids == ("2502.00002#s1.p1",)

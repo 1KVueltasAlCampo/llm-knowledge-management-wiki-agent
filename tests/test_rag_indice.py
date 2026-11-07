@@ -1,6 +1,7 @@
 """Índice vectorial con embeddings falsos: sin GPU, sin descargas y sin red."""
 
 import hashlib
+import json
 import re
 from dataclasses import replace
 
@@ -9,7 +10,13 @@ import yaml
 from langchain_core.embeddings import Embeddings
 
 from wikillm.common.config import Settings
-from wikillm.rag.indice import ErrorDeDispositivo, abrir_indice, crear_embeddings, recuperar
+from wikillm.rag.indice import (
+    ErrorDeDispositivo,
+    GoldDistinto,
+    IndiceRag,
+    cargar_span_ids,
+    crear_embeddings,
+)
 
 DIMENSIONES = 64
 
@@ -40,9 +47,13 @@ def palabras(texto: str) -> int:
     return len(texto.split())
 
 
-def escribir_gold(carpeta, arxiv_id, titulo, secciones):
-    cuerpo = f"# {titulo}\n\n" + "\n\n".join(f"## {n}\n\n{t}" for n, t in secciones)
-    encabezado = yaml.safe_dump({"arxiv_id": arxiv_id, "titulo": titulo})
+def escribir_gold(carpeta, arxiv_id, titulo, secciones, hash_="sha256:aaa"):
+    cuerpo = f"# {titulo}\n\n" + "\n\n".join(
+        f"## {nombre}\n\n" + "\n\n".join(parrafos) for nombre, parrafos in secciones
+    )
+    encabezado = yaml.safe_dump(
+        {"arxiv_id": arxiv_id, "titulo": titulo, "version": "v1", "hash": hash_}
+    )
     (carpeta / f"{arxiv_id}.md").write_text(f"---\n{encabezado}---\n\n{cuerpo}\n", encoding="utf-8")
 
 
@@ -55,68 +66,76 @@ def gold(tmp_path):
         "2401.00001",
         "Memoria de grafos",
         [
-            ("1 Intro", "Los grafos de conocimiento mejoran la memoria de los modelos."),
-            ("2 Método", "El algoritmo PageRank personalizado recorre el grafo de entidades."),
+            ("1 Intro", ["Los grafos de conocimiento mejoran la memoria de los modelos."]),
+            ("2 Método", ["El algoritmo PageRank personalizado recorre el grafo de entidades."]),
         ],
     )
     escribir_gold(
         carpeta,
         "2502.00002",
         "Wikis compilados",
-        [("1 Intro", "Un wiki mantenido por un modelo guarda páginas de markdown revisadas.")],
+        [("1 Intro", ["Un wiki mantenido por un modelo guarda páginas de markdown revisadas."])],
     )
     return carpeta
 
 
-def abrir(gold, tmp_path, embeddings, **cambios):
+def indice(gold, tmp_path, embeddings, corpus_jsonl=None, **cambios):
     parametros = {
         "embeddings": embeddings,
         "medir": palabras,
         "modelo_embeddings": "falso",
-        "max_tokens": 50,
+        "max_tokens": 60,
         "solapamiento": 5,
+        "corpus_jsonl": corpus_jsonl,
         **cambios,
     }
-    return abrir_indice(gold, tmp_path / "chroma", **parametros)
+    return IndiceRag(gold, tmp_path / "chroma", **parametros)
 
 
-def test_primera_construccion_calcula_todos_los_fragmentos(gold, tmp_path):
+def test_primera_ingesta_calcula_los_embeddings_y_no_gasta_modelo(gold, tmp_path):
     embeddings = EmbeddingsFalsos()
-    _, informe = abrir(gold, tmp_path, embeddings)
-    assert informe.reconstruido
-    assert informe.fragmentos == 3
-    assert embeddings.textos_calculados == 3
+    resultado = indice(gold, tmp_path, embeddings).ingerir("2401.00001")
+    assert embeddings.textos_calculados == 2  # una sección corta por fragmento
+    assert (resultado.llamadas, resultado.tokens_entrada, resultado.usd) == (0, 0, 0)
+    assert resultado.segundos > 0
 
 
-def test_gold_sin_cambios_no_recalcula(gold, tmp_path):
-    abrir(gold, tmp_path, EmbeddingsFalsos())
+def test_un_paper_ya_ingerido_con_el_mismo_gold_no_recalcula(gold, tmp_path):
+    indice(gold, tmp_path, EmbeddingsFalsos()).ingerir("2401.00001")
     otros = EmbeddingsFalsos()
-    _, informe = abrir(gold, tmp_path, otros)
-    assert not informe.reconstruido
-    assert informe.fragmentos == 3
+    nuevo = indice(gold, tmp_path, otros)  # misma carpeta de Chroma: otra corrida
+    nuevo.ingerir("2401.00001")
     assert otros.textos_calculados == 0
+    assert nuevo.total_fragmentos == 2
+    assert nuevo.ingeridos == ["2401.00001"]
 
 
-def test_gold_modificado_reconstruye_sin_restos(gold, tmp_path):
-    abrir(gold, tmp_path, EmbeddingsFalsos())
-    escribir_gold(gold, "2502.00002", "Wikis compilados", [("1 Intro", "Texto nuevo y distinto.")])
-    almacen, informe = abrir(gold, tmp_path, EmbeddingsFalsos())
-    assert informe.reconstruido
-    assert informe.fragmentos == 3
-    textos = [r.fragmento.texto for r in recuperar(almacen, "wiki páginas markdown", k=10)]
+def test_si_cambia_el_gold_se_reemplazan_sus_fragmentos(gold, tmp_path):
+    primero = indice(gold, tmp_path, EmbeddingsFalsos())
+    primero.ingerir("2502.00002")
+    escribir_gold(
+        gold, "2502.00002", "Wikis compilados", [("1 Intro", ["Texto nuevo y distinto."])]
+    )
+    segundo = indice(gold, tmp_path, EmbeddingsFalsos())
+    segundo.ingerir("2502.00002")
+    textos = [r.fragmento.texto for r in segundo.recuperar("wiki páginas markdown", k=10)]
     assert not any("markdown revisadas" in t for t in textos)
     assert any("Texto nuevo y distinto" in t for t in textos)
+    assert segundo.total_fragmentos == 1
 
 
-def test_cambiar_los_parametros_de_fragmentacion_reconstruye(gold, tmp_path):
-    abrir(gold, tmp_path, EmbeddingsFalsos())
-    _, informe = abrir(gold, tmp_path, EmbeddingsFalsos(), max_tokens=30)
-    assert informe.reconstruido
+def test_cambiar_los_parametros_de_fragmentacion_reemplaza_los_fragmentos(gold, tmp_path):
+    indice(gold, tmp_path, EmbeddingsFalsos()).ingerir("2401.00001")
+    otros = EmbeddingsFalsos()
+    indice(gold, tmp_path, otros, max_tokens=50).ingerir("2401.00001")
+    assert otros.textos_calculados == 2
 
 
-def test_recuperar_respeta_k_orden_y_metadatos(gold, tmp_path):
-    almacen, _ = abrir(gold, tmp_path, EmbeddingsFalsos())
-    resultados = recuperar(almacen, "algoritmo PageRank personalizado grafo", k=2)
+def test_recuperar_respeta_k_orden_metadatos_y_span_ids(gold, tmp_path):
+    almacen = indice(gold, tmp_path, EmbeddingsFalsos())
+    almacen.ingerir("2401.00001")
+    almacen.ingerir("2502.00002")
+    resultados = almacen.recuperar("algoritmo PageRank personalizado grafo", k=2)
     assert len(resultados) == 2
     assert resultados[0].distancia <= resultados[1].distancia
     primero = resultados[0].fragmento
@@ -125,7 +144,57 @@ def test_recuperar_respeta_k_orden_y_metadatos(gold, tmp_path):
         "2 Método",
         "Memoria de grafos",
     )
+    assert primero.span_ids == ("2401.00001#s2.p1",)
     assert primero.texto.startswith("Memoria de grafos — 2 Método")
+
+
+def test_un_paper_no_ingerido_no_aparece_aunque_este_en_el_indice(gold, tmp_path):
+    almacen = indice(gold, tmp_path, EmbeddingsFalsos())
+    almacen.ingerir("2401.00001")
+    almacen.ingerir("2502.00002")
+    nueva_corrida = indice(gold, tmp_path, EmbeddingsFalsos())
+    nueva_corrida.ingerir("2401.00001")
+    papers = {r.fragmento.arxiv_id for r in nueva_corrida.recuperar("wiki markdown grafo", k=10)}
+    assert papers == {"2401.00001"}
+    assert nueva_corrida.total_fragmentos == 3  # el otro sigue en disco, pero no cuenta
+
+
+def test_con_el_corpus_vacio_no_se_recupera_nada_y_no_falla(gold, tmp_path):
+    assert indice(gold, tmp_path, EmbeddingsFalsos()).recuperar("lo que sea") == []
+
+
+def test_reiniciar_olvida_lo_ingerido_pero_no_los_vectores(gold, tmp_path):
+    almacen = indice(gold, tmp_path, EmbeddingsFalsos())
+    almacen.ingerir("2401.00001")
+    almacen.reiniciar()
+    assert almacen.recuperar("grafo") == [] and almacen.total_fragmentos == 2
+
+
+def test_el_hash_del_gold_debe_coincidir_con_el_versionado(gold, tmp_path):
+    corpus = tmp_path / "corpus.jsonl"
+    corpus.write_text(json.dumps({"arxiv_id": "2401.00001", "hash": "sha256:distinto"}) + "\n")
+    with pytest.raises(GoldDistinto, match="2401.00001"):
+        indice(gold, tmp_path, EmbeddingsFalsos(), corpus_jsonl=corpus).ingerir("2401.00001")
+    corpus.write_text(json.dumps({"arxiv_id": "2401.00001", "hash": "sha256:aaa"}) + "\n")
+    indice(gold, tmp_path, EmbeddingsFalsos(), corpus_jsonl=corpus).ingerir("2401.00001")
+
+
+def test_un_paper_que_no_figura_en_el_corpus_versionado_tambien_falla(gold, tmp_path):
+    corpus = tmp_path / "corpus.jsonl"
+    corpus.write_text(json.dumps({"arxiv_id": "9999.99999", "hash": "sha256:aaa"}) + "\n")
+    with pytest.raises(GoldDistinto):
+        indice(gold, tmp_path, EmbeddingsFalsos(), corpus_jsonl=corpus).ingerir("2401.00001")
+
+
+def test_un_paper_sin_gold_pide_ejecutar_la_ingesta(gold, tmp_path):
+    with pytest.raises(FileNotFoundError, match="wikillm.ingest"):
+        indice(gold, tmp_path, EmbeddingsFalsos()).ingerir("1111.11111")
+
+
+def test_cargar_span_ids_lee_el_manifiesto_de_spans(tmp_path):
+    ruta = tmp_path / "spans.jsonl"
+    ruta.write_text('{"span_id": "a#s1.p1"}\n{"span_id": "a#s1.p2"}\n', encoding="utf-8")
+    assert cargar_span_ids(ruta) == {"a#s1.p1", "a#s1.p2"}
 
 
 AJUSTES = Settings(

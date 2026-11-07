@@ -67,7 +67,7 @@ El banco tiene **60 preguntas** (30 por autor). Cada tipo mide una capacidad dis
 | **T1 · Hecho puntual** | Un dato concreto de **un solo paper** | Si el sistema recupera y reporta bien un hecho | "¿Qué umbral de sinonimia τ usa HippoRAG por defecto?" → 0,8 |
 | **T2 · Síntesis** | Algo que exige **combinar dos o más papers** | Si conecta información repartida entre fuentes | "¿En qué difieren STALE y TEPA en su manejo de memorias obsoletas?" |
 | **T3 · Contradicción o superación** | Qué estudio **supera o contradice** a otro, y por cuánto | Si detecta conflictos en vez de mezclar las fuentes | "¿Qué framework rinde mejor en QA multi-salto, HippoRAG o SSGM?" |
-| **T4 · Actualización** | Un dato que **cambia** cuando llega un paper posterior | Si actualiza lo que sabe: la respuesta correcta cambia en ese paso | Una cifra que un trabajo posterior mejora |
+| **T4 · Actualización** | Un dato concreto, **sin decir cuál paper es más reciente**. Se repite en varios pasos y su respuesta correcta cambia cuando entra el paper que lo actualiza | Si da el valor nuevo tras el cambio, o sigue dando el viejo (respuesta «obsoleta») | «¿Qué F1 se ha reportado para HippoRAG 2 en 2WikiMultiHopQA?»: un valor hasta que entra el paper que lo actualiza, otro después |
 | **T5 · No respondible** | Algo del tema que **no está en el corpus** | Si sabe abstenerse en lugar de inventar | "¿Qué puntaje logra EdgeMem en LoCoMo?" (EdgeMem no está en el corpus) |
 
 - **T1 y T2** miden **cobertura**: si el sistema tiene y encuentra la información.

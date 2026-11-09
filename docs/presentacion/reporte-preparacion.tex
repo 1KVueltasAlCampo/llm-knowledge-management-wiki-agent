@@ -1,0 +1,332 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+
+\definecolor{rag}{HTML}{1D4ED8}
+\definecolor{wiki}{HTML}{047857}
+\definecolor{acento}{HTML}{4338CA}
+\definecolor{aviso}{HTML}{B45309}
+
+\hypersetup{colorlinks=true,linkcolor=acento,urlcolor=acento}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{3em}
+
+\newtcolorbox{clave}[1]{colback=acento!5,colframe=acento,fonttitle=\bfseries,title=#1,
+  boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{alerta}[1]{colback=aviso!6,colframe=aviso,fonttitle=\bfseries,title=#1,
+  boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{decir}{colback=black!3,colframe=black!25,boxrule=0.4pt,arc=2pt,
+  left=6pt,right=6pt,top=3pt,bottom=3pt,fontupper=\itshape}
+
+\newcommand{\RAG}{\textcolor{rag}{\textbf{RAG}}}
+\newcommand{\WIKI}{\textcolor{wiki}{\textbf{WikiLLM}}}
+\newcommand{\cod}[1]{\texttt{\small #1}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small WikiLLM frente a RAG · preparación de la presentación}
+\fancyhead[R]{\small 9 de noviembre de 2026}
+\fancyfoot[C]{\small\thepage}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Reporte de preparación para la presentación}\\[4pt]
+  {\large WikiLLM frente a RAG sobre un corpus de arXiv}\\[2pt]
+  {\small Maestría en Inteligencia Artificial Aplicada · Juan David Cruz y Juan Diego Ramírez}
+\end{center}
+
+\begin{clave}{En una frase}
+La demostración funciona de punta a punta en local. Con el \textbf{mismo modelo}
+(\cod{deepseek-flash}), el \RAG{} y el \WIKI{} se abstienen cuando el corpus no tiene la
+respuesta y, tras ingerir el paper que la contiene, responden lo mismo y citan el mismo fragmento.
+En el piloto, el WikiLLM acierta más (5 de 6 frente a 2 de 6), pero lee unas 2,9 veces más contexto
+y cuesta más. El piloto \textbf{no} es un resultado del informe.
+\end{clave}
+
+\tableofcontents
+\vspace{4pt}
+
+%==========================================================================================
+\section{El proyecto en una página}
+
+\paragraph{Problema.} Un RAG recupera en cada consulta los fragmentos más parecidos a la pregunta,
+sin distinguir una fuente reciente de una superada, y repite la síntesis en cada respuesta. Un wiki
+mantenido por un LLM traslada ese trabajo a la ingesta: integra cada fuente nueva en páginas
+existentes y responde consultando conocimiento ya organizado, a cambio de un costo de
+mantenimiento. La literatura que compara ambos enfoques usa corpus, modelos y métricas distintos y
+no converge.
+
+\textbf{Pregunta de investigación.}\par
+\begin{decir}
+¿Cómo se comparan un sistema RAG simple y un WikiLLM, con el mismo modelo, a medida que se ingiere
+un corpus de forma cronológica, en correctitud, fundamentación, costo y tiempo?
+\end{decir}
+
+\paragraph{Hipótesis de trabajo.} La recuperación por similitud tiende a devolver el fragmento más
+parecido aunque esté superado; un wiki mantenido incrementalmente puede reflejar la información más
+reciente. La diferencia debería verse en las preguntas T4 (actualización). La contrapartida
+esperada es un costo mayor en el wiki. La formulación es abierta: un resultado desfavorable al
+WikiLLM también es válido y se reporta.
+
+\paragraph{Diseño, en cuatro ideas.}
+\begin{enumerate}
+  \item \textbf{Una sola variable.} Mismo modelo, mismo corpus, mismas preguntas, misma frase de
+        abstención y misma extracción de citas. Solo cambia la arquitectura de la memoria.
+  \item \textbf{Corpus de 50 preprints} de arXiv (casi todos de 2026, posteriores al corte del
+        modelo) procesados en Bronze $\rightarrow$ Silver $\rightarrow$ Gold. Cada párrafo, tabla o
+        ecuación tiene un \cod{span\_id} con su huella: una cita solo vale si resuelve a uno real.
+  \item \textbf{Ingesta cronológica.} Los papers entran de uno en uno; tras los pasos
+        0, 5, 10, \dots, 50 se hacen las mismas preguntas a los dos sistemas.
+  \item \textbf{Respuestas fijadas por humanos.} Banco de 60 preguntas (T1 hecho puntual, T2
+        síntesis, T3 comparación, T4 actualización, T5 no respondible). Una pregunta solo cuenta
+        cuando los dos autores la verificaron contra el paper.
+\end{enumerate}
+
+\paragraph{Los dos sistemas.}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X X@{}}
+\toprule
+ & \textcolor{rag}{RAG simple} & \textcolor{wiki}{WikiLLM} \\
+\midrule
+Memoria & Vectores (Chroma, \cod{bge-small-en-v1.5} en GPU), 5.430 fragmentos &
+          Carpeta de páginas Markdown con índice, registro y Git propio \\
+Al ingerir & Nada: el índice ya está hecho & 2 llamadas (plan y escritura) y validación por
+          código de citas, enlaces y cifras \\
+Al responder & Top-5 por similitud y \textbf{1 llamada} & Un agente que \textbf{busca y lee}
+          páginas (tope de 8 acciones) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+%==========================================================================================
+\section{Estado de la demostración (verificado hoy)}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\textbf{Componente} & \textbf{Estado} \\
+\midrule
+Entorno (\cod{uv}, torch con CUDA) & Listo; torch 2.14.1+cu126 detecta la RTX 3050 \\
+Índice del RAG (\cod{data/chroma}) & Reconstruido: 50 papers, 5.430 fragmentos, 72 s en GPU \\
+Wiki base (\cod{data/wiki/dev2}) & Reconstruido: 5 papers, 18 páginas, 0,043 USD \\
+Wiki de la demo (\cod{data/wiki/demo}) & En el paso 5, etiquetas \cod{paso-1} a \cod{paso-5} \\
+\cod{scripts/verificar\_demo.py} & 10 de 11 (la falla restante: cambios sin commit) \\
+Calidad del código & \cod{ruff} sin problemas; \textbf{449 pruebas} pasan \\
+Panel web & \url{http://127.0.0.1:8765} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Qué se arregló hoy}
+\begin{enumerate}
+  \item \textbf{Error de código al preguntar.} Torch fallaba con
+        \cod{libcufft.so.11: version not found}: la caché de \cod{uv} tenía paquetes de NVIDIA
+        dañados por una instalación interrumpida. Se limpiaron y se reinstalaron.
+  \item \textbf{Faltaban datos que no se versionan}: el índice del RAG y el wiki base. Se
+        reconstruyeron.
+  \item \textbf{Resultados se quedaba en «Cargando…».} El frontend cargaba las métricas pero
+        repintaba otra zona de la página. Corregido.
+  \item \textbf{Métricas del piloto desactualizadas.} Tras la prueba de reanudación se rehicieron
+        10 respuestas (5 preguntas T5), pero las métricas versionadas seguían calculadas con la
+        primera tanda. Se regeneraron con la capa determinista (sin juez, sin gasto); el cálculo es
+        idempotente. Registrado en \cod{docs/bitacora-datos.md}.
+  \item \textbf{Verificación del Gold.} Exigía exactamente 50 archivos y fallaba con dos papers
+        fuera del corpus (los de las T5). Ahora comprueba que esté el Gold de cada paper del
+        manifest.
+  \item \textbf{Comando de reinicio en Linux.} La consola mostraba la orden de PowerShell; ahora
+        muestra la de cada sistema operativo (con prueba).
+\end{enumerate}
+
+\subsection{Mejoras del panel para la presentación}
+\begin{itemize}
+  \item \textbf{Barra «Recorrido»}: los 6 pasos del guion; resalta el que sigue y precarga la
+        pregunta de BeliefShift.
+  \item \textbf{«Lectura rápida»} en cada comparación, en lenguaje llano: «Los dos se abstuvieron…»,
+        «citan el mismo fragmento…», «El RAG usó 2,2$\times$ menos tokens de entrada…».
+  \item \textbf{Grafo del wiki} (tipo Obsidian) en la sección Wiki: nodos por página (papers en
+        índigo, conceptos en verde) unidos por los enlaces \cod{[[...]]}; resalta los vecinos al
+        pasar el cursor y marca con un anillo las páginas que tocó la última ingesta. Funciona sin
+        internet.
+  \item \textbf{Resultados}: tabla RAG frente a WikiLLM con el mejor valor de cada métrica
+        resaltado, indicando si conviene que sea alto o bajo, y un resumen en una frase.
+\end{itemize}
+
+%==========================================================================================
+\section{Guion de la demostración}
+
+Duración: 10--12 minutos. Costo en vivo: menos de 0,02 USD (tope de la sesión: 0,25 USD). Las
+cifras vienen del ensayo real de hoy; la redacción y los centavos pueden variar un poco porque el
+proveedor no es determinista.
+
+\subsection*{Antes de empezar (15 minutos antes)}
+\begin{enumerate}
+  \item \cod{uv run python -m wikillm.panel} y esperar el índice del RAG (unos 15 s).
+  \item \textbf{Sistema $\rightarrow$ Reiniciar el wiki}: la barra debe decir «5 de 50 papers».
+  \item \textbf{Sistema $\rightarrow$ Verificar}: 11 de 11 (o 10 si hay cambios sin commit).
+  \item Revisar la hora: \textbf{evitar 20--23 h y 01--05 h de Colombia} (hora pico de DeepSeek,
+        tarifa doble).
+\end{enumerate}
+
+\renewcommand{\arraystretch}{1.25}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}c >{\raggedright}p{3.2cm} X r@{}}
+\toprule
+\textbf{Paso} & \textbf{Qué se hace} & \textbf{Qué se espera ver} & \textbf{USD} \\
+\midrule
+1 & Wiki en el paso 5 & Grafo con 18 páginas y 39 enlaces; índice, una página con \cod{[span\_id]} tras cada
+    afirmación, \cod{log.md} y etiquetas \cod{paso-1}…\cod{paso-5} & 0 \\
+2 & Preguntar antes: \emph{What is the total number of sessions in the BeliefShift dataset?} &
+    Los dos se abstienen. El RAG recupera fragmentos de otros papers (distancia $\approx$ 0,33);
+    el agente busca 3 veces con palabras distintas y no encuentra páginas & 0,0004 \\
+3 & Ingerir el paper 6 (BeliefShift) & $\approx$ 40 s, 2 llamadas: plan, escritura, validación
+    y copia \cod{paso-6}. Ensayo: 3 páginas creadas, 5 actualizadas, 0 citas eliminadas & 0,009 \\
+4 & Preguntar después & Los dos responden \textbf{68,160} y citan
+    \cod{2603.23848\#s18.p3}. El agente: buscó, leyó la página del paper y respondió & 0,0007 \\
+5 & Evidencia & \cod{comparaciones.jsonl}, \cod{corrida.json} y la pestaña de llamadas con
+    tokens, segundos y dólares & 0 \\
+6 & Resultados & Tabla del piloto y estimaciones: piloto 0,51 USD; corrida completa
+    4,67 USD & 0 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection*{Frases clave por paso}
+\begin{description}[style=nextline]
+  \item[Paso 1] \begin{decir}La memoria del WikiLLM no es una caja negra: es Markdown legible, con
+        una cita por afirmación y una copia versionada por cada paper.\end{decir}
+  \item[Paso 2] \begin{decir}Con 5 papers el corpus no tiene la respuesta; lo correcto es
+        abstenerse, no inventar. Los dos lo hacen bien.\end{decir}
+  \item[Paso 3] \begin{decir}El modelo propone; el código decide qué se guarda. Ninguna cita entra
+        al wiki si no apunta a un fragmento real.\end{decir}
+  \item[Paso 4] \begin{decir}Misma respuesta, misma fuente, mismo modelo. En una pregunta puntual
+        el RAG es más barato; la apuesta del wiki está en síntesis y actualización, y eso lo mide
+        el banco, no una pregunta.\end{decir}
+  \item[Paso 6] \begin{decir}Es un piloto de 17 preguntas: demuestra que la cadena de evaluación
+        funciona; no es un resultado del informe.\end{decir}
+\end{description}
+
+\subsection*{Lo que muestra el ensayo del paso 4}
+\begin{center}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Sistema & Llamadas & Tokens de entrada & Tokens de contexto & Segundos & USD \\
+\midrule
+\textcolor{rag}{RAG simple} & 1 & 1.503 & 1.389 & 1,1 & 0,000239 \\
+\textcolor{wiki}{WikiLLM}   & 3 & 3.294 & 1.831 & 2,8 & 0,000421 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Lectura: el RAG usó 2,2$\times$ menos tokens de entrada, 3$\times$ menos llamadas, 1,8$\times$
+menos dólares y 2,5$\times$ menos tiempo. Los dos acertaron y citaron el mismo fragmento.
+
+%==========================================================================================
+\section{Resultados del piloto y cómo contarlos}
+
+Piloto \cod{piloto-1}: 17 preguntas (T1, T4 y T5), pasos 0 y 5, 68 respuestas, \cod{deepseek-flash},
+temperatura 0. Marcado como \cod{valida\_para\_informe: false}: usa borradores y tiene un $n$
+pequeño. Solo 6 de las 17 preguntas son respondibles en el paso 5.
+
+\begin{center}
+\begin{tabular}{@{}l l c c l@{}}
+\toprule
+Métrica (paso 5) & Mejor si es & \textcolor{rag}{RAG} & \textcolor{wiki}{WikiLLM} & Gana \\
+\midrule
+Cobertura (aciertos entre respondibles) & mayor & 0,33 (2/6) & \textbf{0,83 (5/6)} & WikiLLM \\
+Abstención correcta & mayor & 1,00 & 1,00 & empate \\
+Fundamentación de las citas & mayor & 1,00 & 1,00 & empate \\
+Contexto medio (tokens) & menor & \textbf{1.217} & 3.544 & RAG \\
+Tokens por acierto & menor & \textbf{10.341} & 12.049 & RAG \\
+Costo total (USD) & menor & \textbf{0,0027} & 0,0123 & RAG \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{clave}{Cómo contarlo con honestidad}
+\begin{itemize}[leftmargin=12pt]
+  \item El WikiLLM acierta más preguntas, pero con $n=6$ eso \textbf{no es evidencia}: solo muestra
+        que la cadena arnés $\rightarrow$ métricas funciona.
+  \item El costo por acierto es parecido: el wiki gasta más por pregunta, pero acierta más; por eso
+        la diferencia en tokens por acierto es pequeña (16\,\%).
+  \item La métrica que define la hipótesis (respuestas obsoletas en T4) todavía no tiene casos: hace
+        falta la corrida completa.
+\end{itemize}
+\end{clave}
+
+\begin{alerta}{Hallazgo útil para la discusión: premisa falsa}
+En la primera tanda del piloto, ante la T5 AT5-T5-12 (un método inexistente, «HyperAddress»), el
+WikiLLM \textbf{no se abstuvo}: respondió «The corpus does not mention "HyperAddress"; the relevant
+method is HippoRAG 2…» con una cita válida. Sustituyó la premisa por otra del corpus. En la
+segunda tanda sí se abstuvo. Con temperatura 0 el proveedor no es determinista, así que una sola
+corrida por pregunta tiene ruido. Es un buen ejemplo para justificar repeticiones y la métrica de
+abstención.
+\end{alerta}
+
+\paragraph{Costo previsto.} Corrida completa: 60 preguntas $\times$ 11 pasos $\times$ 2 sistemas =
+1.320 respuestas y 50 ingestas; cota alta de \textbf{4,67 USD} (1,50 de ingesta y 3,17 de
+preguntas). La extrapolación del piloto la sitúa entre 1 y 2,5 USD.
+
+%==========================================================================================
+\section{Preguntas probables del jurado}
+
+\begin{description}[style=nextline,leftmargin=0pt]
+  \item[¿Por qué el mismo modelo?] Es la única variable: cambia la arquitectura de la memoria, no el
+        modelo (constitución, regla 1). Fue un pedido del tutor.
+  \item[¿No es más barato el RAG?] En preguntas puntuales sí, y lo mostramos en vivo. El experimento
+        mide si el wiki compensa en síntesis entre papers (T2, T3) y en actualización de cifras
+        (T4), y reporta el costo de todas formas.
+  \item[¿Por qué el wiki tiene más llamadas que el RAG?] Es parte de la arquitectura: el agente
+        decide qué buscar y leer. No se iguala; se mide con tokens, latencia y costo por respuesta.
+  \item[¿Cómo saben que una cita es real?] Toda cita debe resolver a un \cod{span\_id} del Gold con la
+        misma huella y de un paper ya ingerido en ese paso. En la ingesta, el código quita las que
+        no resuelven antes de guardar la página.
+  \item[¿Quién juzga la correctitud?] Primero una capa determinista con claves normalizadas.
+        Lo indeterminado lo juzga otro modelo, \cod{gemini-3.1-flash-lite}, distinto del que
+        responde y de los que redactaron las preguntas (decisión 0003).
+  \item[¿El modelo no sabe ya las respuestas?] Casi todo el corpus es de 2026, posterior al corte de
+        entrenamiento. Las dos semillas anteriores (HippoRAG y HippoRAG 2) se marcan y se reportan
+        aparte, y se mide un control «libro cerrado».
+  \item[¿Por qué el piloto «no vale»?] $n$ pequeño y preguntas en borrador, sin el acuerdo entre
+        autores. Las cifras del informe saldrán solo de corridas guardadas en \cod{results/}.
+  \item[¿Y si un paper dice algo falso?] La respuesta correcta sale del corpus, no del mundo: el
+        sistema debe repetirlo con su fuente (regla 3).
+  \item[¿Qué falta?] Cerrar la verificación de la mitad B del banco y el acuerdo entre autores
+        (kappa de Cohen), calibrar el juez, ejecutar la corrida completa, el análisis y el informe.
+\end{description}
+
+%==========================================================================================
+\section{Plan B y cierre}
+
+\begin{itemize}
+  \item \textbf{Si falla la conexión o el proveedor}: en Preguntar e Ingerir, el botón
+        \textbf{Ejecuciones guardadas} reproduce un ensayo sin llamar al modelo. El panel muestra
+        «REPRODUCCIÓN… No es una ejecución en vivo»; hay que decirlo en voz alta.
+  \item Los pasos 1, 5 y 6 nunca llaman al modelo.
+  \item Si la ingesta falla a mitad: \textbf{Sistema $\rightarrow$ Reiniciar el wiki} y usar la
+        reproducción.
+  \item \textbf{Al terminar}: Reiniciar el wiki deja todo en el paso 5 y aparta la evidencia en
+        \cod{results/demo/ensayos/}.
+\end{itemize}
+
+\begin{clave}{Pendientes fuera de la demo}
+\begin{itemize}[leftmargin=12pt]
+  \item Los cambios de hoy (panel, verificación, métricas regeneradas y bitácora) \textbf{no tienen
+        commit}: el panel es código de Juan David; conviene que lo revise.
+  \item Guion detallado: \cod{docs/presentacion/guion-demo.md}.
+\end{itemize}
+\end{clave}
+
+\end{document}

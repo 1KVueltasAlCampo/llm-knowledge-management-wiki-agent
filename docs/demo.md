@@ -2,6 +2,24 @@
 
 Recorrido de punta a punta del sistema sobre el corpus real: un wiki mantenido por un agente y un RAG simple responden la misma pregunta con el mismo modelo; se ingiere un paper nuevo en vivo; se repite la pregunta y se inspecciona la evidencia que queda. Cada comando se ejecuta desde la raíz del repositorio.
 
+## Interfaz web
+
+```powershell
+uv run python -m wikillm.panel          # abre http://127.0.0.1:8765 (opciones: --puerto, --tope-usd, --no-abrir)
+```
+
+Solo escucha en la máquina local. Al arrancar carga el índice del RAG (unos 15 s en GPU). Secciones:
+
+| Sección | Qué hace |
+|---|---|
+| Preguntar | Una pregunta (o un ejemplo) a los dos sistemas: columna azul para el RAG y verde para el WikiLLM, con pasos del agente, fragmentos recuperados, respuesta, citas con su fragmento, costo y tabla comparativa |
+| Ingerir | Estado del corpus, siguiente paper del orden de ingesta y su ingesta con plan, escritura, validación del código y copia versionada |
+| Wiki | Índice, páginas y historial versionado |
+| Resultados | Métricas del piloto y estimación del costo de una corrida |
+| Sistema | Estado (clave, índice, wiki), verificaciones y reinicio del wiki en el paso 5 |
+
+La consola de cada ejecución muestra la misma salida que la orden equivalente (con un botón para copiarla), y la pestaña de llamadas lista tokens, tiempo y dólares de cada llamada al modelo. «Archivos» abre un visor de solo lectura (wiki, evidencia, documentos, especificaciones y código clave; nunca `.env`). Las acciones que llaman al modelo piden confirmación con su estimación, y la sesión se bloquea al llegar al tope de gasto (0,25 USD por defecto). Cada ejecución queda en `results/demo/grabaciones/` (no se versiona: incluye fragmentos de papers) y «Ejecuciones guardadas» la reproduce sin llamar al modelo, con un aviso permanente de que es una reproducción.
+
 ## Qué muestra
 
 | Paso | Qué se ve | Qué demuestra |
@@ -84,4 +102,4 @@ La primera orden solo estima el costo (no llama al modelo); la segunda calcula c
 
 ## Si falla la conexión
 
-Los pasos 1, 5 y 6 no usan el proveedor. Para los pasos 2 a 4 se reproducen las respuestas guardadas en `results/demo/ensayos/` y en `results/piloto-1/trazas.jsonl`.
+En la interfaz web, «Ejecuciones guardadas» reproduce una ejecución anterior sin llamar al proveedor. Los pasos 1, 5 y 6 no usan el proveedor. Para los pasos 2 a 4 se reproducen las respuestas guardadas en `results/demo/ensayos/` y en `results/piloto-1/trazas.jsonl`.

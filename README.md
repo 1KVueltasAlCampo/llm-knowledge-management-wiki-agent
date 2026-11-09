@@ -170,7 +170,10 @@ Desarrollo guiado por especificaciones con [OpenSpec](https://github.com/Fission
 
 ```bash
 uv run python -m wikillm.arnes comparar "<pregunta>" --wiki data/wiki/demo
+uv run python -m wikillm.panel        # interfaz web local (http://127.0.0.1:8765)
 ```
+
+El panel local ejecuta las mismas órdenes y muestra en vivo, con una columna por sistema, el recorrido del agente, las llamadas al modelo, las citas con su fragmento y el costo. Tiene cinco secciones (preguntar, ingerir, wiki, resultados y sistema), un visor de archivos de solo lectura y un tope de gasto por sesión; cada ejecución real queda guardada y puede reproducirse sin llamar al modelo.
 
 ## Cómo reproducir
 

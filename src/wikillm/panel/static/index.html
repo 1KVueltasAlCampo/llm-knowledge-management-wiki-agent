@@ -777,7 +777,11 @@ function frontmatter(texto) {
   return {tipo: campo('tipo'), titulo: campo('titulo'), paso: parseInt(campo('actualizada_en_paso'), 10) || 0};
 }
 async function cargarGrafo(ingeridos) {
-  const rutas = (S.archivos || []).map((a) => a.ruta).filter((r) => r.startsWith(WIKI + '/pages/') && r.endsWith('.md'));
+  // Ask for a fresh file list: S.archivos refreshes every 5 s and may not yet hold the pages
+  // that the last ingestion created, and the graph is cached per ingestion step.
+  let archivos = S.archivos || [];
+  try { archivos = await api('/api/archivos'); S.archivos = archivos; S.rutasPermitidas = new Set(archivos.map((a) => a.ruta)); } catch (e) { /* keep the cached list */ }
+  const rutas = archivos.map((a) => a.ruta).filter((r) => r.startsWith(WIKI + '/pages/') && r.endsWith('.md'));
   const paginas = await Promise.all(rutas.map(async (ruta) => {
     try { return {ruta, texto: (await api('/api/archivo?ruta=' + encodeURIComponent(ruta))).texto}; } catch (e) { return null; }
   }));
@@ -872,7 +876,7 @@ function dibujarGrafo(caja, g, ingeridos) {
         n.vx += (GW / 2 - n.x) * 0.0015; n.vy += (GH / 2 - n.y) * 0.003;
         if (arrastre && arrastre.n === n) { n.vx = 0; n.vy = 0; continue; }
         n.x += n.vx * calor; n.y += n.vy * calor; n.vx *= 0.6; n.vy *= 0.6;
-        n.x = Math.min(GW - 140, Math.max(20, n.x)); n.y = Math.min(GH - 20, Math.max(20, n.y));
+        n.x = Math.min(GW - 230, Math.max(20, n.x)); n.y = Math.min(GH - 20, Math.max(20, n.y));
       }
       calor *= 0.985;
     }

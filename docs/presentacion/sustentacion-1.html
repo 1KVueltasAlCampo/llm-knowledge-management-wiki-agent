@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WikiLLM frente a RAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ink:#13213a; --ink-2:#2c3d5c; --muted:#6b7a90; --line:#d9d2c3;
+  --paper:#f6f2e9; --card:#fffdf8; --night:#0f1b2d;
+  --rag:#d9694a; --rag-soft:#f6ddd3;
+  --wiki:#23877b; --wiki-soft:#d3ebe7;
+  --gold:#c99a2e; --gold-soft:#f3e6c4;
+  --ok:#3d8b4f; --bad:#b4443a; --pend:#8a7a5c;
+  --serif:"Fraunces",Georgia,serif; --sans:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b1422;overflow:hidden;font-family:var(--sans);color:var(--ink)}
+#viewport{position:fixed;inset:0;display:grid;place-items:center}
+#stage{width:1600px;height:900px;position:relative;transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--paper);padding:64px 84px 70px;display:none;flex-direction:column;overflow:hidden}
+.slide:not(#demo){justify-content:center;padding-bottom:90px}
+.slide.active{display:flex;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(var(--rag) 0 50%,var(--wiki) 50% 100%)}
+.kicker{font:600 15px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+h1{font:700 64px/1.05 var(--serif);letter-spacing:-.01em}
+h2{font:700 46px/1.1 var(--serif);letter-spacing:-.01em;margin-bottom:26px;max-width:1300px}
+h3{font:600 22px/1.25 var(--sans);margin-bottom:8px}
+p,li{font-size:21px;line-height:1.45;color:var(--ink-2)}
+.small{font-size:16px;color:var(--muted)}
+.mono{font-family:var(--mono)}
+.rag{color:var(--rag)} .wiki{color:var(--wiki)} .gold{color:var(--gold)}
+.foot{position:absolute;left:84px;right:84px;bottom:24px;display:flex;justify-content:space-between;font:500 14px var(--mono);color:var(--muted)}
+.speaker{display:inline-flex;gap:8px;align-items:center}
+.speaker i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.grid{display:grid;gap:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
+.card.rag-c{border-top:5px solid var(--rag)} .card.wiki-c{border-top:5px solid var(--wiki)} .card.gold-c{border-top:5px solid var(--gold)}
+.big{font:700 54px/1 var(--serif);color:var(--ink)}
+.chip{display:inline-block;font:600 13px/1 var(--mono);padding:6px 10px;border-radius:999px;letter-spacing:.04em;white-space:nowrap}
+.chip.ok{background:#dcefe0;color:var(--ok)} .chip.wip{background:var(--gold-soft);color:#8a6512} .chip.pend{background:#ece6da;color:var(--pend)}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:13px 16px;font-size:19px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 15px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+/* cover */
+.cover{background:var(--night);color:#f1ece0;justify-content:center}
+.cover h1{color:#fff;font-size:92px;max-width:1200px}
+.cover p{color:#c2cad8}
+.cover .kicker{color:#8fa0b8}
+.cover .foot{color:#7d8ca3}
+/* notes */
+#notes{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(980px,94vw);background:#111c2ecc;backdrop-filter:blur(6px);color:#e8edf5;border:1px solid #2c3d5c;border-radius:12px;padding:14px 18px;font:15px/1.5 var(--sans);display:none;z-index:10}
+#notes b{color:#ffd58a}
+#progress{position:fixed;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--rag),var(--wiki));transition:width .3s;z-index:9}
+#help{position:fixed;right:14px;top:10px;font:12px var(--mono);color:#6d7d95;z-index:9}
+/* pipeline */
+.flow{display:flex;align-items:stretch;gap:0}
+.step{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 14px;position:relative}
+.step b{display:block;font:600 17px var(--sans);margin-bottom:4px}
+.step>span{font-size:15px;color:var(--muted);line-height:1.35;display:block}
+.step .chip{margin-left:4px}
+.arrow{width:30px;display:grid;place-items:center;color:var(--muted);font-size:22px}
+/* bars */
+.hbar{display:flex;height:46px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.hbar div{display:flex;align-items:center;justify-content:center;color:#fff;font:600 16px var(--mono)}
+.trow{display:grid;grid-template-columns:170px 1fr 40px;align-items:center;gap:12px;margin:9px 0}
+.trow .bar{height:24px;border-radius:5px;background:var(--ink-2)}
+/* demo */
+#demo{padding:40px 50px 56px}
+#demo h2{font-size:34px;margin-bottom:12px}
+.demo-wrap{display:grid;grid-template-columns:940px minmax(0,1fr);gap:20px;flex:1;min-height:0}
+#graphBox{background:var(--card);border:1px solid var(--line);border-radius:14px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+#graph{flex:1;width:100%}
+.ctrl{display:flex;align-items:center;gap:14px;padding:12px 16px;border-top:1px solid var(--line);font:500 15px var(--mono)}
+.ctrl input[type=range]{flex:1;accent-color:var(--wiki)}
+button.b{font:600 14px var(--mono);border:1px solid var(--ink-2);background:var(--ink);color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer}
+button.b.alt{background:transparent;color:var(--ink)}
+#stepLbl{min-width:210px}
+#side{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
+#side select{width:100%;min-width:0;max-width:100%;font:14px var(--mono);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.4;color:var(--ink-2)}
+.panel h4{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;gap:8px}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cols3>.panel{min-width:0;overflow-wrap:anywhere}
+.cols3 .panel{font-size:13.5px;padding:12px}
+.cols3 .chip{white-space:normal;font-size:11.5px}
+.pendbox{border-style:dashed;background:transparent}
+.legend{position:absolute;left:14px;top:12px;font:12px var(--mono);color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;max-width:960px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
+#tip{position:absolute;pointer-events:none;background:var(--night);color:#fff;font:13px/1.35 var(--sans);padding:8px 10px;border-radius:8px;max-width:330px;display:none;z-index:3}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- 1 · Portada -->
+<section class="slide cover" data-speaker="Juan David" data-notes="Presentarnos y plantear la tensión en una frase: <b>¿conviene sintetizar el conocimiento una vez, al ingerirlo, o cada vez que alguien pregunta?</b> Avisar que hay demo en vivo al final.">
+  <div class="kicker">Maestría en IA Aplicada · Primera sustentación · 9 de noviembre de 2026</div>
+  <h1>¿Compilar o recuperar?</h1>
+  <p style="font-size:30px;margin-top:22px;max-width:1150px">WikiLLM frente a RAG sobre 50 preprints de arXiv: cuánto <span style="color:#7fd3c6">contexto</span> necesita un modelo para responder bien cuando el conocimiento <span style="color:#f2a183">crece y cambia</span>.</p>
+  <div style="display:flex;gap:56px;margin-top:70px">
+    <div><div class="small" style="color:#8fa0b8">Expone</div><p style="color:#fff;font-size:24px">Juan David Cruz</p></div>
+    <div><div class="small" style="color:#8fa0b8">Expone</div><p style="color:#fff;font-size:24px">Juan Diego Ramírez</p></div>
+  </div>
+  <svg style="position:absolute;right:70px;top:150px;opacity:.9" width="430" height="560" viewBox="0 0 430 560" aria-hidden="true">
+    <g stroke="#2c3d5c" stroke-width="1.5" fill="none">
+      <path d="M60 80 L200 170 L330 110 M200 170 L150 300 L300 330 L330 110 M150 300 L80 430 L250 470 L300 330 M250 470 L380 500"/>
+    </g>
+    <g><circle cx="60" cy="80" r="14" fill="#c99a2e"/><circle cx="200" cy="170" r="22" fill="#23877b"/><circle cx="330" cy="110" r="12" fill="#d9694a"/>
+    <circle cx="150" cy="300" r="17" fill="#23877b"/><circle cx="300" cy="330" r="13" fill="#d9694a"/><circle cx="80" cy="430" r="10" fill="#23877b"/>
+    <circle cx="250" cy="470" r="15" fill="#d9694a"/><circle cx="380" cy="500" r="9" fill="#23877b"/></g>
+  </svg>
+  <div class="foot"><span>github.com/1KVueltasAlCampo/llm-knowledge-management-wiki-agent</span><span class="pg"></span></div>
+</section>
+
+<!-- 2 · Problema -->
+<section class="slide" data-speaker="Juan David" data-notes="El escenario general es el conocimiento organizacional; lo estudiamos sobre arXiv porque es la versión más exigente del problema y la única reproducible y pública. Remarcar: <b>RAG trata igual un experimento validado y una afirmación sin sustento</b>.">
+  <div class="kicker">01 · El problema</div>
+  <h2>El contexto es el recurso escaso, y RAG lo gasta igual en cada pregunta</h2>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="card rag-c"><h3>Repite la síntesis</h3><p>Recupera, lee y sintetiza fragmentos crudos <b>cada vez</b> que alguien pregunta, aunque la pregunta sea la de ayer.</p></div>
+    <div class="card rag-c"><h3>Todos los fragmentos valen lo mismo</h3><p>La similitud semántica no distingue fecha ni respaldo: un resultado superado pesa igual que el vigente.</p></div>
+    <div class="card rag-c"><h3>No consolida</h3><p>Lo sintetizado no persiste. No se construye un activo que crezca, sino un buscador que vuelve a empezar.</p></div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:34px">
+    <div><div class="big">22,3 %</div><p>de 716 empleados públicos dedica cerca de media jornada semanal a buscar información <span class="small">(Nakash y Bouhnik, 2024)</span></p></div>
+    <div><div class="big">20.500+</div><p>preprints de computación recibió arXiv solo en febrero de 2026, sin revisión por pares <span class="small">(arXiv, 2026)</span></p></div>
+    <div><div class="big">≈ 6×</div><p>más texto generado por LLM en artículos que no son revisiones <span class="small">(Elazar y Antoniak, 2026)</span></p></div>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 3 · Pregunta -->
+<section class="slide" data-speaker="Juan David" data-notes="La pregunta es abierta a propósito: buscamos <b>bajo qué condiciones</b> conviene compilar, no demostrar que siempre conviene. H2 es la hipótesis de riesgo que nos obligamos a probar contra nosotros mismos.">
+  <div class="kicker">02 · Pregunta de investigación</div>
+  <h2 style="font-size:40px;font-weight:500;line-height:1.25">«¿En qué medida un WikiLLM mantenido de forma incremental <b>reduce el contexto</b> que un modelo de lenguaje y una persona necesitan para responder correctamente, y <b>cómo evoluciona esa ventaja frente a RAG</b> a medida que se ingieren nuevas fuentes?»</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:8px">
+    <div class="card wiki-c"><h3><span class="wiki">H1</span> · La ventaja</h3><p>A partir de cierto número de fuentes, el WikiLLM iguala o supera la exactitud de RAG con <b>menos tokens de contexto por respuesta correcta</b>.</p></div>
+    <div class="card rag-c"><h3><span class="rag">H2</span> · El riesgo</h3><p>Compilar puede <b>blanquear el ruido</b>: convertir afirmaciones débiles en prosa segura y conservar errores varias ingestas. Si ocurre, se reporta.</p></div>
+  </div>
+  <div class="card" style="margin-top:22px;padding:18px 26px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:22px">
+      <div><span class="chip ok">listo</span><p style="font-size:18px;margin-top:8px">Corpus versionado y preguntas con respuesta verificable</p></div>
+      <div><span class="chip wip">en construcción</span><p style="font-size:18px;margin-top:8px">Agente WikiLLM con fuente por afirmación y revisión humana</p></div>
+      <div><span class="chip wip">en construcción</span><p style="font-size:18px;margin-top:8px">Línea base RAG reproducible sobre el mismo corpus</p></div>
+      <div><span class="chip ok">métricas listas</span><p style="font-size:18px;margin-top:8px">Medir calidad, contexto, esfuerzo y costo tras cada ingesta</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 4 · Diseño -->
+<section class="slide" data-speaker="Juan David" data-notes="Regla 1 de la constitución, pedida por el tutor: <b>una sola variable</b>. Mismo modelo, mismo corpus, mismas preguntas. Lo único que cambia es la arquitectura. Explicar el protocolo de 50 pasos.">
+  <div class="kicker">03 · Diseño experimental</div>
+  <h2>Una sola variable: la arquitectura</h2>
+  <table>
+    <tr><th style="width:28%"></th><th class="rag">RAG · línea base</th><th class="wiki">WikiLLM · propuesta</th></tr>
+    <tr><td><b>Cuándo se sintetiza</b></td><td>En cada consulta</td><td>Una vez, al ingerir cada fuente</td></tr>
+    <tr><td><b>Qué persiste</b></td><td>Fragmentos y embeddings</td><td>Páginas redactadas, enlazadas y fechadas</td></tr>
+    <tr><td><b>Contradicciones</b></td><td>Implícitas, al responder</td><td>Explícitas, marcadas en la página</td></tr>
+    <tr><td><b>Falla característica</b></td><td>Recuperar el fragmento equivocado</td><td>Propagar un error de síntesis anterior</td></tr>
+  </table>
+  <div class="flow" style="margin-top:30px">
+    <div class="step"><b>1 · Ordenar</b><span>50 papers por fecha de publicación</span></div><div class="arrow">→</div>
+    <div class="step"><b>2 · Ingerir uno</b><span>RAG indexa · el wiki se reescribe vía PR</span></div><div class="arrow">→</div>
+    <div class="step"><b>3 · Congelar</b><span>Copia versionada tras cada ingesta</span></div><div class="arrow">→</div>
+    <div class="step"><b>4 · Preguntar</b><span>Las mismas 60 preguntas a ambos</span></div><div class="arrow">→</div>
+    <div class="step" style="border-color:var(--wiki)"><b>5 · Medir</b><span>× 50 pasos: la curva, no un punto</span></div>
+  </div>
+  <p class="small" style="margin-top:18px">Igual en ambos: modelo <span class="mono">deepseek-flash</span> · corpus y orden de ingesta · banco de preguntas · temperatura y fecha registradas por corrida.</p>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 5 · Implementación -->
+<section class="slide" data-speaker="Juan David" data-notes="Recorrer el flujo de izquierda a derecha. Lo que ya corre: ingesta, corpus, evaluación. Lo que se termina para el hito del 13 de noviembre: RAG, agente y arnés. Mencionar que <b>ninguna prueba gasta saldo</b> y que todo pasa por OpenSpec antes del código.">
+  <div class="kicker">04 · Cómo se implementa</div>
+  <h2>Un pipeline donde cada llamada al modelo queda registrada</h2>
+  <div class="flow">
+    <div class="step"><b>arXiv</b><span>API + HTML, respeta robots.txt (15 s)</span></div><div class="arrow">→</div>
+    <div class="step" style="background:#f1ece0"><b>Bronze</b><span>HTML crudo, sin versionar</span></div><div class="arrow">→</div>
+    <div class="step" style="background:#eceae6"><b>Silver</b><span>Markdown limpio</span></div><div class="arrow">→</div>
+    <div class="step" style="background:var(--gold-soft);border-color:var(--gold)"><b>Gold</b><span>Texto + 8.387 fragmentos con huella <span class="mono">span_id</span></span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;margin-top:16px">
+    <div class="grid" style="gap:12px">
+      <div class="step" style="border-left:5px solid var(--rag)"><b class="rag">RAG simple</b><span>Solo búsqueda vectorial, sin agentes <span class="chip wip">en construcción</span></span></div>
+      <div class="step" style="border-left:5px solid var(--wiki)"><b class="wiki">Agente WikiLLM</b><span>Ingesta → páginas → Pull Request revisado por humano <span class="chip wip">en construcción</span></span></div>
+    </div>
+    <div class="arrow" style="width:auto;font-size:30px">→</div>
+    <div class="step"><b>Arnés + evaluación</b><span>Una línea JSONL por (pregunta, sistema, paso) con citas como <span class="mono">span_id</span> → capa determinista → juez → métricas <span class="chip ok">evaluación lista</span></span></div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-top:26px">
+    <div class="card"><div class="big" style="font-size:40px">ClienteModelo</div><p style="font-size:17px">Tokens, tiempo y USD por llamada; corta en <span class="mono">MAX_USD_PER_RUN</span></p></div>
+    <div class="card"><div class="big" style="font-size:40px">OpenSpec</div><p style="font-size:17px">Propuesta, spec y tareas antes de cada cambio</p></div>
+    <div class="card"><div class="big" style="font-size:40px">13 reglas</div><p style="font-size:17px">Constitución: una variable, ningún secreto, corpus como dato</p></div>
+    <div class="card"><div class="big" style="font-size:40px">129 pruebas</div><p style="font-size:17px">En verde, y ninguna llama a una API real</p></div>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 6 · Corpus -->
+<section class="slide" data-speaker="Juan Diego" data-notes="Por qué 2026: el modelo no debe responder de memoria (su corte de entrenamiento no está publicado). Las dos semillas HippoRAG son anteriores y se reportan aparte. Incluimos a propósito <b>pares que se superan o contradicen</b>. El diseño es válido también con las primeras 30 ingestas.">
+  <div class="kicker">05 · Corpus</div>
+  <h2>50 preprints elegidos con una regla reproducible</h2>
+  <div class="grid" style="grid-template-columns:repeat(5,1fr)">
+    <div><div class="big">48</div><p style="font-size:17px">de 2026, posteriores al corte del modelo</p></div>
+    <div><div class="big">8.387</div><p style="font-size:17px">fragmentos citables con huella sha256</p></div>
+    <div><div class="big">1,08 M</div><p style="font-size:17px">tokens de texto en el Gold</p></div>
+    <div><div class="big">46</div><p style="font-size:17px">citas cruzadas dentro del corpus</p></div>
+    <div><div class="big">22</div><p style="font-size:17px">con enlace a código</p></div>
+  </div>
+  <div class="card" style="margin-top:26px;padding:18px 22px">
+    <div style="display:flex;justify-content:space-between" class="small"><span>Orden de ingesta (por fecha de publicación) · alto de la barra = tamaño en tokens</span><span><span class="gold">■</span> semilla antes del corte &nbsp; <span style="color:var(--ink-2)">■</span> mitad A &nbsp; <span style="color:#9aa6b8">■</span> mitad B</span></div>
+    <svg id="corpusChart" width="1380" height="190" style="display:block;margin-top:8px"></svg>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:20px">
+    <p style="font-size:18px"><b>Tema:</b> memoria de agentes, RAG y wikis de LLM, el estado del arte que revisamos.</p>
+    <p style="font-size:18px"><b>Choques a propósito:</b> HippoRAG → HippoRAG 2 → wikis, para medir contradicciones.</p>
+    <p style="font-size:18px"><b>Corpus responsable:</b> en Git solo van ids, metadatos, posiciones y huellas, nunca el texto.</p>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 7 · Banco -->
+<section class="slide" data-speaker="Juan Diego" data-notes="Un LLM distinto del que responde redacta borradores anclados a fragmentos reales; <b>solo cuentan cuando un humano los verificó contra el paper</b>. Cada ajuste quedó registrado con su motivo. Falta el revisor B para calcular kappa de Cohen.">
+  <div class="kicker">06 · Banco de preguntas (mitad A)</div>
+  <h2>Respuestas fijadas por humanos, no por el modelo</h2>
+  <div class="grid" style="grid-template-columns:1.1fr 1fr;gap:40px">
+    <div>
+      <h3 style="margin-bottom:14px">Del borrador a la pregunta verificada</h3>
+      <div id="funnel"></div>
+      <p class="small" style="margin-top:14px">Redacta <span class="mono">deepseek-v4-pro</span> con evidencia anclada a un <span class="mono">span_id</span>. Revisión humana: 4 descartes, 3 reemplazos, 2 reclasificaciones, 17 ajustes con motivo.</p>
+    </div>
+    <div>
+      <h3 style="margin-bottom:14px">Cinco tipos, cinco capacidades</h3>
+      <div id="types"></div>
+      <div class="card" style="margin-top:18px;padding:16px 20px"><p style="font-size:18px"><b>21 de 25</b> preguntas T1–T4 se pueden responder en las primeras 30 ingestas (mínimo exigido: 20). Antes de su <span class="mono">ingesta_minima</span>, toda pregunta es T5: <b>lo correcto es abstenerse</b>.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 8 · Medición y primer resultado -->
+<section class="slide" data-speaker="Juan Diego" data-notes="Primera corrida real: el modelo que responde, <b>sin contexto</b>, sobre los 102 borradores. Se abstiene en 93: no conoce el corpus, que es justo lo que queríamos. 5 de los 7 aciertos tocan las semillas HippoRAG anteriores al corte; esas preguntas se marcan como contaminadas y se reportan aparte. Todo lo gastado hasta hoy: menos de un dólar.">
+  <div class="kicker">07 · Cómo medimos y qué medimos ya</div>
+  <h2>Primer resultado: el modelo no conoce el corpus</h2>
+  <div class="grid" style="grid-template-columns:1fr 1.25fr;gap:40px">
+    <div>
+      <h3>Evaluación en capas</h3>
+      <div class="grid" style="gap:10px;margin-top:10px">
+        <div class="step"><b>1 · Capa determinista</b><span>Claves de respuesta, abstención y citas que resuelven a un fragmento real</span></div>
+        <div class="step"><b>2 · Juez externo</b><span><span class="mono">gemini-3.1-flash-lite</span>, solo lo indeterminado. Nadie se evalúa a sí mismo</span></div>
+        <div class="step" style="border-color:var(--wiki)"><b>3 · Métricas por paso</b><span>Cobertura · abstención correcta · fundamentación · tokens de contexto por correcta · costo</span></div>
+      </div>
+    </div>
+    <div>
+      <h3>Control a libro cerrado · <span class="mono" style="font-weight:400">deepseek-flash</span>, 102 preguntas, sin contexto</h3>
+      <div class="hbar" style="margin-top:16px">
+        <div style="width:91.2%;background:var(--ink-2)">93 se abstiene</div>
+        <div style="width:6.9%;background:var(--rag)">7</div>
+        <div style="width:1.9%;background:#b9b0a0"></div>
+      </div>
+      <div class="small" style="display:flex;gap:22px;margin-top:8px"><span><span style="color:var(--ink-2)">■</span> abstención</span><span><span class="rag">■</span> acierta sin leer (contaminada)</span><span><span style="color:#b9b0a0">■</span> 2 responde mal</span></div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:22px">
+        <div class="card" style="padding:16px"><div class="big" style="font-size:42px">6,9 %</div><p style="font-size:16px">cobertura sin contexto</p></div>
+        <div class="card" style="padding:16px"><div class="big" style="font-size:42px">97/102</div><p style="font-size:16px">decididas por la capa determinista</p></div>
+        <div class="card" style="padding:16px"><div class="big" style="font-size:42px">US$ 0,86</div><p style="font-size:16px">gasto total del proyecto hasta hoy</p></div>
+      </div>
+      <p style="font-size:18px;margin-top:18px">5 de los 7 aciertos tocan las semillas <b>HippoRAG</b>, anteriores al corte. Esas preguntas (4 del banco final) se marcan y se analizan aparte.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 9 · Demo -->
+<section class="slide" id="demo" data-speaker="Juan Diego" data-notes="<b>Demo:</b> 1) Pulsar ▶ para ver ingerir los 50 papers en orden; las aristas aparecen cuando ambos papers ya están dentro. 2) Elegir una pregunta T2 o T3: sus fuentes se resaltan y el panel dice desde qué paso se puede responder. 3) Mover el control antes y después de ese paso. 4) Mostrar la respuesta real a libro cerrado. Las columnas RAG y WikiLLM se llenan con el arnés después del 13-nov.">
+  <div class="kicker">08 · Demo en vivo · <a href="demo.html" target="_blank" style="color:var(--wiki)">abrir el frontend completo ↗</a></div>
+  <h2>El corpus crece paso a paso: ¿cuándo se vuelve respondible una pregunta?</h2>
+  <div class="demo-wrap">
+    <div id="graphBox">
+      <div class="legend">
+        <span><i style="background:var(--gold)"></i>semilla antes del corte</span>
+        <span><i style="background:var(--ink-2)"></i>mitad A</span>
+        <span><i style="background:#9aa6b8"></i>mitad B</span>
+        <span><i style="background:transparent;border:2px solid var(--wiki)"></i>tiene código</span>
+        <span><i style="background:var(--rag)"></i>fuente de la pregunta</span>
+        <span>tamaño = veces citado · eje x = orden de ingesta</span>
+      </div>
+      <svg id="graph" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="tip"></div>
+      <div class="ctrl">
+        <button class="b" id="play">▶ ingerir</button>
+        <button class="b alt" id="reset">↺</button>
+        <input type="range" id="step" min="0" max="50" value="50">
+        <span id="stepLbl"></span>
+      </div>
+    </div>
+    <div id="side">
+      <select id="qsel"></select>
+      <div class="panel" id="qpanel"></div>
+      <div class="cols3">
+        <div class="panel" id="cbpanel"></div>
+        <div class="panel pendbox"><h4><span class="rag">RAG · 13-nov</span></h4>Pendiente: el arnés escribirá aquí la respuesta, sus citas (<span class="mono">span_id</span>) y los tokens de contexto de este paso.</div>
+        <div class="panel pendbox"><h4><span class="wiki">WikiLLM · 13-nov</span></h4>Pendiente: mismo contrato de resultados, misma pregunta, mismo paso: lo único distinto es la arquitectura.</div>
+      </div>
+      <div class="panel" id="ppanel"><h4>Paper</h4>Pasa el cursor o haz clic en un nodo.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+<!-- 10 · Próximos pasos -->
+<section class="slide" data-speaker="Juan Diego" data-notes="Cerrar con el hito y con la postura honesta: <b>un resultado desfavorable al WikiLLM también es un resultado</b>. Invitar preguntas.">
+  <div class="kicker">09 · Lo que sigue</div>
+  <h2>Hito del 13 de noviembre: los dos sistemas sobre la misma línea de partida</h2>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="card rag-c"><h3>Construir</h3><p>RAG simple con búsqueda vectorial, agente WikiLLM con Pull Requests y arnés que escribe el contrato de resultados.</p></div>
+    <div class="card gold-c"><h3>Verificar</h3><p>Revisor B sobre la mitad A para el acuerdo (kappa de Cohen) y las 30 preguntas de la mitad B: banco de 60.</p></div>
+    <div class="card wiki-c"><h3>Medir</h3><p>Primera corrida comparativa paso a paso: cobertura, tokens de contexto por respuesta correcta y costo.</p></div>
+  </div>
+  <div class="card" style="margin-top:24px">
+    <h3>Riesgos que ya tenemos controlados</h3>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:8px">
+      <p style="font-size:18px"><b>Contaminación:</b> corpus de 2026 + control a libro cerrado.</p>
+      <p style="font-size:18px"><b>Autoevaluación:</b> responde, redacta y juzga un modelo distinto cada vez.</p>
+      <p style="font-size:18px"><b>Costo:</b> tope por corrida y registro de cada llamada; se evita la hora pico.</p>
+    </div>
+  </div>
+  <p style="font:500 34px/1.3 var(--serif);color:var(--ink);margin-top:40px">Un resultado desfavorable al WikiLLM también es un resultado, y lo vamos a reportar.</p>
+  <div class="foot"><span class="speaker"></span><span class="pg"></span></div>
+</section>
+
+</div></div>
+<div id="progress"></div>
+<div id="help">← → navegar · F pantalla completa · N notas</div>
+<div id="notes"></div>
+
+<script>
+const PAPERS=[{"o":1,"id":"2405.14831","t":"HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models","f":"2024-05-23","m":"A","pc":1,"c":1,"k":17534,"r":[]},{"o":2,"id":"2502.14802","t":"From RAG to Memory: Non-Parametric Continual Learning for Large Language Models","f":"2025-02-20","m":"B","pc":1,"c":1,"k":16056,"r":["2405.14831"]},{"o":3,"id":"2602.06052","t":"A Survey of Agent Memory in the Second Half: Towards Self-Evolving and Long-Horizon Agents","f":"2026-01-14","m":"A","pc":0,"c":1,"k":56863,"r":["2405.14831"]},{"o":4,"id":"2603.02473","t":"Diagnosing Retrieval vs. Utilization Bottlenecks in LLM Agent Memory","f":"2026-03-02","m":"B","pc":0,"c":1,"k":4938,"r":[]},{"o":5,"id":"2603.11768","t":"Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the Stability and Safety Governed Memory (SSGM) Framework","f":"2026-03-12","m":"A","pc":0,"c":0,"k":11580,"r":["2405.14831"]},{"o":6,"id":"2603.23848","t":"BeliefShift: Benchmarking Temporal Belief Consistency and Opinion Drift in LLM Agents","f":"2026-03-25","m":"B","pc":0,"c":0,"k":12079,"r":[]},{"o":7,"id":"2604.11364","t":"The Missing Knowledge Layer in Cognitive Architectures for AI Agents","f":"2026-04-13","m":"A","pc":0,"c":1,"k":10544,"r":[]},{"o":8,"id":"2604.12034","t":"Memory as Metabolism: A Design for Companion Knowledge Systems","f":"2026-04-13","m":"B","pc":0,"c":1,"k":35585,"r":[]},{"o":9,"id":"2605.06527","t":"STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?","f":"2026-05-07","m":"A","pc":0,"c":1,"k":27536,"r":["2502.14802"]},{"o":10,"id":"2605.07068","t":"WiCER: Wiki-memory Compile, Evaluate, Refine Iterative Knowledge Compilation for LLM Wiki Systems","f":"2026-05-08","m":"B","pc":0,"c":1,"k":19346,"r":[]},{"o":11,"id":"2605.10488","t":"DeepRefine: Agentic Knowledge Refinement via Reinforcement Learning","f":"2026-05-11","m":"A","pc":0,"c":0,"k":14798,"r":["2405.14831","2502.14802"]},{"o":12,"id":"2605.17596","t":"NeuSymMS: A Hybrid Neuro-Symbolic Memory System for Persistent, Self-Curating LLM Agents","f":"2026-05-17","m":"B","pc":0,"c":0,"k":8337,"r":[]},{"o":13,"id":"2605.18490","t":"Single-Round Vector RAG vs an LLM-Compiled Wiki: A Preregistered Comparison on a Small Multi-Domain Research Corpus","f":"2026-05-18","m":"A","pc":0,"c":1,"k":25992,"r":["2605.07068"]},{"o":14,"id":"2605.20926","t":"MemConflict: Evaluating Long-Term Memory Systems Under Memory Conflicts","f":"2026-05-20","m":"B","pc":0,"c":1,"k":23263,"r":["2603.23848"]},{"o":15,"id":"2605.25480","t":"Retrieval as Reasoning: Self-Evolving Agent-Native Retrieval via LLM-Wiki","f":"2026-05-25","m":"A","pc":0,"c":0,"k":13594,"r":["2405.14831","2502.14802"]},{"o":16,"id":"2607.24759","t":"Beyond Memory: A Templated Substrate for Heterogeneous Collaborative Knowledge Work with LLM Agents","f":"2026-05-29","m":"B","pc":0,"c":1,"k":12289,"r":[]},{"o":17,"id":"2606.09877","t":"Streaming Knowledge Compilation: Proactive Materiality-Scored Pinning for Time-Evolving LLM Wikis","f":"2026-06-03","m":"A","pc":0,"c":0,"k":24284,"r":["2605.07068"]},{"o":18,"id":"2606.06240","t":"TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in LLM-Agent Persistent Memory","f":"2026-06-04","m":"B","pc":0,"c":1,"k":59821,"r":["2405.14831","2603.23848","2604.11364","2605.06527"]},{"o":19,"id":"2606.09090","t":"Context Rot in AI-Assisted Software Development: Repurposing Documentation Consistency for AI Configuration Artifacts","f":"2026-06-08","m":"A","pc":0,"c":0,"k":6161,"r":[]},{"o":20,"id":"2606.22528","t":"Governance Decay: How Context Compaction Silently Erases Safety Constraints in Long-Horizon LLM Agents","f":"2026-06-21","m":"B","pc":0,"c":0,"k":9234,"r":[]},{"o":21,"id":"2606.25656","t":"Is GraphRAG Needed? From Basic RAG to Graph-/Agentic Solutions with Context Optimization","f":"2026-06-24","m":"A","pc":0,"c":0,"k":14529,"r":[]},{"o":22,"id":"2606.26511","t":"Temporal Validity in Retrieval Memory: Eliminating Stale-Fact Errors for AI Agents over Evolving Knowledge","f":"2026-06-25","m":"B","pc":0,"c":0,"k":13975,"r":[]},{"o":23,"id":"2607.02609","t":"Knowledge-Centric Information Systems","f":"2026-07-01","m":"A","pc":0,"c":0,"k":7715,"r":[]},{"o":24,"id":"2607.04576","t":"Progressive Disclosure for LLM-Maintained Wiki Knowledge Bases: a Preregistered Ablation","f":"2026-07-06","m":"B","pc":0,"c":0,"k":10857,"r":["2605.18490"]},{"o":25,"id":"2607.12893","t":"MemOps: Benchmarking Lifecycle Memory Operations in Long-Horizon Conversations","f":"2026-07-14","m":"A","pc":0,"c":1,"k":13464,"r":[]},{"o":26,"id":"2609.05441","t":"When Does Memory Help? A Cost-Aware Evaluation of Long-Term Memory in Tool-Using LLM Agents","f":"2026-07-26","m":"B","pc":0,"c":1,"k":9226,"r":[]},{"o":27,"id":"2607.26604","t":"WikiLoop: Jointly Learning to Build and Navigate Agent-Native Wikis with Downstream Feedback","f":"2026-07-29","m":"A","pc":0,"c":0,"k":15706,"r":["2405.14831","2502.14802","2605.25480"]},{"o":28,"id":"2607.26637","t":"Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability","f":"2026-07-29","m":"B","pc":0,"c":0,"k":55755,"r":[]},{"o":29,"id":"2607.27773","t":"ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory","f":"2026-07-30","m":"A","pc":0,"c":0,"k":11301,"r":[]},{"o":30,"id":"2608.00967","t":"TrajWiki: Source-Grounded Memory Trajectories for Long-Horizon Dialogue Agents","f":"2026-08-02","m":"B","pc":0,"c":0,"k":18297,"r":["2405.14831"]},{"o":31,"id":"2608.07429","t":"TEPA: Revoking Stale Memories for Conflict-Robust Language Agents","f":"2026-08-07","m":"A","pc":0,"c":0,"k":14028,"r":["2605.06527"]},{"o":32,"id":"2608.08995","t":"Muscle Memory for Agents: Compile not Merely Retrieve","f":"2026-08-10","m":"B","pc":0,"c":1,"k":10121,"r":[]},{"o":33,"id":"2608.10502","t":"From Faulty Memories to Corrected Actions: Dependency-Guided Rollback Repair for Memory-Augmented Agents","f":"2026-08-11","m":"A","pc":0,"c":1,"k":24219,"r":["2605.06527"]},{"o":34,"id":"2608.12888","t":"When Your Agent Opens the Chat App: Agent-Controlled Search over Raw Chat Logs Rivals Structured Memory","f":"2026-08-13","m":"B","pc":0,"c":0,"k":14291,"r":["2405.14831","2502.14802"]},{"o":35,"id":"2608.13883","t":"MemoryLake on MemoryArena: A Matched Study of Agent Memory Backends","f":"2026-08-14","m":"A","pc":0,"c":1,"k":11113,"r":[]},{"o":36,"id":"2608.15008","t":"Harness the Memory: A Holistic Evaluation of Memory Substrates in Memory Agents","f":"2026-08-15","m":"B","pc":0,"c":1,"k":44378,"r":["2405.14831","2502.14802","2602.06052"]},{"o":37,"id":"2608.29606","t":"Agent Zero Memory: Provenance-Aware Long-Term Memory for LLM Agents","f":"2026-08-30","m":"A","pc":0,"c":0,"k":11643,"r":["2405.14831"]},{"o":38,"id":"2608.29612","t":"LLMs Interpret, Embeddings Organize, Graphs Emerge: Agent-Driven Compilation of Scientific Knowledge","f":"2026-08-30","m":"B","pc":0,"c":0,"k":20413,"r":[]},{"o":39,"id":"2609.01852","t":"The Memory Trust Gap: Capability-Dependent Failures in Persistent-Memory Agents","f":"2026-09-01","m":"A","pc":0,"c":0,"k":10218,"r":["2605.06527"]},{"o":40,"id":"2609.16073","t":"The Immutable Past: Formalizing State Mutability and Conflict Resolution in Mutable RAG","f":"2026-09-13","m":"B","pc":0,"c":0,"k":11872,"r":["2405.14831"]},{"o":41,"id":"2609.18182","t":"WFM: Wiki Foundation Model for Complex Agentic Reasoning","f":"2026-09-16","m":"A","pc":0,"c":0,"k":12245,"r":["2405.14831","2502.14802"]},{"o":42,"id":"2609.24971","t":"DolphinBench: Mapping the Pareto Frontier of Agent Memory","f":"2026-09-21","m":"B","pc":0,"c":0,"k":5710,"r":[]},{"o":43,"id":"2609.25303","t":"Potential for Enhanced Learning in Machine Learning Classes by Using Wiki LLM Indexing","f":"2026-09-21","m":"A","pc":0,"c":0,"k":10164,"r":["2605.18490"]},{"o":44,"id":"2610.02472","t":"APDMem: Agent-Controlled Progressive Disclosure for Query-Adaptive Long-Term Memory","f":"2026-10-01","m":"B","pc":0,"c":0,"k":12032,"r":[]},{"o":45,"id":"2610.03902","t":"When Evidence Changes: Evaluating Memory Repair and Re-reading in Language-Model Agents","f":"2026-10-02","m":"A","pc":0,"c":1,"k":39631,"r":["2605.06527","2608.07429","2608.10502","2609.05441"]},{"o":46,"id":"2610.04794","t":"Knowing the Store: What a Memory Backend Must Write Down Before an Agent Can Read It","f":"2026-10-03","m":"B","pc":0,"c":1,"k":112449,"r":["2605.06527"]},{"o":47,"id":"2610.05732","t":"PACMI: Provenance-Aware Cascading Memory Invalidation for Long-Term LLM Agents","f":"2026-10-05","m":"A","pc":0,"c":0,"k":18891,"r":["2405.14831","2605.06527","2605.20926"]},{"o":48,"id":"2610.22209","t":"Beyond Downstream QA: Rethinking How We Evaluate Agent Memory","f":"2026-10-15","m":"B","pc":0,"c":1,"k":15600,"r":["2602.06052"]},{"o":49,"id":"2610.30755","t":"Is Complex Agentic Memory Always Needed? Naive RAG Is Stronger Than We Thought","f":"2026-10-22","m":"A","pc":0,"c":0,"k":45319,"r":["2405.14831","2608.12888","2608.29606"]},{"o":50,"id":"2611.02361","t":"Agent Memory as Rate-Limited Filtering: Explicit State Outlasts Long Context Beyond a Reader-Dependent Horizon","f":"2026-11-02","m":"B","pc":0,"c":1,"k":57977,"r":["2605.06527"]}];
+const QUESTIONS=[{"id":"A001-T1-01","tx":"What is the synonymy threshold tau used by default in HippoRAG?","tp":"T1","ans":"0.8","key":["0.8"],"src":["2405.14831"],"im":1,"cb":{"a":"0.8","ab":false,"v":"correcta","src":"determinista"}},{"id":"A002-T1-01","tx":"How many key articles were ultimately selected for the survey's systematic literature collection, and what publication period do they cover?","tp":"T1","ans":"218 key articles published between 2023 Q1 and 2025 Q4","key":["218","2023 Q1","2025 Q4"],"src":["2602.06052"],"im":3,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A002-T1-02","tx":"In the Memory-R1 system, what are the four discrete editing actions that the memory manager agent is allowed to perform on memory?","tp":"T1","ans":"ADD, UPDATE, DELETE, and NOOP","key":["ADD","UPDATE","DELETE","NOOP"],"src":["2602.06052"],"im":3,"cb":{"a":"ADD, UPDATE, DELETE, NOOP","ab":false,"v":"correcta","src":"determinista"}},{"id":"A003-T2-01","tx":"How do HippoRAG and the survey of agent memory both conceptualize the role of knowledge graphs in memory systems, and what specific algorithm does HippoRAG use on its graph?","tp":"T2","ans":"The response is almost accurate but there are some elements that the papers do not mention directly as \"Structural Store\" but the response is correct. ","key":["Personalized PageRank","PPR","Structural Store"],"src":["2405.14831","2602.06052"],"im":3,"cb":{"a":"HippoRAG and agent-memory surveys both treat knowledge graphs as structured long-term memory that supports retrieval and reasoning by linking entities/relations. HippoRAG specifically uses the Personalized PageRank (PPR) algorithm on its graph.","ab":false,"v":"correcta","src":"juez"}},{"id":"A003-T3-02","tx":"On the 2WikiMultiHopQA dataset, by how many percentage points does HippoRAG outperform the best single-step retrieval baseline (ColBERTv2) in terms of Recall@5, and what does the survey paper identify as a limitation of such static, context-limited benchmarks?","tp":"T3","ans":"HippoRAG (ColBERTv2) reaches 89.1 Recall@5 on 2WikiMultiHopQA versus 68.2 for ColBERTv2, a gain of 20.9 points (the paper rounds it to about 20%). The survey notes that such benchmarks are configured in context-limited simple environments that substantially under-specify the memory demands faced by real-world agents.","key":["20.9"],"src":["2405.14831","2602.06052"],"im":3,"cb":{"a":"HippoRAG outperforms ColBERTv2 by **~10 percentage points** in Recall@5 (roughly 71.7 vs 61.6). The survey notes such static benchmarks are **context-limited**—they assume a fixed retrieved context and don't capture dynamic, multi-turn or evolving information needs.","ab":false,"v":"incorrecta","src":"juez"}},{"id":"A004-T1-01","tx":"In the SSGM framework, what is the name of the append-only memory structure that serves as the operational source of truth for reversible reconciliation?","tp":"T1","ans":"Immutable Episodic Log","key":["Immutable Episodic Log"],"src":["2603.11768"],"im":5,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A005-T3-02","tx":"Which framework, HippoRAG or SSGM, demonstrates superior performance on multi-hop question answering benchmarks, and by what percentage does it outperform state-of-the-art RAG methods?","tp":"T3","ans":"HippoRAG outperforms state-of-the-art RAG methods by up to 20% on multi-hop QA benchmarks, while SSGM does not report empirical QA benchmark results.","key":["20%"],"src":["2405.14831","2603.11768"],"im":5,"cb":{"a":"HippoRAG demonstrates superior performance on multi-hop QA benchmarks, outperforming state-of-the-art RAG methods by up to 20%.","ab":false,"v":"correcta","src":"determinista"}},{"id":"A006-T1-02","tx":"According to the paper, what is the half-life assigned to semantic memories in NornicDB's three-tier cognitive decay model?","tp":"T1","ans":"69 days","key":["69-day","69 days"],"src":["2604.11364"],"im":7,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A008-T2-01","tx":"How do HippoRAG 2 and CUPMem differ in their approach to handling outdated information in memory?","tp":"T2","ans":"HippoRAG 2 extends HippoRAG's Personalized PageRank retrieval with passage nodes and more effective online use of an LLM; the paper does not describe a mechanism for deciding whether older memories are stale. CUPMem treats new evidence as a potential state update and decides, before query time, whether older memories remain usable, should be revised, or should be blocked (for example marking them STALE or UNKNOWN_CURRENT).","key":["before query time"],"src":["2502.14802","2605.06527"],"im":9,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A016-T2-01","tx":"How do HippoRAG 2 and LLM-Wiki differ in their approach to exposing knowledge for retrieval, and what specific structural artifact does each system use?","tp":"T2","ans":"HippoRAG 2 exposes knowledge through an open knowledge graph built offline from passages, with phrase nodes and passage nodes, searched with Personalized PageRank. LLM-Wiki compiles documents into structured Wiki pages with bidirectional links and exposes search, read and link-following operations through tool calls.","key":["passage nodes","bidirectional links"],"src":["2502.14802","2605.25480"],"im":15,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A016-T3-02","tx":"According to the LLM-Wiki paper's main results, which method achieves a higher F1 on MuSiQue, LLM-Wiki or HippoRAG 2, and by how many F1 points?","tp":"T1","ans":"LLM-Wiki, with 0.739 F1 versus 0.624 for HippoRAG 2: 11.5 points higher.","key":["11.5"],"src":["2605.25480"],"im":15,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A017-T1-01","tx":"What AUROC does the classification head achieve on the held-out finance test set for predicting abnormal stock volatility?","tp":"T1","ans":"0.728","key":["0.728"],"src":["2606.09877"],"im":17,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A018-T3-02","tx":"Which paper's evaluation methodology is shown by the later paper to be unreliable for post-training facts, and what alternative metric does the later paper propose as the reliable evaluation for compiled knowledge systems?","tp":"T3","ans":"The later paper shows that LLM-as-judge evaluation (used in the earlier WiCER paper) is confounded on post-training facts, and proposes regret analysis on matched pairs as the reliable metric.","key":["LLM-as-judge","regret analysis","matched pairs"],"src":["2605.07068","2606.09877"],"im":17,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A018-T4-03","tx":"What do the WiCER paper and the later Streaming Knowledge Compilation paper report about the quality of compiled-wiki inference in finance: how much of the quality lost by blind compilation does WiCER recover, and what cumulative regret does Online WiCER reach over 173 matched finance pairs?","tp":"T2","ans":"WiCER recovers 80% of the quality lost by blind compilation (mean 3.24 vs. 3.47 for raw full context); the later paper reports a finance cumulative regret of -20.0 (-0.12 per step) for Online WiCER.","key":["80%","-20.0"],"src":["2605.07068","2606.09877"],"im":17,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A019-T1-01","tx":"In the preliminary study, how many repositories out of the 356 analyzed were found to contain at least one stale code element reference?","tp":"T1","ans":"82 repositories","key":["82"],"src":["2606.09090"],"im":19,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A025-T2-01","tx":"How do HippoRAG 2 and WikiLoop differ in their approach to using downstream feedback for improving structured knowledge bases?","tp":"T2","ans":"HippoRAG 2 builds its knowledge graph offline (an LLM extracts open KG triples from passages) and retrieves with Personalized PageRank; the paper does not describe learning from downstream feedback. WikiLoop is feedback-coupled: it jointly learns to build and navigate an agent-native Wiki, using downstream navigation utility as the training signal for constructing it.","key":["downstream navigation utility"],"src":["2502.14802","2607.26604"],"im":27,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A026-T3-02","tx":"On AuthTrace, which system achieves higher All AC, WikiLoop or LLM-Wiki base, and by how many points?","tp":"T3","ans":"WikiLoop achieves higher All AC than LLM-Wiki base by 6.3 points (62.6 vs 56.3).","key":["6.3"],"src":["2605.25480","2607.26604"],"im":27,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A027-T1-01","tx":"On the LoCoMo dataset, what is the Recall@1 percentage achieved by ChronoMem for semantic version selection?","tp":"T1","ans":"20.5%","key":["20.5%"],"src":["2607.27773"],"im":29,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A044-T3-02","tx":"On the MemoryAgentBench SH-6k single-hop conflict-resolution benchmark, which method achieves the same substring exact match as TEPA-Rev, and what is that score?","tp":"T3","ans":"Last-write-wins achieves the same substring exact match as TEPA-Rev, at 0.890.","key":["Last-write-wins","0.890"],"src":["2608.07429","2610.03902"],"im":45,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A047-T1-01","tx":"What is the exact McNemar p-value for the paired comparison between PACMI and A-MEM-style on final accuracy over all 300 queries?","tp":"T1","ans":"2.55601 × 10^-6","key":["2.55601","10^-6"],"src":["2610.05732"],"im":47,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A053-T2-01","tx":"What is the key architectural difference between ReFind and Raw-RAG in how they retrieve evidence from raw chat history?","tp":"T2","ans":"ReFind uses an agent-controlled iterative keyword-search loop with chat-native controls (session-aware rank fusion, local context expansion, temporal narrowing, and seen-session filtering), while Raw-RAG uses a fixed dense retrieval and cross-encoder reranking pipeline without agentic search control.","key":["agent-controlled iterative keyword-search","fixed dense retrieval and cross-encoder reranking"],"src":["2608.12888","2610.30755"],"im":49,"cb":{"a":"ReFind uses a **two-stage retrieve-then-rerank** pipeline over raw chat history (dense retrieval followed by LLM-based reranking), whereas Raw-RAG feeds the **entire raw history directly** into the model without retrieval.","ab":false,"v":"incorrecta","src":"juez"}},{"id":"A054-T2-01","tx":"How do Agent Zero Memory and Raw-RAG differ in their approach to handling knowledge updates and superseded facts, and what design principle does each paper emphasize to support their respective approach?","tp":"T2","ans":"Agent Zero Memory uses a non-destructive, append-only Memory Events timeline that records when facts were asserted and superseded, so a superseded fact is distinguished from its correction rather than overwritten. Raw-RAG retrieves raw history and relies on the reader LLM to resolve temporal order and state changes directly from the retrieved evidence, without explicit state maintenance or mutation.","key":["non-destructive","append-only","reader LLM","raw history"],"src":["2608.29606","2610.30755"],"im":49,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"AT5-T5-07","tx":"What strict-judge score does EdgeMem achieve on the LoCoMo benchmark?","tp":"T5","ans":"Abstain: the ingested corpus does not contain this information.","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-09","tx":"What is the maximum relative gain in overall LLM-judge accuracy that Memory as Code achieves over the strongest baseline on LoCoMo and LongMemEval?","tp":"T5","ans":"Experiments on LoCoMo and LongMemEval show relative gains of up to 15.91% in overall LLM-judge accuracy over the strongest baseline in each setting","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-10","tx":"What is the maximum evidence recall that RAGU achieves on GraphRAG-Bench (Medical)?","tp":"T5","ans":"On GraphRAG-Bench (Medical), RAGU retrieves the most complete context at every factoid level (evidence recall up to 0.84 vs. $\\leq$0.76)","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-11","tx":"What is the largest average gap in F1 and BLEU-1 that Bio-Memory achieves under face-based personalization on the CALFW dataset?","tp":"T5","ans":"Under face-based personalization, the largest average gap reaches 27.29% / 21.15% in F1 / BLEU-1 on CALFW","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-12","tx":"By how many points of Recall@5 does HyperAddress outperform the strongest baseline on average across MuSiQue, 2WikiMultiHopQA, and HotpotQA?","tp":"T5","ans":"Abstain: the ingested corpus does not contain this information.","key":[],"src":[],"im":null,"cb":null},{"id":"A039-T4-03","tx":"What passage Recall@5 on MuSiQue has been reported for HippoRAG 2? If more than one paper in the corpus reports it, give the most recent report.","tp":"T4","ans":"74.7 (HippoRAG 2 paper, Table 3).","key":["74.7"],"src":["2502.14802","2609.18182"],"im":2,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A016-T4-03","tx":"What F1 on 2WikiMultiHopQA has been reported for HippoRAG 2? If more than one paper in the corpus reports it, give the most recent report.","tp":"T4","ans":"71.0 F1 (HippoRAG 2 paper, Table 2, Llama-3.3-70B reader).","key":["71.0"],"src":["2502.14802","2605.25480"],"im":2,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A013-T3-02","tx":"On the question of whether an LLM-compiled wiki outperforms RAG on answer quality, how do the two papers' headline results conflict, and what do they identify as the key factor explaining the disagreement?","tp":"T3","ans":"The earlier paper (WiCER) reports that full-context KV cache inference on a compiled wiki outperforms RAG on curated knowledge (4.38 vs. 4.08/5) but degrades below RAG at scale (3.47 vs. 3.64), while the later paper reports that a tool-browsing wiki beats single-round RAG on synthesis structure but loses on point-source groundedness and costs 21x more per query; the later paper attributes the disagreement to serving strategy (cached context vs. tool-using agent traversal) and retrieval baseline.","key":["4.38","21"],"src":["2605.07068","2605.18490"],"im":13,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}}];
+
+</script>
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const stage = document.getElementById('stage');
+  const notes = document.getElementById('notes');
+  let cur = 0, notesOn = false;
+
+  const fit = () => {
+    const s = Math.min(innerWidth / 1600, innerHeight / 900);
+    stage.style.transform = `scale(${s})`;
+  };
+  addEventListener('resize', fit); fit();
+
+  slides.forEach((sl, i) => {
+    const sp = sl.dataset.speaker, color = sp === 'Juan David' ? 'var(--rag)' : 'var(--wiki)';
+    sl.querySelectorAll('.speaker').forEach(e => e.innerHTML = `<i style="background:${color}"></i>${sp}`);
+    sl.querySelectorAll('.pg').forEach(e => e.textContent = `${i + 1} / ${slides.length}`);
+  });
+
+  const show = i => {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    document.getElementById('progress').style.width = `${(cur + 1) / slides.length * 100}%`;
+    notes.innerHTML = `<b>${slides[cur].dataset.speaker}:</b> ${slides[cur].dataset.notes}`;
+    notes.style.display = notesOn ? 'block' : 'none';
+    try { history.replaceState(null, '', '#' + (cur + 1)); } catch (e) {}
+  };
+
+  addEventListener('keydown', e => {
+    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+      if (e.key === 'Escape') document.activeElement.blur();
+      return;
+    }
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key.toLowerCase() === 'n') { notesOn = !notesOn; show(cur); }
+    else if (e.key.toLowerCase() === 'f') {
+      document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+    }
+  });
+
+  /* ---------- slide 6: corpus chart ---------- */
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    parent && parent.appendChild(n);
+    return n;
+  };
+  const colorOf = p => p.pc ? 'var(--gold)' : (p.m === 'A' ? 'var(--ink-2)' : '#9aa6b8');
+  {
+    const svg = document.getElementById('corpusChart');
+    const W = 1380, H = 190, base = 150, bw = W / 50;
+    const maxK = Math.max(...PAPERS.map(p => p.k));
+    PAPERS.forEach((p, i) => {
+      const h = Math.max(4, Math.sqrt(p.k / maxK) * 130);
+      const r = el('rect', { x: i * bw + 3, y: base - h, width: bw - 6, height: h, rx: 3, fill: colorOf(p) }, svg);
+      el('title', {}, r).textContent = `${p.o}. ${p.t} (${p.f}) · ${p.k.toLocaleString('es')} tokens`;
+    });
+    el('line', { x1: 30 * bw, x2: 30 * bw, y1: 6, y2: base + 4, stroke: 'var(--wiki)', 'stroke-dasharray': '5 4', 'stroke-width': 2 }, svg);
+    el('text', { x: 30 * bw - 8, y: 18, 'text-anchor': 'end', fill: 'var(--wiki)', 'font-size': 14, 'font-family': 'JetBrains Mono' }, svg).textContent = 'prefijo de 30 ingestas (2-ago-2026)';
+    [[0, 'may 2024', 'start'], [4, 'mar 2026'], [16, 'jun 2026'], [38, 'sep 2026'], [49, 'nov 2026', 'end']].forEach(([i, t, a]) => {
+      const x = a === 'start' ? i * bw + 3 : a === 'end' ? (i + 1) * bw - 3 : i * bw + bw / 2;
+      el('text', { x, y: base + 26, 'text-anchor': a || 'middle', fill: 'var(--muted)', 'font-size': 13, 'font-family': 'JetBrains Mono' }, svg).textContent = t;
+    });
+  }
+
+  /* ---------- slide 7: funnel and types ---------- */
+  {
+    const f = [['Borradores T1–T4', 102], ['Revisados en la página', 33], ['Elegidos por el revisor', 31], ['Verificados en el banco', 30]];
+    document.getElementById('funnel').innerHTML = f.map(([t, n], i) =>
+      `<div class="trow" style="grid-template-columns:240px 1fr 46px"><span style="font-size:17px">${t}</span>
+       <div class="bar" style="width:${Math.max(6, n / 102 * 100)}%;background:${i === 3 ? 'var(--wiki)' : 'var(--ink-2)'};opacity:${0.55 + i * 0.15}"></div>
+       <b class="mono">${n}</b></div>`).join('') +
+      `<p class="small">+ 12 borradores T5 a partir de papers fuera del corpus.</p>`;
+    const t = [['T1 · Hecho puntual', 10, 'var(--ink-2)'], ['T2 · Síntesis', 7, 'var(--ink-2)'], ['T3 · Contradicción', 6, 'var(--wiki)'], ['T4 · Actualización', 2, 'var(--wiki)'], ['T5 · No respondible', 5, 'var(--rag)']];
+    document.getElementById('types').innerHTML = t.map(([l, n, c]) =>
+      `<div class="trow"><span style="font-size:17px">${l}</span><div class="bar" style="width:${n / 10 * 100}%;background:${c}"></div><b class="mono">${n}</b></div>`).join('') +
+      `<p class="small" style="margin-top:6px"><span style="color:var(--ink-2)">■</span> cobertura &nbsp; <span class="wiki">■</span> donde se espera la ventaja del wiki &nbsp; <span class="rag">■</span> alucinación</p>`;
+  }
+
+  /* ---------- slide 9: live demo ---------- */
+  const svg = document.getElementById('graph');
+  const W = 1000, H = 560, top = 70, bottom = 525;
+  const byId = Object.fromEntries(PAPERS.map(p => [p.id, p]));
+  const cited = Object.fromEntries(PAPERS.map(p => [p.id, 0]));
+  const edges = [];
+  PAPERS.forEach(p => p.r.forEach(t => { if (byId[t]) { edges.push([p.id, t]); cited[t]++; } }));
+
+  // Deterministic layout: x is fixed by ingestion order, y relaxes with link attraction and repulsion.
+  const nodes = PAPERS.map((p, i) => ({
+    p, x: 40 + (p.o - 1) / 49 * (W - 80),
+    y: (top + bottom) / 2 + ((i * 97) % 200 - 100) * 1.6,
+    r: 7 + Math.sqrt(cited[p.id]) * 4.2
+  }));
+  const N = Object.fromEntries(nodes.map(n => [n.p.id, n]));
+  for (let it = 0; it < 400; it++) {
+    const f = nodes.map(() => 0);
+    nodes.forEach((a, i) => nodes.forEach((b, j) => {
+      if (i === j) return;
+      const dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy + 1;
+      if (d2 < 140 * 140) f[i] += dy / d2 * 900;
+    }));
+    edges.forEach(([s, t]) => {
+      const a = N[s], b = N[t], dy = b.y - a.y;
+      f[nodes.indexOf(a)] += dy * 0.01; f[nodes.indexOf(b)] -= dy * 0.01;
+    });
+    nodes.forEach((n, i) => {
+      n.y += Math.max(-6, Math.min(6, f[i] + ((top + bottom) / 2 - n.y) * 0.004));
+      n.y = Math.max(top + n.r, Math.min(bottom - n.r, n.y));
+    });
+  }
+
+  const gE = el('g', {}, svg), gN = el('g', {}, svg), gL = el('g', {}, svg);
+  const marker = el('line', { y1: top - 20, y2: bottom + 10, stroke: 'var(--rag)', 'stroke-width': 2, 'stroke-dasharray': '6 5', opacity: 0 }, svg);
+  const markerTxt = el('text', { y: top - 26, fill: 'var(--rag)', 'font-size': 13, 'font-family': 'JetBrains Mono', 'text-anchor': 'middle', opacity: 0 }, svg);
+  const eEls = edges.map(([s, t]) => {
+    const a = N[s], b = N[t], mx = (a.x + b.x) / 2, my = Math.min(a.y, b.y) - Math.abs(a.x - b.x) * 0.18;
+    return el('path', { d: `M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}`, fill: 'none', stroke: '#9aa6b8', 'stroke-width': 1.3, opacity: .55 }, gE);
+  });
+  const tip = document.getElementById('tip');
+  const nEls = nodes.map(n => {
+    const c = el('circle', { cx: n.x, cy: n.y, r: n.r, fill: colorOf(n.p), stroke: n.p.c ? 'var(--wiki)' : '#fff', 'stroke-width': n.p.c ? 3 : 1.5, style: 'cursor:pointer;transition:opacity .25s' }, gN);
+    c.addEventListener('mouseenter', ev => {
+      const box = document.getElementById('graphBox').getBoundingClientRect();
+      const s = box.width / document.getElementById('graphBox').offsetWidth;
+      tip.style.display = 'block';
+      tip.innerHTML = `<b>${n.p.o}. ${n.p.t}</b><br>${n.p.f} · citado ${cited[n.p.id]} veces`;
+      tip.style.left = Math.min((ev.clientX - box.left) / s + 12, 640) + 'px';
+      tip.style.top = ((ev.clientY - box.top) / s + 12) + 'px';
+      paper(n.p);
+    });
+    c.addEventListener('mouseleave', () => tip.style.display = 'none');
+    c.addEventListener('click', () => paper(n.p));
+    return c;
+  });
+  // A few labels for orientation.
+  [[1, 'HippoRAG'], [2, 'HippoRAG 2'], [9, 'STALE'], [31, 'TEPA'], [49, 'Naive RAG']].forEach(([o, label]) => {
+    const n = nodes[o - 1];
+    el('text', { x: Math.max(n.x, 40), y: n.y + n.r + 15, 'text-anchor': 'middle', 'font-size': 12, 'font-family': 'JetBrains Mono', fill: 'var(--muted)' }, gL)
+      .textContent = label;
+  });
+
+  const range = document.getElementById('step'), lbl = document.getElementById('stepLbl');
+  const qsel = document.getElementById('qsel');
+  let step = 50, q = null, timer = null;
+
+  const paper = p => {
+    document.getElementById('ppanel').innerHTML = `<h4><span>Paper · paso ${p.o}</span><span>${p.id}</span></h4>
+      <b>${p.t}</b><br>${p.f} · ${p.k.toLocaleString('es')} tokens · ${p.c ? 'con código' : 'sin código'} · mitad ${p.m}${p.pc ? ' · <span class="gold">antes del corte</span>' : ''}<br>
+      Cita a ${p.r.length} del corpus · citado por ${cited[p.id]}`;
+  };
+
+  const render = () => {
+    lbl.textContent = step === 0 ? 'Paso 0 · corpus vacío' : `Paso ${step} · ${PAPERS[step - 1].f}`;
+    const src = new Set(q ? q.src : []);
+    nodes.forEach((n, i) => {
+      const on = n.p.o <= step;
+      nEls[i].style.opacity = on ? 1 : 0.08;
+      nEls[i].setAttribute('fill', src.has(n.p.id) ? 'var(--rag)' : colorOf(n.p));
+      nEls[i].setAttribute('r', src.has(n.p.id) ? n.r + 3 : n.r);
+    });
+    edges.forEach(([s, t], i) => {
+      const on = byId[s].o <= step && byId[t].o <= step;
+      const hot = src.has(s) && src.has(t);
+      eEls[i].style.opacity = on ? (hot ? 1 : .5) : 0;
+      eEls[i].setAttribute('stroke', hot ? 'var(--rag)' : '#9aa6b8');
+      eEls[i].setAttribute('stroke-width', hot ? 3 : 1.3);
+    });
+    if (q && q.im) {
+      const x = 40 + (q.im - 1) / 49 * (W - 80);
+      marker.setAttribute('x1', x); marker.setAttribute('x2', x); marker.setAttribute('opacity', 1);
+      markerTxt.setAttribute('x', Math.min(Math.max(x, 110), 890)); markerTxt.setAttribute('opacity', 1);
+      markerTxt.textContent = `respondible desde el paso ${q.im}`;
+    } else { marker.setAttribute('opacity', 0); markerTxt.setAttribute('opacity', 0); }
+    question();
+  };
+
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const question = () => {
+    const qp = document.getElementById('qpanel'), cb = document.getElementById('cbpanel');
+    if (!q) { qp.innerHTML = 'Elige una pregunta del banco verificado.'; cb.innerHTML = ''; return; }
+    let expected;
+    if (q.tp === 'T5') expected = `<span class="chip pend">abstenerse siempre</span> La respuesta no está en el corpus.`;
+    else if (step < q.im) expected = `<span class="chip pend">abstenerse</span> En el paso ${step} faltan fuentes: lo correcto es no responder.`;
+    else expected = `<span class="chip ok">respondible</span> ${esc(q.ans)}`;
+    const srcs = q.src.map(id => byId[id] ? `${byId[id].o}. ${esc(byId[id].t.split(/[:—]/)[0])}` : `${id} (fuera del corpus)`).join(' · ');
+    qp.innerHTML = `<h4><span>${q.id} · ${q.tp}</span><span>${q.im ? 'paso mínimo ' + q.im : 'sin paso mínimo'}</span></h4>
+      <div style="font-size:16px;color:var(--ink);margin-bottom:8px">${esc(q.tx)}</div>
+      <div style="margin-bottom:6px"><b>Respuesta esperada en el paso ${step}:</b> ${expected}</div>
+      <div class="small">Fuentes: ${srcs}</div>`;
+    if (q.cb) {
+      const v = q.cb.ab ? '<span class="chip pend">se abstuvo</span>' : (q.cb.v === 'correcta' ? '<span class="chip wip">contaminada</span>' : '<span class="chip" style="background:#f3d9d5;color:var(--bad)">incorrecta</span>');
+      cb.innerHTML = `<h4><span>Libro cerrado · medido</span></h4>${v}<div style="margin-top:6px">${esc(q.cb.a.slice(0, 95))}${q.cb.a.length > 95 ? '…' : ''}</div><div class="small" style="margin-top:4px">decidió: ${q.cb.src}</div>`;
+    } else {
+      cb.innerHTML = `<h4><span>Libro cerrado</span></h4>Las T5 no entraron en el control a libro cerrado (se redactaron después).`;
+    }
+  };
+
+  qsel.innerHTML = '<option value="">— Elige una pregunta del banco (30 verificadas) —</option>' +
+    QUESTIONS.map((x, i) => `<option value="${i}">${x.id} · ${esc(x.tx.slice(0, 70))}${x.tx.length > 70 ? '…' : ''}</option>`).join('');
+  qsel.addEventListener('change', () => { q = qsel.value === '' ? null : QUESTIONS[+qsel.value]; render(); });
+  range.addEventListener('input', () => { step = +range.value; render(); });
+  const stop = () => { clearInterval(timer); timer = null; document.getElementById('play').textContent = '▶ ingerir'; };
+  document.getElementById('play').addEventListener('click', () => {
+    if (timer) return stop();
+    if (step >= 50) step = 0;
+    document.getElementById('play').textContent = '❚❚ pausa';
+    timer = setInterval(() => {
+      step++; range.value = step; render();
+      if (step >= 50) stop();
+    }, 260);
+  });
+  document.getElementById('reset').addEventListener('click', () => { stop(); step = 0; range.value = 0; render(); });
+
+  const pre = QUESTIONS.findIndex(x => x.id === 'A005-T3-02');
+  if (pre >= 0) { qsel.value = String(pre); q = QUESTIONS[pre]; }
+  render();
+
+  const start = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(start) ? start - 1 : 0);
+})();
+</script>
+</body>
+</html>

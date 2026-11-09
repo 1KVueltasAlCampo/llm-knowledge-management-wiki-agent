@@ -222,6 +222,15 @@ def test_la_orden_equivalente_se_puede_pegar_en_la_consola(raiz):
     assert comando_equivalente(POR_ID["calentar"], {}) is None
 
 
+def test_la_orden_de_reiniciar_el_wiki_es_la_del_sistema_operativo(monkeypatch):
+    monkeypatch.setattr(acciones, "_en_windows", lambda: True)
+    assert comando_equivalente(POR_ID["reiniciar_wiki"], {}) == r".\scripts\preparar_demo.ps1"
+    monkeypatch.setattr(acciones, "_en_windows", lambda: False)
+    assert comando_equivalente(POR_ID["reiniciar_wiki"], {}) == (
+        "rm -rf data/wiki/demo && cp -r data/wiki/dev2 data/wiki/demo"
+    )
+
+
 def test_los_subprocesos_salen_de_una_lista_fija_con_el_wiki_validado():
     cmd = comando_de_subproceso("git_wiki", {"wiki": "data/wiki/dev2"}, "py")
     assert cmd[-3:] == ["log", "--oneline", "--decorate"] and "data/wiki/dev2" in cmd

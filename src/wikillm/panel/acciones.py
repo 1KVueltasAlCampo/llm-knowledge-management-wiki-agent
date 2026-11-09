@@ -247,6 +247,10 @@ def _citar(texto: str) -> str:
     return "'" + texto.replace("'", "''") + "'"
 
 
+def _en_windows() -> bool:
+    return sys.platform == "win32"
+
+
 def comando_equivalente(accion: Accion, v: dict[str, Any]) -> str | None:
     """La orden de consola que hace lo mismo; solo se muestra, nunca se ejecuta."""
     wiki = v.get("wiki", WIKI_DEMO)
@@ -257,7 +261,9 @@ def comando_equivalente(accion: Accion, v: dict[str, Any]) -> str | None:
         "--respuestas results/piloto-1/respuestas.jsonl",
         "validar_banco": "uv run python -m wikillm.eval validar-banco",
         "verificar": "uv run python scripts/verificar_demo.py",
-        "reiniciar_wiki": r".\scripts\preparar_demo.ps1",
+        "reiniciar_wiki": r".\scripts\preparar_demo.ps1"
+        if _en_windows()
+        else f"rm -rf {WIKI_DEMO} && cp -r {WIKI_BASE} {WIKI_DEMO}",
     }
     if accion.id in comandos:
         return comandos[accion.id]

@@ -31,7 +31,7 @@
   "context_tokens_media": 1216.5882352941176,
   "context_tokens_mediana": 1194.0,
   "tokens_por_correcta": 10341.0,
-  "costo_usd_total": 0.003457278
+  "costo_usd_total": 0.0027234539999999997
  },
  {
   "system": "wiki",
@@ -57,14 +57,14 @@
   "n_respondibles": 6,
   "cobertura": 0.8333333333333334,
   "indeterminadas": 1,
-  "abstencion_correcta": 0.9090909090909091,
+  "abstencion_correcta": 1.0,
   "n_t4_actualizadas": 0,
   "obsoletas": 0,
   "tasa_obsoleta": null,
   "fundamentacion_media": 1.0,
-  "context_tokens_media": 3557.5882352941176,
+  "context_tokens_media": 3543.705882352941,
   "context_tokens_mediana": 3319.0,
-  "tokens_por_correcta": 12095.8,
-  "costo_usd_total": 0.013156307999999999
+  "tokens_por_correcta": 12048.6,
+  "costo_usd_total": 0.012343406999999999
  }
 ]

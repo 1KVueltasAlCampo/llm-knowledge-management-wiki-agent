@@ -165,6 +165,7 @@ def test_la_traza_esta_vacia_antes_de_preguntar_y_describe_la_ultima_pregunta(en
         "lecturas": 0,
         "paginas_leidas": [],
         "incidencias": [],
+        "detalle": [],
     }
     brazo.ingerir(P1)
     brazo.responder("What threshold?")
@@ -174,7 +175,13 @@ def test_la_traza_esta_vacia_antes_de_preguntar_y_describe_la_ultima_pregunta(en
         "lecturas": 1,
         "paginas_leidas": [SLUG1],
         "incidencias": [],
+        "detalle": [
+            {"accion": "search", "argumento": "HippoRAG", "resultado": SLUG1},
+            {"accion": "read", "argumento": [SLUG1], "resultado": f"read: {SLUG1}"},
+            {"accion": "answer", "argumento": "", "resultado": "final answer"},
+        ],
     }
     brazo.responder("Second question?")  # la traza se reinicia: solo una lectura
     assert brazo.traza()["acciones"] == 1 and brazo.traza()["busquedas"] == 0
+    assert [paso["accion"] for paso in brazo.traza()["detalle"]] == ["read", "answer"]
     assert brazo.ingeridos == [P1]

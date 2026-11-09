@@ -59,4 +59,5 @@ class BrazoWiki:
             "lecturas": traza.lecturas,
             "paginas_leidas": list(traza.paginas_leidas),
             "incidencias": list(traza.incidencias),
+            "detalle": [dict(paso) for paso in traza.detalle],
         }

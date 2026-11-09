@@ -220,3 +220,47 @@ def test_el_analisis_de_acciones_valida_cada_forma():
 def test_el_rag_y_el_wiki_comparten_las_mismas_reglas_de_respuesta():
     for instrucciones in (INSTRUCCIONES_RAG, INSTRUCCIONES_AGENTE, INSTRUCCIONES_SIN_HERRAMIENTAS):
         assert REGLAS_DE_RESPUESTA in instrucciones
+
+
+def test_el_detalle_de_la_traza_lista_las_acciones_en_orden_con_sus_argumentos(tmp_path, wiki):
+    agente, _ = consulta(
+        tmp_path,
+        wiki,
+        [buscar("PageRank"), leer("hipporag"), responder(f"It uses PageRank [{S1}].")],
+    )
+    agente.responder("What algorithm?")
+    detalle = agente.traza.detalle
+    assert [d["accion"] for d in detalle] == ["search", "read", "answer"]
+    assert detalle[0]["argumento"] == "PageRank" and "hipporag" in detalle[0]["resultado"]
+    assert detalle[1]["argumento"] == ["hipporag"] and detalle[1]["resultado"] == "read: hipporag"
+
+
+def test_el_detalle_indica_las_paginas_inexistentes_y_las_respuestas_rechazadas(tmp_path, wiki):
+    agente, _ = consulta(
+        tmp_path,
+        wiki,
+        [responder("Guess"), leer("no-existe", "hipporag"), responder(f"Ok [{S1}]")],
+    )
+    agente.responder("Q?")
+    detalle = agente.traza.detalle
+    assert detalle[0] == {"accion": "answer", "argumento": "", "resultado": "rejected: read first"}
+    assert detalle[1]["resultado"] == "read: hipporag; not found: no-existe"
+    assert detalle[2]["accion"] == "answer" and detalle[2]["resultado"] == "final answer"
+
+
+def test_una_busqueda_sin_resultados_queda_anotada_y_el_detalle_se_reinicia(tmp_path, wiki):
+    agente, _ = consulta(
+        tmp_path,
+        wiki,
+        [
+            buscar("zzz"),
+            leer("hipporag"),
+            responder(f"Ok [{S1}]"),
+            leer("hipporag"),
+            responder("x"),
+        ],
+    )
+    agente.responder("Q1?")
+    assert agente.traza.detalle[0]["resultado"] == "no pages match"
+    agente.responder("Q2?")
+    assert [d["accion"] for d in agente.traza.detalle] == ["read", "answer"]

@@ -21,6 +21,7 @@ from wikillm.wiki.almacen import Wiki
 from wikillm.wiki.herramientas import (
     MAXIMO_PAGINAS_POR_LECTURA,
     MAXIMO_RESULTADOS,
+    Lectura,
     texto_de_busqueda,
     wiki_read,
     wiki_search,
@@ -59,6 +60,17 @@ class Traza:
     lecturas: int = 0
     paginas_leidas: list[str] = field(default_factory=list)
     incidencias: list[str] = field(default_factory=list)
+    # Una entrada por acción, en orden: {"accion", "argumento", "resultado"}.
+    detalle: list[dict[str, Any]] = field(default_factory=list)
+
+
+def resumen_de_lectura(lectura: Lectura) -> str:
+    partes = [f"read: {', '.join(lectura.leidas) or 'none'}"]
+    if lectura.no_encontradas:
+        partes.append(f"not found: {', '.join(lectura.no_encontradas)}")
+    if lectura.no_leidas:
+        partes.append(f"not read (limit): {', '.join(lectura.no_leidas)}")
+    return "; ".join(partes)
 
 
 def analizar_accion(texto: str) -> tuple[str, Any]:
@@ -153,10 +165,16 @@ class ConsultaWiki:
             if accion == "answer":
                 if not self.traza.paginas_leidas and not final_pedido:
                     self.traza.acciones += 1  # asegura que el bucle termina
+                    self.traza.detalle.append(
+                        {"accion": "answer", "argumento": "", "resultado": "rejected: read first"}
+                    )
                     mensajes.append(
                         {"role": "user", "content": "Read at least one page before answering."}
                     )
                     continue
+                self.traza.detalle.append(
+                    {"accion": "answer", "argumento": "", "resultado": "final answer"}
+                )
                 return self._resultado(argumento, leido, llamadas, salidas, inicio)
 
             self.traza.acciones += 1
@@ -165,6 +183,13 @@ class ConsultaWiki:
                 resultados = wiki_search(self._wiki, argumento)
                 vacias = 0 if resultados else vacias + 1
                 texto = texto_de_busqueda(resultados)
+                self.traza.detalle.append(
+                    {
+                        "accion": "search",
+                        "argumento": argumento,
+                        "resultado": ", ".join(r.slug for r in resultados) or "no pages match",
+                    }
+                )
             else:
                 self.traza.lecturas += 1
                 lectura = wiki_read(self._wiki, argumento)
@@ -172,6 +197,13 @@ class ConsultaWiki:
                     s for s in lectura.leidas if s not in self.traza.paginas_leidas
                 ]
                 texto = lectura.texto
+                self.traza.detalle.append(
+                    {
+                        "accion": "read",
+                        "argumento": list(argumento),
+                        "resultado": resumen_de_lectura(lectura),
+                    }
+                )
             salidas.append(texto)
             leido.update(PATRON_SPAN_ID.findall(texto))
             restantes = max(self._max_acciones - self.traza.acciones, 0)

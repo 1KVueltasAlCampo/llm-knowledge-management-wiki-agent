@@ -62,7 +62,7 @@ def validar_pasos(pasos: Sequence[int], total_papers: int) -> tuple[int, ...]:
     return ordenados
 
 
-def _comprobar_estado(brazos: Sequence[Brazo], esperados: Sequence[str], paso: int) -> None:
+def comprobar_estado(brazos: Sequence[Brazo], esperados: Sequence[str], paso: int) -> None:
     for brazo in brazos:
         ingeridos = getattr(brazo, "ingeridos", None)
         if ingeridos is not None and list(ingeridos) != list(esperados):
@@ -122,7 +122,7 @@ def ejecutar(
         if not pendientes:
             salida(f"Paso {paso}: ya estaba completo ({total} respuestas)")
             continue
-        _comprobar_estado(brazos, config.orden[:paso], paso)
+        comprobar_estado(brazos, config.orden[:paso], paso)
         salida(f"Paso {paso}: {len(pendientes)} respuestas por hacer de {total}")
         for pregunta, brazo in pendientes:
             resultado = brazo.responder(pregunta["texto"])

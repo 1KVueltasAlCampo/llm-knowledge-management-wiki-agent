@@ -4,9 +4,14 @@
     uv run python -m wikillm.arnes correr --corrida piloto-1 --pasos 0,5 \\
         --estado-minimo borrador --tipos T1,T5
     uv run python -m wikillm.arnes correr --corrida 2026-12-01 --confirmo-usd 6
+    uv run python -m wikillm.arnes comparar "What does HippoRAG use PageRank for?" \\
+        --wiki data/wiki/dev2
 
-Ingiere los papers en ``orden_ingesta`` y, en cada paso, hace las preguntas del banco al RAG y al
-wiki. Escribe en ``results/<corrida>/``: ``respuestas.jsonl`` (el contrato de resultados),
+``comparar`` hace una sola pregunta a los dos sistemas y muestra respuesta, citas con su fragmento,
+pasos del agente y costo; el paso de ingesta es el del wiki indicado.
+
+``correr`` ingiere los papers en ``orden_ingesta`` y, en cada paso, hace las preguntas del banco al
+RAG y al wiki. Escribe en ``results/<corrida>/``: ``respuestas.jsonl`` (el contrato de resultados),
 ``ingestas.jsonl``, ``trazas.jsonl`` y ``corrida.json``. Si se corta, repetir la misma orden
 continúa donde quedó. Hace llamadas reales al modelo y gasta saldo.
 """
@@ -20,6 +25,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from wikillm.arnes.comparar import comparar, crear_resolutor, formatear, registrar
 from wikillm.arnes.corrida import (
     CORRIDA,
     PASOS_POR_DEFECTO,
@@ -88,9 +94,11 @@ def _crear_brazos_reales(
     from wikillm.wiki.brazo import BrazoWiki
 
     spans = cargar_span_ids(argumentos.spans) if argumentos.spans.exists() else None
+    carpeta_indice = getattr(argumentos, "chroma", None) or Path("data/chroma") / argumentos.corrida
+    carpeta_wiki = getattr(argumentos, "wiki", None) or Path("data/wiki") / argumentos.corrida
     indice = IndiceRag(
         argumentos.gold,
-        Path("data/chroma") / argumentos.corrida,
+        carpeta_indice,
         embeddings=crear_embeddings(ajustes),
         medir=medidor_de_tokens(ajustes.embedding_model),
         modelo_embeddings=ajustes.embedding_model,
@@ -99,7 +107,7 @@ def _crear_brazos_reales(
         BrazoRag(modelo, indice, k=argumentos.k, spans_validos=spans),
         BrazoWiki(
             modelo,
-            Wiki(Path("data/wiki") / argumentos.corrida),
+            Wiki(carpeta_wiki),
             argumentos.gold,
             max_acciones=argumentos.max_acciones,
             spans_validos=spans,
@@ -129,6 +137,21 @@ def _analizar(argv: Sequence[str] | None) -> argparse.Namespace:
     correr.add_argument("--max-acciones", type=int, default=8, help="tope del agente del wiki")
     correr.add_argument("--estimar", action="store_true", help="solo imprime el costo esperado")
     correr.add_argument("--confirmo-usd", type=float, default=0.0, help="acepta gasto mayor de 5")
+    cmp_ = ordenes.add_parser(
+        "comparar", help="hace una pregunta a los dos sistemas y muestra todo (gasta centavos)"
+    )
+    cmp_.add_argument("pregunta")
+    cmp_.add_argument(
+        "--wiki", type=Path, default=Path("data/wiki/demo"), help="wiki ya construido"
+    )
+    cmp_.add_argument("--chroma", type=Path, default=Path("data/chroma"), help="índice del RAG")
+    cmp_.add_argument("--manifest", type=Path, default=RUTA_MANIFEST)
+    cmp_.add_argument("--gold", type=Path, default=Path("data/gold"))
+    cmp_.add_argument("--spans", type=Path, default=RUTA_SPANS)
+    cmp_.add_argument("--resultados", type=Path, default=Path("results"))
+    cmp_.add_argument("--k", type=int, default=5, help="fragmentos que recupera el RAG")
+    cmp_.add_argument("--max-acciones", type=int, default=8, help="tope del agente del wiki")
+    cmp_.set_defaults(corrida="demo")
     return analizador.parse_args(argv)
 
 
@@ -199,6 +222,44 @@ def _comprobar_reanudacion(previa: dict[str, Any], nueva: dict[str, Any]) -> Non
         )
 
 
+def _comparar(
+    argumentos: argparse.Namespace,
+    ajustes: Settings,
+    salida: Callable[[str], None],
+    crear_brazos: Callable[[ClienteModelo, Settings, argparse.Namespace], list[Brazo]],
+    crear_modelo: Callable[[Settings, Path], ClienteModelo],
+    ahora: Callable[[], datetime],
+) -> int:
+    carpeta = argumentos.resultados / "demo"
+    try:
+        orden = leer_orden(argumentos.manifest)
+        brazos = crear_brazos(
+            crear_modelo(ajustes, carpeta / "llamadas.jsonl"), ajustes, argumentos
+        )
+        # el wiki ya construido fija el paso; el RAG se pone en el mismo estado
+        paso = max(
+            (len(b.ingeridos) for b in brazos if getattr(b, "ingeridos", None) is not None),
+            default=0,
+        )
+        resultado = comparar(
+            brazos,
+            argumentos.pregunta,
+            orden,
+            paso,
+            modelo=ajustes.model,
+            ahora=ahora,
+            avisar=salida,
+        )
+    except _errores_conocidos() as error:
+        print(f"Error: {error}", file=sys.stderr)
+        return 1
+    for linea in formatear(resultado, crear_resolutor(argumentos.gold, argumentos.spans)):
+        salida(linea)
+    registrar(carpeta / "comparaciones.jsonl", resultado)
+    salida(f"Evidencia añadida a {carpeta / 'comparaciones.jsonl'}")
+    return 0
+
+
 def principal(
     argv: Sequence[str] | None = None,
     *,
@@ -211,6 +272,8 @@ def principal(
 ) -> int:
     argumentos = _analizar(argv)
     ajustes = load_settings()
+    if argumentos.orden == "comparar":
+        return _comparar(argumentos, ajustes, salida, crear_brazos, crear_modelo, ahora)
     try:
         orden = leer_orden(argumentos.manifest)
         pasos = validar_pasos([int(p) for p in argumentos.pasos.split(",")], len(orden))

@@ -268,3 +268,41 @@ Cambio OpenSpec `arnes-comparacion`: `python -m wikillm.arnes correr`. Piloto `p
 - **Estado.** Las de B quedan en `borrador`: la selección y las correcciones están aprobadas, pero
   falta la verificación humana de cada respuesta contra su paper. El material de la selección
   (paquete, respuestas de los revisores, votos) lleva texto de arXiv y vive fuera del repo.
+
+## 2026-11-09 (Juan David): comparación puntual de una pregunta y ajuste de dos T4 de B
+
+Cambio OpenSpec `demo-comparacion`: `python -m wikillm.arnes comparar "<pregunta>" --wiki <carpeta>`
+hace la misma pregunta al RAG y al wiki, con el mismo modelo, y muestra respuesta, citas con el
+fragmento del Gold que las respalda, los pasos del agente del wiki (qué buscó, qué leyó), tokens,
+segundos y dólares. El paso de ingesta lo fija el wiki indicado. La evidencia queda en
+`results/demo/comparaciones.jsonl`, sin texto de arXiv. La traza del agente guarda ahora el detalle
+ordenado de sus acciones. El recorrido está en [docs/demo.md](demo.md).
+
+**Ensayo del recorrido sobre el wiki de desarrollo (5 papers, deepseek-flash):**
+
+| Paso | Sistema | Resultado | Llamadas | USD | s |
+|---|---|---|---|---|---|
+| 5 (BeliefShift aún no ingerido) | RAG | se abstiene | 1 | 0,000200 | 1,3 |
+| 5 | Wiki | 5 búsquedas, lee el índice y se abstiene | 7 | 0,000451 | 7,5 |
+| Ingesta del paper 6 | Wiki | 2 páginas creadas, 5 actualizadas, 0 citas eliminadas | 2 | 0,0083 | 38,1 |
+| 6 | RAG | 68,160 con cita `2603.23848#s18.p3` | 1 | 0,000239 | 1,6 |
+| 6 | Wiki | 68,160 con la misma cita | 3 | 0,000409 | 3,7 |
+
+**Dos T4 de B corregidas por lo que mostró el ensayo.**
+- La T4 de 2Wiki («el Recall@5 más alto que el corpus reporta para HippoRAG») era ambigua: el wiki
+  respondió 93,9, que es «IRCoT + HippoRAG», una combinación de pasos múltiples. Se acotó la
+  pregunta de 2Wiki y la de MuSiQue a «de un solo paso, sin combinaciones con recuperación
+  iterativa como IRCoT». Con esa restricción el máximo pasa de 89,5 a 90,4 en 2Wiki y de 52,1 a
+  53,2 en MuSiQue al entrar el paper de HippoRAG 2, y ningún otro paper del corpus reporta un valor
+  mayor (el de WFM da 73,12 y 48,64).
+- La T4 de RAPTOR en LongMemEval-S se sustituyó por la de MuSiQue: el paper de Harness también
+  reporta RAPTOR (como M6, en escala 0–1: 0,507, 0,593 y 0,593), de modo que la respuesta cambia en
+  tres pasos y no en dos, y los tres papers usan subconjuntos y protocolos distintos.
+
+El banco de B sigue en 30 preguntas (13 T1, 5 T2, 5 T3, 2 T4, 5 T5), con 21 de las 25 de T1–T4 en
+ingesta ≤ 30, en estado `borrador` hasta la verificación humana.
+
+**Caso difícil, a modo de limitación.** En el paso 6, ninguno de los dos sistemas acierta la T4 de
+MuSiQue: el RAG toma otra métrica (22,4, de AR@5) y el wiki da 51,9 en vez de 53,2. Es el tipo de
+respuesta que la medida de respuestas obsoletas está pensada para detectar; con un solo caso no
+permite concluir nada sobre cuál sistema actualiza mejor.

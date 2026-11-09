@@ -1,0 +1,61 @@
+{
+  "corrida": "piloto-1",
+  "inicio": "2026-11-07T04:13:22Z",
+  "commit": "eb882885711353c195aa2864c2db3af6e34f13d8",
+  "arbol_con_cambios": true,
+  "modelo": "deepseek-flash",
+  "temperatura": 0.0,
+  "razonamiento": "disabled",
+  "precios_usd_por_millon": {
+    "entrada_sin_cache": 0.15,
+    "entrada_con_cache": 0.003,
+    "salida": 0.6
+  },
+  "max_usd_por_run": 2.0,
+  "pasos": [
+    0,
+    5
+  ],
+  "brazos": {
+    "rag": {
+      "k": 5
+    },
+    "wiki": {
+      "max_acciones": 8
+    }
+  },
+  "banco": {
+    "ruta": "data\\preguntas\\banco.jsonl",
+    "sha256": "37bc9242cd48161f25a410b50355f337ad962c7de6c75a20b0a151b25096e57e",
+    "estado_minimo": "borrador",
+    "preguntas": [
+      "A001-T1-01",
+      "A002-T1-01",
+      "A002-T1-02",
+      "A004-T1-01",
+      "A006-T1-02",
+      "A016-T3-02",
+      "A016-T4-03",
+      "A017-T1-01",
+      "A019-T1-01",
+      "A027-T1-01",
+      "A039-T4-03",
+      "A047-T1-01",
+      "AT5-T5-07",
+      "AT5-T5-09",
+      "AT5-T5-10",
+      "AT5-T5-11",
+      "AT5-T5-12"
+    ],
+    "por_estado": {
+      "verificado_a": 17
+    }
+  },
+  "valida_para_informe": false,
+  "estimacion_usd": 0.3132,
+  "fin": "2026-11-07T04:22:24Z",
+  "gasto_usd": 0.052367,
+  "reanudaciones": [
+    "2026-11-07T04:21:19Z"
+  ]
+}

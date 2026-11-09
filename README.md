@@ -25,7 +25,7 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
 | Corpus de 50 papers (Bronze → Silver → Gold, manifest y fragmentos citables) | Listo. Ver [docs/corpus.md](docs/corpus.md). |
 | RAG simple (LangChain y Chroma) | Listo, con citas verificadas contra el corpus. |
 | WikiLLM (ingesta controlada y consulta por agente) | Listo. |
-| Arnés de comparación (reanudable, con control de costo) | Listo; ejecutado en un piloto que no se usa en el informe. |
+| Arnés de comparación (reanudable, con control de costo) y comparación puntual de una pregunta | Listo; ejecutado en un piloto que no se usa en el informe. |
 | Métricas (correctitud, fundamentación, cobertura, abstención, respuestas obsoletas, acuerdo) | Listas y probadas con resultados sintéticos. |
 | Banco de 60 preguntas | 30 de la mitad A verificadas por un autor; 30 de la mitad B seleccionadas y en espera de verificación. Falta el acuerdo entre autores. |
 | Corrida completa, análisis, informe y demostración | Pendientes. |
@@ -146,6 +146,7 @@ Desarrollo guiado por especificaciones con [OpenSpec](https://github.com/Fission
 
 | Documento | Contenido |
 |---|---|
+| [Demostración](docs/demo.md) | Recorrido de punta a punta con la evidencia que produce. |
 | [Estado del arte](docs/estado-del-arte.md) | Revisión de literatura, implementaciones existentes, vacíos y encuadre. |
 | [Selección del corpus](docs/corpus.md) | Criterios, fuentes de candidatos y resultado de la selección de los 50 papers. |
 | [Bitácora](docs/bitacora-datos.md) | Qué se hizo, qué se decidió y qué falta, con las mediciones de cada etapa. |
@@ -163,6 +164,14 @@ Desarrollo guiado por especificaciones con [OpenSpec](https://github.com/Fission
 | 30 de noviembre – 4 de diciembre | Análisis, ranking con sensibilidad, informe y guion de demostración; congelamiento el 4 de diciembre |
 | 7–11 de diciembre | Entrega y sustentación |
 
+## Demostración
+
+[docs/demo.md](docs/demo.md) describe un recorrido de punta a punta sobre el corpus real: la misma pregunta al RAG y al wiki antes de ingerir el paper que la responde, la ingesta de ese paper en vivo, la pregunta repetida y la evidencia que queda (citas con su fragmento, pasos del agente, costo y copias versionadas del wiki).
+
+```bash
+uv run python -m wikillm.arnes comparar "<pregunta>" --wiki data/wiki/demo
+```
+
 ## Cómo reproducir
 
 Requiere [uv](https://docs.astral.sh/uv/) y un archivo `.env` creado a partir de `.env.example`. Los comandos que llaman al modelo gastan saldo y muestran antes su estimación.
@@ -177,6 +186,7 @@ uv run python -m wikillm.corpus spans         # data/gold/spans.jsonl
 uv run python -m wikillm.eval validar-banco   # valida el banco de preguntas
 uv run python -m wikillm.rag indexar          # índice vectorial del RAG
 uv run python -m wikillm.wiki ingerir --paso 5 --estimar   # costo esperado de ingerir 5 papers
+uv run python -m wikillm.arnes comparar "<pregunta>" --wiki data/wiki/demo   # una pregunta a ambos sistemas
 uv run python -m wikillm.arnes correr --corrida <nombre> --estimar   # costo de la corrida
 uv run python -m wikillm.arnes correr --corrida <nombre>             # ejecuta ambos sistemas por pasos
 uv run python -m wikillm.eval metricas --respuestas results/<nombre>/respuestas.jsonl

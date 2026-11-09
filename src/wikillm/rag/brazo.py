@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable, Collection, Sequence
+from typing import Any
 
 from wikillm.common.modelo import ClienteModelo
 from wikillm.common.responder import ResultadoBrazo, ResultadoIngesta
@@ -61,6 +62,8 @@ class BrazoRag:
         self._k = k
         self._spans_validos = spans_validos
         self._reloj = reloj
+        # Fragmentos recuperados en la última pregunta: {"span_ids", "distancia"}; sin texto.
+        self.ultimos_recuperados: list[dict[str, Any]] = []
 
     def ingerir(self, arxiv_id: str) -> ResultadoIngesta:
         return self._indice.ingerir(arxiv_id)
@@ -68,6 +71,10 @@ class BrazoRag:
     def responder(self, pregunta: str) -> ResultadoBrazo:
         inicio = self._reloj()
         recuperados = self._indice.recuperar(pregunta, self._k)
+        self.ultimos_recuperados = [
+            {"span_ids": list(r.fragmento.span_ids), "distancia": round(r.distancia, 4)}
+            for r in recuperados
+        ]
         contexto = construir_contexto(recuperados)
         llamada = self._modelo.generar(construir_mensajes(pregunta, contexto), etiqueta=self.nombre)
         return ResultadoBrazo.desde_llamadas(

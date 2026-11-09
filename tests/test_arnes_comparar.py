@@ -47,9 +47,19 @@ def resultado(texto="It is 0.8.", citas=(CITA,), abstuvo=False, usd=0.001):
     )
 
 
+RECUPERADOS = [
+    {"span_ids": [CITA, "2401.00001#s1.p2"], "distancia": 0.2512},
+    {"span_ids": ["2401.00002#s3.p4"], "distancia": 0.4107},
+]
+
+
 class BrazoComparable:
-    def __init__(self, nombre, res=None, *, traza=None, ingeridos=(), falla=False):
+    def __init__(
+        self, nombre, res=None, *, traza=None, ingeridos=(), falla=False, recuperados=None
+    ):
         self.nombre = nombre
+        if recuperados is not None:
+            self.ultimos_recuperados = recuperados
         self.res = res or resultado()
         self.falla = falla
         self._ingeridos = list(ingeridos)
@@ -75,6 +85,13 @@ class BrazoComparable:
 
 def par(**wiki):
     return [BrazoComparable("rag"), BrazoComparable("wiki", traza=TRAZA, **wiki)]
+
+
+def par_con_recuperados(**wiki):
+    return [
+        BrazoComparable("rag", recuperados=RECUPERADOS),
+        BrazoComparable("wiki", traza=TRAZA, **wiki),
+    ]
 
 
 def correr(brazos, paso=2, pregunta="What is the threshold?"):
@@ -281,3 +298,24 @@ def test_un_fallo_del_modelo_devuelve_1_y_no_escribe_evidencia(tmp_path, capsys)
     assert e.comparar() == 1
     assert "Tope alcanzado" in capsys.readouterr().err
     assert not (tmp_path / "results" / "demo" / "comparaciones.jsonl").exists()
+
+
+# --- fragmentos recuperados por el RAG ----------------------------------------------------------
+def test_la_salida_lista_los_fragmentos_recuperados_y_marca_el_citado():
+    salida = texto(correr(par_con_recuperados(ingeridos=ORDEN[:2])))
+    assert "Fragmentos que recuperó por similitud" in salida
+    assert f"* [{CITA}] (+1)  distancia 0.251" in salida
+    assert "  [2401.00002#s3.p4]  distancia 0.411" in salida  # sin marca: no se citó
+
+
+def test_un_sistema_que_no_recupera_no_tiene_esa_seccion_ni_ese_campo():
+    comparacion = correr(par(ingeridos=ORDEN[:2]))
+    assert "Fragmentos que recuperó" not in texto(comparacion)
+    assert all("recuperados" not in s for s in a_linea(comparacion)["sistemas"])
+
+
+def test_la_evidencia_guarda_ids_y_distancias_de_lo_recuperado_sin_texto():
+    linea = a_linea(correr(par_con_recuperados(ingeridos=ORDEN[:2])))
+    rag = next(s for s in linea["sistemas"] if s["sistema"] == "rag")
+    assert rag["recuperados"] == RECUPERADOS
+    assert FRAGMENTO not in json.dumps(linea)

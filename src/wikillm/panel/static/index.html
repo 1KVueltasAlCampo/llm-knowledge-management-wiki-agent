@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de la demostración</title>
+<style>
+:root{
+  --bg:#f3f4f7; --panel:#ffffff; --panel2:#f8f9fb; --texto:#0f172a; --suave:#64748b; --borde:#e2e8f0;
+  --acento:#4338ca; --acento-fondo:#eef2ff;
+  --rag:#1d4ed8; --rag-fondo:#eff6ff; --rag-borde:#bfdbfe;
+  --wiki:#047857; --wiki-fondo:#ecfdf5; --wiki-borde:#a7f3d0;
+  --ok:#047857; --aviso:#b45309; --aviso-fondo:#fffbeb; --error:#b91c1c; --error-fondo:#fef2f2;
+  --repro:#92400e; --repro-fondo:#fef3c7; --repro-borde:#f59e0b;
+  --term-fondo:#0b1020; --term-texto:#cbd5e1; --term-cmd:#93c5fd; --term-err:#fca5a5; --term-suave:#64748b;
+  --sombra:0 1px 2px rgba(15,23,42,.06),0 6px 18px rgba(15,23,42,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --bg:#0b1220; --panel:#111a2e; --panel2:#0e1627; --texto:#e5e7eb; --suave:#94a3b8; --borde:#24304a;
+    --acento:#a5b4fc; --acento-fondo:#1e2347;
+    --rag:#60a5fa; --rag-fondo:#0f1d3a; --rag-borde:#1e3a8a;
+    --wiki:#34d399; --wiki-fondo:#0a2a22; --wiki-borde:#065f46;
+    --ok:#34d399; --aviso:#fbbf24; --aviso-fondo:#2a1f05; --error:#f87171; --error-fondo:#2b1114;
+    --repro:#fcd34d; --repro-fondo:#2a1f05; --repro-borde:#b45309;
+    --term-fondo:#050914; --sombra:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  }
+}
+:root[data-tema="oscuro"]{
+  --bg:#0b1220; --panel:#111a2e; --panel2:#0e1627; --texto:#e5e7eb; --suave:#94a3b8; --borde:#24304a;
+  --acento:#a5b4fc; --acento-fondo:#1e2347;
+  --rag:#60a5fa; --rag-fondo:#0f1d3a; --rag-borde:#1e3a8a;
+  --wiki:#34d399; --wiki-fondo:#0a2a22; --wiki-borde:#065f46;
+  --ok:#34d399; --aviso:#fbbf24; --aviso-fondo:#2a1f05; --error:#f87171; --error-fondo:#2b1114;
+  --repro:#fcd34d; --repro-fondo:#2a1f05; --repro-borde:#b45309;
+  --term-fondo:#050914; --sombra:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html{font-size:15px}
+body{margin:0;background:var(--bg);color:var(--texto);font:1rem/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;height:100vh;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.5}
+input,select{font:inherit;color:inherit}
+code,pre,.mono{font-family:ui-monospace,"Cascadia Mono","SF Mono",Consolas,monospace}
+a{color:var(--acento)}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--acento);outline-offset:2px}
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* barra superior */
+#barra{display:flex;align-items:center;gap:.8rem;padding:.5rem 1rem;background:var(--panel);border-bottom:1px solid var(--borde);flex-wrap:wrap}
+#barra h1{font-size:1.05rem;margin:0;white-space:nowrap}
+#barra .grupo{display:flex;align-items:center;gap:.5rem}
+#barra .espacio{flex:1}
+.chip{display:inline-flex;align-items:center;gap:.35rem;padding:.12rem .55rem;border-radius:999px;border:1px solid var(--borde);background:var(--panel2);font-size:.82rem;white-space:nowrap}
+.chip.ok{color:var(--ok);border-color:currentColor}
+.chip.aviso{color:var(--aviso);background:var(--aviso-fondo);border-color:currentColor}
+.chip.error{color:var(--error);background:var(--error-fondo);border-color:currentColor}
+.chip.rag{color:var(--rag);background:var(--rag-fondo);border-color:var(--rag-borde)}
+.chip.wiki{color:var(--wiki);background:var(--wiki-fondo);border-color:var(--wiki-borde)}
+.chip.acento{color:var(--acento);background:var(--acento-fondo);border-color:transparent}
+.punto{width:.55rem;height:.55rem;border-radius:50%;background:var(--suave);display:inline-block}
+.punto.ok{background:var(--ok)}.punto.aviso{background:var(--aviso)}.punto.error{background:var(--error)}
+.boton{border:1px solid var(--borde);background:var(--panel);border-radius:.6rem;padding:.35rem .8rem;line-height:1.2}
+.boton:hover:not(:disabled){border-color:var(--acento)}
+.boton.primario{background:var(--acento);color:#fff;border-color:var(--acento);font-weight:600}
+:root[data-tema="oscuro"] .boton.primario{color:#0b1220}
+@media (prefers-color-scheme: dark){:root:not([data-tema="claro"]) .boton.primario{color:#0b1220}}
+.boton.peligro{border-color:var(--error);color:var(--error)}
+.boton.fantasma{background:transparent}
+.boton.chico{padding:.15rem .5rem;font-size:.85rem}
+.tecla{font:.72rem ui-monospace,Consolas,monospace;border:1px solid var(--borde);border-bottom-width:2px;border-radius:.3rem;padding:0 .3rem;margin-left:.3rem;color:var(--suave);background:var(--panel2)}
+.boton.primario .tecla{color:inherit;background:transparent;border-color:rgba(255,255,255,.5)}
+
+/* cuerpo */
+#cuerpo{flex:1;display:flex;min-height:0}
+#nav{width:16rem;flex:none;overflow:auto;border-right:1px solid var(--borde);background:var(--panel);padding:.6rem}
+#nav h2{display:none;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--suave);margin:.2rem .4rem .5rem}
+.item-paso{display:flex;gap:.6rem;align-items:flex-start;width:100%;text-align:left;border:1px solid transparent;background:transparent;border-radius:.7rem;padding:.5rem .55rem;margin-bottom:.2rem}
+.item-paso:hover{background:var(--panel2)}
+.item-paso.actual{background:var(--acento-fondo);border-color:var(--acento)}
+.item-paso .num{flex:none;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--borde);display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.item-paso.actual .num{background:var(--acento);color:#fff}
+.item-paso.hecho .num{background:var(--ok);color:#fff}
+.item-paso b{display:block;font-size:.92rem;line-height:1.25}
+.item-paso small{color:var(--suave);font-size:.78rem}
+.item-paso .tiempo-ok{color:var(--ok)}.item-paso .tiempo-pasado{color:var(--error)}
+#principal{flex:1;min-width:0;overflow:auto;padding:1rem 1.25rem 2rem}
+#visor{width:min(48%,46rem);flex:none;border-left:1px solid var(--borde);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+
+/* paso y acciones */
+.paso-cab{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:baseline;margin-bottom:.2rem}
+.paso-cab h2{font-size:1.45rem;margin:0}
+.paso-cab .meta{color:var(--suave);font-size:.9rem}
+.objetivo{margin:.2rem 0 .8rem;font-size:1.05rem;max-width:62rem}
+.lentes{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.7rem}
+.acciones{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:.7rem}
+.accion{background:var(--panel);border:1px solid var(--borde);border-radius:.9rem;padding:.65rem .8rem;box-shadow:var(--sombra);min-width:16rem;max-width:100%}
+.accion .cab{display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.accion .cab b{font-size:.95rem}
+.accion .botones{display:flex;gap:.4rem;flex-wrap:wrap}
+.accion input[type=text],.accion input[type=number]{width:100%;border:1px solid var(--borde);background:var(--panel2);border-radius:.5rem;padding:.35rem .5rem;margin-bottom:.45rem}
+.archivos-paso{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem}
+.archivos-paso .etq{color:var(--suave);font-size:.85rem}
+.chip-archivo{cursor:pointer;font-family:ui-monospace,Consolas,monospace;font-size:.78rem}
+.chip-archivo:hover{border-color:var(--acento);color:var(--acento)}
+.chip-archivo[disabled]{opacity:.45;cursor:not-allowed}
+.visibles{margin:.2rem 0 1rem;padding-left:1.2rem;max-width:56rem}.visibles li{margin-bottom:.35rem}
+.vacio{border:1px dashed var(--borde);border-radius:.9rem;padding:1.4rem;color:var(--suave);background:var(--panel2)}
+
+/* ejecución */
+.estado-run{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin:.2rem 0 .6rem}
+.estado-run h3{margin:0;font-size:1.05rem}
+.aviso-repro{background:var(--repro-fondo);color:var(--repro);border:2px solid var(--repro-borde);border-radius:.7rem;padding:.5rem .8rem;margin:.2rem 0 .7rem;font-weight:600}
+.aviso-error{background:var(--error-fondo);color:var(--error);border:1px solid var(--error);border-radius:.7rem;padding:.5rem .8rem;margin:.2rem 0 .7rem}
+.girando{width:.9rem;height:.9rem;border:2px solid var(--borde);border-top-color:var(--acento);border-radius:50%;display:inline-block;animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.pregunta-run{background:var(--panel);border:1px solid var(--borde);border-left:4px solid var(--acento);border-radius:.6rem;padding:.55rem .8rem;margin-bottom:.8rem}
+.pregunta-run small{color:var(--suave);display:block}
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;align-items:start}
+@media (max-width:1100px){.columnas{grid-template-columns:1fr}}
+.col{background:var(--panel);border:1px solid var(--borde);border-top:5px solid var(--borde);border-radius:.9rem;box-shadow:var(--sombra);overflow:hidden;min-width:0}
+.col.rag{border-top-color:var(--rag)}.col.wiki{border-top-color:var(--wiki)}
+.col-cab{padding:.6rem .8rem;display:flex;gap:.5rem;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.col.rag .col-cab{background:var(--rag-fondo)}.col.wiki .col-cab{background:var(--wiki-fondo)}
+.col-cab b{font-size:1.1rem}.col.rag .col-cab b{color:var(--rag)}.col.wiki .col-cab b{color:var(--wiki)}
+.col-cab small{display:block;color:var(--suave);font-size:.8rem;max-width:22rem}
+.col-cuerpo{padding:.7rem .85rem}
+.col h4{font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--suave);margin:.9rem 0 .35rem}
+.col h4:first-child{margin-top:0}
+.col.esperando{opacity:.55}
+.col.trabajando{box-shadow:0 0 0 2px var(--acento),var(--sombra)}
+.linea-tiempo{list-style:none;margin:0;padding:0 0 0 .2rem}
+.linea-tiempo li{position:relative;padding:0 0 .65rem 1.4rem}
+.linea-tiempo li::before{content:"";position:absolute;left:.3rem;top:.35rem;bottom:-.1rem;width:2px;background:var(--borde)}
+.linea-tiempo li:last-child::before{display:none}
+.linea-tiempo li::after{content:"";position:absolute;left:0;top:.28rem;width:.7rem;height:.7rem;border-radius:50%;background:var(--suave)}
+.col.rag .linea-tiempo li::after{background:var(--rag)}.col.wiki .linea-tiempo li::after{background:var(--wiki)}
+.linea-tiempo li.curso::after{background:transparent;border:2px solid var(--acento);border-top-color:transparent;animation:gira 1s linear infinite}
+.accion-agente{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:0 .4rem;border-radius:.3rem;background:var(--panel2);border:1px solid var(--borde);margin-right:.35rem}
+.accion-agente.search{color:var(--acento)}.accion-agente.read{color:var(--wiki)}.accion-agente.answer{color:var(--ok)}
+.detalle{color:var(--suave);font-size:.85rem;margin-top:.15rem;word-break:break-word}
+.paginas{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.25rem}
+.respuesta{background:var(--panel2);border:1px solid var(--borde);border-radius:.6rem;padding:.6rem .75rem;white-space:pre-wrap;word-break:break-word}
+.respuesta.abstencion{border-style:dashed;color:var(--suave)}
+.cita-chip{display:inline-block;font:.74rem ui-monospace,Consolas,monospace;background:var(--acento-fondo);color:var(--acento);padding:0 .35rem;border-radius:.3rem;cursor:pointer;margin:0 .1rem}
+.cita-chip:hover,.cita-chip.resalta{outline:2px solid var(--acento)}
+.cita{border-left:3px solid var(--acento);padding:.2rem 0 .2rem .6rem;margin:.35rem 0;font-size:.9rem}
+.cita .id{font:.78rem ui-monospace,Consolas,monospace;color:var(--acento)}
+.cita .texto{color:var(--texto);opacity:.85}
+.cita.resalta{background:var(--acento-fondo)}
+.fragmento{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem 0;border-bottom:1px dashed var(--borde);font-size:.85rem}
+.fragmento:last-child{border-bottom:0}
+.fragmento .dist{flex:none;width:5.2rem}
+.fragmento .barra{height:.35rem;border-radius:2px;background:var(--borde);margin-top:.2rem;overflow:hidden}
+.fragmento .barra i{display:block;height:100%;background:var(--rag)}
+.fragmento .citado{color:var(--ok);font-weight:700}
+.fragmento .id{font:.75rem ui-monospace,Consolas,monospace;color:var(--suave)}
+.costos{display:flex;gap:.35rem;flex-wrap:wrap}
+.tabla{width:100%;border-collapse:collapse;font-size:.88rem}
+.tabla th,.tabla td{padding:.35rem .5rem;text-align:right;border-bottom:1px solid var(--borde);white-space:nowrap}
+.tabla th:first-child,.tabla td:first-child{text-align:left}
+.tabla th{color:var(--suave);font-weight:600;font-size:.76rem;text-transform:uppercase;letter-spacing:.04em}
+.tabla td.rag{color:var(--rag);font-weight:600}.tabla td.wiki{color:var(--wiki);font-weight:600}
+.tabla .mejor{background:var(--acento-fondo);font-weight:700}
+.comparacion{margin-top:.9rem;background:var(--panel);border:1px solid var(--borde);border-radius:.9rem;padding:.7rem .85rem;box-shadow:var(--sombra);overflow:auto}
+.comparacion h4{margin:0 0 .4rem;font-size:.8rem;text-transform:uppercase;letter-spacing:.07em;color:var(--suave)}
+.relativo{color:var(--suave);font-size:.85rem;margin-top:.45rem}
+.ingesta{background:var(--panel);border:1px solid var(--borde);border-top:5px solid var(--wiki);border-radius:.9rem;padding:.8rem 1rem;box-shadow:var(--sombra)}
+.etapas{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin:.6rem 0}
+@media (max-width:1100px){.etapas{grid-template-columns:1fr 1fr}}
+.etapa{border:1px solid var(--borde);border-radius:.7rem;padding:.5rem .7rem;background:var(--panel2)}
+.etapa.hecha{border-color:var(--wiki-borde);background:var(--wiki-fondo)}
+.etapa.curso{border-color:var(--acento)}
+.etapa b{display:block}.etapa small{color:var(--suave)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.6rem;margin:.6rem 0}
+.tile{border:1px solid var(--borde);border-radius:.7rem;padding:.5rem .7rem;background:var(--panel2)}
+.tile .v{font-size:1.5rem;font-weight:700}.tile .k{color:var(--suave);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.nota-pie{color:var(--suave);font-size:.88rem;margin-top:.7rem;max-width:56rem}
+
+/* métricas */
+.barra-h{display:inline-block;height:.55rem;border-radius:3px;vertical-align:middle;min-width:2px}
+.barra-h.rag{background:var(--rag)}.barra-h.wiki{background:var(--wiki)}
+.celdas{display:grid;gap:2px;font-size:.82rem}
+.v-ok,.v-abst{color:var(--ok)}.v-mal{color:var(--error)}.v-ind{color:var(--aviso)}
+.pill-v{display:inline-block;min-width:1.6rem;text-align:center;border-radius:.4rem;padding:0 .3rem;font-weight:700;cursor:help;border:1px solid currentColor}
+
+/* dock: consola, llamadas, json */
+.dock{margin-top:1rem;background:var(--term-fondo);border-radius:.9rem;overflow:hidden;border:1px solid var(--borde)}
+.dock-cab{display:flex;gap:.3rem;align-items:center;padding:.35rem .5rem;border-bottom:1px solid #1e293b}
+.dock-cab .tab{background:transparent;border:0;color:var(--term-suave);padding:.25rem .7rem;border-radius:.5rem}
+.dock-cab .tab.activa{background:#1e293b;color:#e2e8f0}
+.dock-cab .espacio{flex:1}
+.dock-cab .boton{background:transparent;color:#cbd5e1;border-color:#334155;padding:.1rem .5rem;font-size:.8rem}
+.dock-cuerpo{max-height:19rem;overflow:auto;padding:.5rem .8rem;color:var(--term-texto);font-size:.84rem}
+.dock.grande .dock-cuerpo{max-height:none}
+.dock.grande.solo{margin-top:0}
+.dock-cuerpo .l{white-space:pre-wrap;word-break:break-word;min-height:1.2em}
+.dock-cuerpo .l.comando{color:var(--term-cmd)}
+.dock-cuerpo .l.error{color:var(--term-err)}
+.dock-cuerpo .l.fin{color:var(--term-suave);margin-top:.3rem}
+.dock-cuerpo table{width:100%;border-collapse:collapse;color:var(--term-texto)}
+.dock-cuerpo th,.dock-cuerpo td{padding:.2rem .5rem;text-align:right;border-bottom:1px solid #1e293b;white-space:nowrap}
+.dock-cuerpo th:first-child,.dock-cuerpo td:first-child{text-align:left}
+.dock-cuerpo th{color:var(--term-suave);font-weight:600}
+.dock-cuerpo .et-rag{color:#93c5fd}.dock-cuerpo .et-wiki{color:#6ee7b7}
+
+/* visor */
+#visor .cab{display:flex;gap:.5rem;align-items:center;padding:.55rem .8rem;border-bottom:1px solid var(--borde)}
+#visor .cab .ruta{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:.85rem ui-monospace,Consolas,monospace}
+#visor .lista{padding:.6rem .8rem;overflow:auto;flex:1}
+#visor input[type=search]{width:100%;border:1px solid var(--borde);background:var(--panel2);border-radius:.5rem;padding:.4rem .6rem;margin-bottom:.5rem}
+#visor details{margin-bottom:.4rem}
+#visor summary{cursor:pointer;font-weight:600;font-size:.9rem;padding:.2rem 0}
+.fila-archivo{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:.4rem;padding:.2rem .5rem;font:.82rem ui-monospace,Consolas,monospace}
+.fila-archivo:hover{background:var(--acento-fondo)}
+.contenido{flex:1;overflow:auto;padding:.9rem 1.1rem 2rem}
+.contenido h2{font-size:1.25rem;margin:1.2rem 0 .4rem}.contenido h3{font-size:1.08rem;margin:1rem 0 .3rem}.contenido h4,.contenido h5{font-size:1rem;margin:.9rem 0 .3rem}
+.contenido p{margin:.4rem 0}.contenido ul,.contenido ol{margin:.3rem 0;padding-left:1.4rem}
+.contenido code{background:var(--panel2);border:1px solid var(--borde);border-radius:.25rem;padding:0 .25rem;font-size:.85em}
+.contenido pre{background:var(--panel2);border:1px solid var(--borde);border-radius:.5rem;padding:.6rem;overflow:auto;font-size:.82rem}
+.contenido pre code{border:0;background:transparent;padding:0}
+.contenido table{border-collapse:collapse;margin:.5rem 0;font-size:.85rem}
+.contenido th,.contenido td{border:1px solid var(--borde);padding:.25rem .5rem}
+.contenido blockquote{margin:.4rem 0;padding-left:.8rem;border-left:3px solid var(--borde);color:var(--suave)}
+.enlace-wiki{cursor:pointer;color:var(--wiki);text-decoration:none;border-bottom:1px dotted currentColor}
+.meta-card{background:var(--wiki-fondo);border:1px solid var(--wiki-borde);border-radius:.7rem;padding:.6rem .8rem;margin-bottom:.8rem}
+.meta-card b{display:block;font-size:1.05rem}
+.codigo{font:.8rem/1.45 ui-monospace,Consolas,monospace}
+.codigo .fila{display:flex}.codigo .n{flex:none;width:3rem;text-align:right;padding-right:.7rem;color:var(--suave);user-select:none}
+.codigo .t{white-space:pre-wrap;word-break:break-word;flex:1}
+.jsonl-fila{border-bottom:1px solid var(--borde);padding:.2rem 0}
+.jsonl-fila summary{font-size:.85rem}
+.jsonl-fila pre{margin:.3rem 0}
+
+/* modal y avisos */
+.velo{position:fixed;inset:0;background:rgba(2,6,23,.55);display:grid;place-items:center;z-index:50;padding:1rem}
+.dialogo{background:var(--panel);border:1px solid var(--borde);border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.4);padding:1.1rem 1.3rem;width:min(34rem,100%);max-height:90vh;overflow:auto}
+.dialogo h3{margin:0 0 .5rem;font-size:1.15rem}
+.dialogo .pie{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap}
+.dialogo table{border-collapse:collapse;width:100%}.dialogo td{padding:.2rem .4rem;border-bottom:1px solid var(--borde)}
+.dialogo td:first-child{white-space:nowrap}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:1rem;display:flex;flex-direction:column;gap:.4rem;z-index:60;align-items:center}
+.toast{background:var(--texto);color:var(--bg);padding:.5rem .9rem;border-radius:.6rem;box-shadow:var(--sombra);max-width:32rem}
+.toast.error{background:var(--error);color:#fff}
+.lista-prep{list-style:none;margin:0;padding:0}.lista-prep li{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem 0;border-bottom:1px solid var(--borde)}
+.fila-form{display:flex;gap:.5rem}
+.fila-form input{flex:1;border:1px solid var(--borde);background:var(--panel2);border-radius:.5rem;padding:.5rem .7rem;font-size:1.02rem}
+.ejemplos{display:flex;flex-direction:column;gap:.35rem;margin-top:.7rem}
+.ejemplos .etq{color:var(--suave);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+.ejemplo{text-align:left;background:var(--panel2);border:1px solid var(--borde);border-radius:.6rem;padding:.4rem .7rem}
+.ejemplo:hover{border-color:var(--acento)}
+.ejemplo b{display:block;font-weight:600;font-size:.92rem}.ejemplo small{color:var(--suave)}
+.progreso{height:.6rem;background:var(--borde);border-radius:999px;overflow:hidden}
+.progreso i{display:block;height:100%;background:var(--wiki)}
+.contenido-inline{max-height:28rem;overflow:auto}
+.contenido-inline ul{padding-left:1.2rem}
+#nav{width:14rem}
+.comparacion+.acciones{margin-top:.9rem}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="barra"></header>
+  <div id="cuerpo">
+    <nav id="nav" aria-label="Secciones"></nav>
+    <main id="principal"><div id="vista"></div><div id="principal-run"></div></main>
+    <aside id="visor" hidden aria-label="Visor de archivos"></aside>
+  </div>
+</div>
+<div id="modales"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* ================= utilidades ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const NUM = new Intl.NumberFormat('es-CO');
+const num = (x) => (x == null ? '—' : NUM.format(x));
+const dec = (x, d) => (x == null ? '—' : Number(x).toLocaleString('es-CO', {minimumFractionDigits: d, maximumFractionDigits: d}));
+const usd = (x, d = 6) => dec(x, d);
+const seg = (x) => (x == null ? '—' : dec(x, 1) + ' s');
+const mmss = (s) => { s = Math.max(0, Math.round(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const minseg = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+
+function h(tag, props, ...hijos) {
+  const el = document.createElement(tag);
+  if (props) {
+    for (const [k, v] of Object.entries(props)) {
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'texto') el.textContent = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+  }
+  for (const hijo of hijos.flat(Infinity)) {
+    if (hijo == null || hijo === false) continue;
+    el.append(hijo.nodeType ? hijo : document.createTextNode(String(hijo)));
+  }
+  return el;
+}
+function poner(el, ...nodos) {
+  el.replaceChildren(...nodos.flat(Infinity).filter((n) => n != null && n !== false));
+}
+const chip = (texto, clase = '', titulo) => h('span', {class: 'chip ' + clase, title: titulo}, texto);
+
+const pref = {
+  get(k, d) { try { const v = localStorage.getItem('panel.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('panel.' + k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento */ } },
+};
+
+async function api(ruta, opciones) {
+  let r;
+  try { r = await fetch(ruta, opciones); } catch (e) { throw new Error('No hay conexión con el panel'); }
+  let cuerpo = null;
+  try { cuerpo = await r.json(); } catch (e) { /* sin cuerpo */ }
+  if (!r.ok) throw Object.assign(new Error((cuerpo && cuerpo.error) || 'Error ' + r.status), {estado: r.status});
+  return cuerpo;
+}
+const post = (ruta, cuerpo) => api(ruta, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(cuerpo)});
+
+function toast(texto, tipo = '', ms = 4500) {
+  const t = h('div', {class: 'toast ' + tipo, texto});
+  $('#toasts').append(t);
+  setTimeout(() => t.remove(), ms);
+}
+function copiar(texto, aviso = 'Copiado') {
+  const listo = () => toast(aviso);
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).then(listo, () => toast('No se pudo copiar', 'error'));
+  else toast('El navegador no permite copiar aquí', 'error');
+}
+function fechaCorta(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? iso : d.toLocaleString('es-CO', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false});
+}
+
+/* ================= estado ================= */
+const S = {
+  acciones: {}, estado: null, ejemplos: [], archivos: [], rutasPermitidas: new Set(),
+  vista: 'preguntar', run: null, es: null, metricas: null, indiceWiki: null,
+  dock: 'consola', dockGrande: false, pregunta: '', pendiente: false, pegado: true,
+  historial: [], rutaVisor: null, firmaBarra: '',
+};
+const hayModal = () => $('#modales').children.length > 0;
+
+/* ================= modal ================= */
+function modal({titulo, cuerpo, botones}) {
+  return new Promise((resolver) => {
+    const previo = document.activeElement;
+    const cerrar = (valor) => { velo.remove(); document.removeEventListener('keydown', alTecla, true); if (previo && previo.focus) previo.focus(); resolver(valor); };
+    const alTecla = (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cerrar(null); }
+      if (e.key === 'Enter' && !(e.target && e.target.tagName === 'BUTTON')) { const p = botones.find((b) => b.primario); if (p) { e.preventDefault(); e.stopPropagation(); cerrar(p.valor); } }
+    };
+    const pie = h('div', {class: 'pie'}, botones.map((b) => h('button', {class: 'boton ' + (b.clase || (b.primario ? 'primario' : '')), onclick: () => cerrar(b.valor)}, b.texto)));
+    const velo = h('div', {class: 'velo', onclick: (e) => { if (e.target === velo) cerrar(null); }},
+      h('div', {class: 'dialogo', role: 'dialog', 'aria-modal': 'true', 'aria-label': titulo}, h('h3', {texto: titulo}), typeof cuerpo === 'function' ? cuerpo(cerrar) : cuerpo, pie));
+    $('#modales').append(velo);
+    document.addEventListener('keydown', alTecla, true);
+    const foco = pie.querySelector('.primario') || pie.querySelector('button');
+    if (foco) foco.focus();
+  });
+}
+
+/* ================= markdown seguro (solo DOM) ================= */
+const RE_INLINE = /`([^`]+)`|\*\*([^*]+)\*\*|\[\[([^\]]+)\]\]|\[([^\]\[]+)\]\(([^)\s]+)\)|\[([^\]\[#\s]+#[^\]\[\s]+)\]|(?<![*\w])\*([^*\s][^*]*?)\*(?![*\w])/g;
+function chipCita(id) {
+  return h('span', {class: 'cita-chip', title: 'Identificador del fragmento citado (clic para copiar)', onclick: () => copiar(id, 'Identificador copiado')}, id);
+}
+function inline(texto, ctx) {
+  const frag = document.createDocumentFragment();
+  const re = new RegExp(RE_INLINE.source, 'g');
+  let ultimo = 0, m;
+  while ((m = re.exec(texto))) {
+    if (m.index > ultimo) frag.append(texto.slice(ultimo, m.index));
+    if (m[1] !== undefined) frag.append(h('code', {texto: m[1]}));
+    else if (m[2] !== undefined) frag.append(h('strong', {texto: m[2]}));
+    else if (m[3] !== undefined) frag.append(enlaceWiki(m[3], ctx));
+    else if (m[4] !== undefined) frag.append(enlaceMd(m[4], m[5], ctx));
+    else if (m[6] !== undefined) frag.append(chipCita(m[6]));
+    else frag.append(h('em', {texto: m[7]}));
+    ultimo = re.lastIndex;
+  }
+  if (ultimo < texto.length) frag.append(texto.slice(ultimo));
+  return frag;
+}
+function enlaceWiki(slug, ctx) {
+  const ruta = (ctx && ctx.carpetaPaginas ? ctx.carpetaPaginas : 'data/wiki/demo/pages/') + slug + '.md';
+  return h('a', {class: 'enlace-wiki', href: '#', title: 'Abrir ' + ruta, onclick: (e) => { e.preventDefault(); abrirArchivo(ruta); }}, slug);
+}
+function resolverRelativa(base, destino) {
+  const partes = base.split('/').slice(0, -1);
+  for (const p of destino.split('/')) { if (p === '..') partes.pop(); else if (p !== '.') partes.push(p); }
+  return partes.join('/');
+}
+function enlaceMd(texto, url, ctx) {
+  if (!/^[a-z]+:/i.test(url) && /\.md(#.*)?$/.test(url) && ctx && ctx.ruta) {
+    const ruta = resolverRelativa(ctx.ruta, url.split('#')[0]);
+    if (S.rutasPermitidas.has(ruta)) return h('a', {href: '#', onclick: (e) => { e.preventDefault(); abrirArchivo(ruta); }}, texto);
+  }
+  return h('span', {class: 'enlace-ext', title: url}, texto);
+}
+function metaDeCabecera(lineas) {
+  const datos = {}; let clave = null;
+  for (const l of lineas) {
+    let m;
+    if ((m = /^(\w+):\s*(.*)$/.exec(l))) { clave = m[1]; datos[clave] = m[2] === '' ? [] : m[2]; }
+    else if ((m = /^-\s+(.*)$/.exec(l)) && clave) { if (!Array.isArray(datos[clave])) datos[clave] = []; datos[clave].push(m[1].replace(/^'(.*)'$/, '$1')); }
+    else if (/^\s+\S/.test(l) && clave && typeof datos[clave] === 'string') datos[clave] += ' ' + l.trim();
+  }
+  for (const k of Object.keys(datos)) if (typeof datos[k] === 'string') datos[k] = datos[k].replace(/^'([\s\S]*)'$/, '$1').replace(/''/g, "'");
+  return datos;
+}
+function tarjetaMeta(lineas) {
+  const d = metaDeCabecera(lineas);
+  return h('div', {class: 'meta-card'},
+    h('b', {texto: d.titulo || 'Página del wiki'}),
+    h('div', null, d.tipo ? chip(d.tipo, 'wiki') : null, ' ', d.actualizada_en_paso ? chip('actualizada en el paso ' + d.actualizada_en_paso) : null,
+      ' ', Array.isArray(d.fuentes) ? d.fuentes.map((f) => chip('fuente ' + f, 'acento')) : null),
+    d.resumen ? h('p', {texto: d.resumen}) : null);
+}
+function renderMarkdown(texto, ctx) {
+  const raiz = document.createDocumentFragment();
+  let l = texto.replace(/\r\n/g, '\n').split('\n');
+  if (l[0] === '---') { const fin = l.indexOf('---', 1); if (fin > 0) { raiz.append(tarjetaMeta(l.slice(1, fin))); l = l.slice(fin + 1); } }
+  const inicioDeBloque = (x) => /^(#{1,4}\s|```|\s*[-*]\s+|\s*\d+\.\s+|>|\|)/.test(x) || /^---+$/.test(x.trim());
+  let i = 0;
+  while (i < l.length) {
+    const x = l[i]; let m;
+    if (!x.trim()) { i++; continue; }
+    if (/^```/.test(x)) {
+      const buf = []; i++;
+      while (i < l.length && !/^```/.test(l[i])) buf.push(l[i++]);
+      i++; raiz.append(h('pre', null, h('code', {texto: buf.join('\n')}))); continue;
+    }
+    if ((m = /^(#{1,4})\s+(.*)$/.exec(x))) { raiz.append(h('h' + (m[1].length + 1), null, inline(m[2], ctx))); i++; continue; }
+    if (/^---+$/.test(x.trim())) { raiz.append(h('hr')); i++; continue; }
+    if (/^\s*[-*]\s+/.test(x) || /^\s*\d+\.\s+/.test(x)) {
+      const ordenada = /^\s*\d+\./.test(x), items = [];
+      while (i < l.length && (/^\s*[-*]\s+/.test(l[i]) || /^\s*\d+\.\s+/.test(l[i]))) {
+        const sangria = /^\s*/.exec(l[i])[0].length;
+        items.push(h('li', {style: sangria >= 2 ? 'margin-left:' + Math.min(sangria, 8) * 0.5 + 'rem' : null}, inline(l[i].replace(/^\s*([-*]|\d+\.)\s+/, ''), ctx)));
+        i++;
+      }
+      raiz.append(h(ordenada ? 'ol' : 'ul', null, items)); continue;
+    }
+    if (x.trim().startsWith('|') && i + 1 < l.length && /^\s*\|?[\s:|-]+\|[\s:|-]*$/.test(l[i + 1])) {
+      const celdas = (f) => f.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+      const cab = celdas(x); i += 2; const filas = [];
+      while (i < l.length && l[i].trim().startsWith('|')) filas.push(celdas(l[i++]));
+      raiz.append(h('table', null, h('thead', null, h('tr', null, cab.map((c) => h('th', null, inline(c, ctx))))),
+        h('tbody', null, filas.map((f) => h('tr', null, f.map((c) => h('td', null, inline(c, ctx))))))));
+      continue;
+    }
+    if (x.startsWith('>')) {
+      const buf = [];
+      while (i < l.length && l[i].startsWith('>')) buf.push(l[i++].replace(/^>\s?/, ''));
+      raiz.append(h('blockquote', null, inline(buf.join(' '), ctx))); continue;
+    }
+    const buf = [x]; i++;
+    while (i < l.length && l[i].trim() && !inicioDeBloque(l[i])) buf.push(l[i++]);
+    raiz.append(h('p', null, inline(buf.join(' '), ctx)));
+  }
+  return raiz;
+}
+
+/* ================= visor de archivos ================= */
+function carpetaDePaginas(ruta) {
+  const m = /^(data\/wiki\/[^/]+)\//.exec(ruta);
+  return m ? m[1] + '/pages/' : 'data/wiki/demo/pages/';
+}
+async function abrirArchivo(ruta, sinHistorial) {
+  mostrarVisor(true);
+  try {
+    const d = await api('/api/archivo?ruta=' + encodeURIComponent(ruta));
+    if (!sinHistorial && S.rutaVisor && S.rutaVisor !== ruta) S.historial.push(S.rutaVisor);
+    S.rutaVisor = ruta; renderVisor(d);
+  } catch (e) { toast(e.message, 'error'); }
+}
+function mostrarVisor(si) {
+  const v = $('#visor'); v.hidden = si === undefined ? !v.hidden : !si;
+  pref.set('visor', !v.hidden);
+  if (!v.hidden && !S.rutaVisor) renderVisor(null);
+}
+function renderLista(filtro) {
+  const grupos = new Map();
+  for (const a of S.archivos) {
+    if (filtro && !a.ruta.toLowerCase().includes(filtro.toLowerCase())) continue;
+    if (!grupos.has(a.grupo)) grupos.set(a.grupo, []);
+    grupos.get(a.grupo).push(a);
+  }
+  const nodos = [];
+  for (const [g, lista] of grupos) {
+    nodos.push(h('details', {open: !!filtro || g === 'Wiki de la demostración' || g === 'Evidencia'}, h('summary', {texto: g + ' (' + lista.length + ')'}),
+      lista.map((a) => h('button', {class: 'fila-archivo', title: a.ruta, onclick: () => abrirArchivo(a.ruta)}, a.ruta))));
+  }
+  return nodos.length ? nodos : [h('p', {class: 'detalle', texto: 'Ningún archivo coincide.'})];
+}
+function renderVisor(d) {
+  const v = $('#visor');
+  const cabecera = h('div', {class: 'cab'},
+    h('button', {class: 'boton chico', title: 'Volver al archivo anterior', disabled: !S.historial.length, onclick: () => { const r = S.historial.pop(); if (r) abrirArchivo(r, true); }}, '←'),
+    h('button', {class: 'boton chico', title: 'Lista de archivos', onclick: () => { S.rutaVisor = null; renderVisor(null); }}, '☰'),
+    h('span', {class: 'ruta', title: d ? d.ruta : ''}, d ? d.ruta : 'Archivos'),
+    d ? h('button', {class: 'boton chico', title: 'Copiar la ruta', onclick: () => copiar(d.ruta, 'Ruta copiada')}, 'Copiar ruta') : null,
+    h('button', {class: 'boton chico', title: 'Cerrar (A)', onclick: () => mostrarVisor(false)}, '✕'));
+  if (!d) {
+    const lista = h('div', null, renderLista(''));
+    const buscar = h('input', {type: 'search', placeholder: 'Filtrar archivos…', 'aria-label': 'Filtrar archivos', oninput: () => lista.replaceChildren(...renderLista(buscar.value))});
+    v.replaceChildren(cabecera, h('div', {class: 'lista'}, buscar, lista));
+    return;
+  }
+  const info = h('div', {class: 'detalle', style: 'margin-bottom:.6rem'}, chip(d.tipo), ' ', chip(num(d.bytes) + ' bytes'), d.truncado ? [' ', chip('truncado: se muestra el comienzo', 'aviso')] : null);
+  const ctx = {ruta: d.ruta, carpetaPaginas: carpetaDePaginas(d.ruta)};
+  let cuerpo;
+  if (d.tipo === 'markdown') cuerpo = h('div', null, renderMarkdown(d.texto, ctx));
+  else if (d.tipo === 'json') { let t = d.texto; try { t = JSON.stringify(JSON.parse(d.texto), null, 2); } catch (e) { /* truncado */ } cuerpo = h('pre', null, h('code', {texto: t})); }
+  else if (d.tipo === 'jsonl') cuerpo = vistaJsonl(d.texto);
+  else cuerpo = vistaCodigo(d.texto);
+  v.replaceChildren(cabecera, h('div', {class: 'contenido'}, info, cuerpo));
+}
+function vistaCodigo(texto) {
+  return h('div', {class: 'codigo'}, texto.split('\n').map((t, i) => h('div', {class: 'fila'}, h('span', {class: 'n', texto: i + 1}), h('span', {class: 't', texto: t}))));
+}
+function resumenJsonl(o) {
+  const claves = ['timestamp', 'question_id', 'pregunta', 'system', 'sistema', 'ingest_step', 'paso', 'run_id', 'id', 'arxiv_id', 'momento', 'etiqueta'];
+  const partes = claves.filter((k) => o[k] !== undefined && typeof o[k] !== 'object').map((k) => o[k]);
+  const t = partes.join(' · ');
+  return t || JSON.stringify(o).slice(0, 120);
+}
+function vistaJsonl(texto) {
+  const lineas = texto.split('\n').filter((x) => x.trim());
+  const tope = 300;
+  const filas = lineas.slice(0, tope).map((x, i) => {
+    let o = null; try { o = JSON.parse(x); } catch (e) { /* línea cortada */ }
+    return h('details', {class: 'jsonl-fila'}, h('summary', {texto: (i + 1) + '. ' + (o ? resumenJsonl(o) : x.slice(0, 120))}),
+      h('pre', null, h('code', {texto: o ? JSON.stringify(o, null, 2) : x})));
+  });
+  return h('div', null, h('p', {class: 'detalle', texto: lineas.length + ' líneas' + (lineas.length > tope ? '; se muestran las primeras ' + tope : '')}), filas);
+}
+function chipArchivo(ruta, texto) {
+  const existe = S.rutasPermitidas.has(ruta);
+  return h('button', {class: 'chip chip-archivo', disabled: !existe, title: existe ? 'Abrir ' + ruta : 'No existe en esta máquina: ' + ruta, onclick: () => abrirArchivo(ruta)}, texto || ruta.split('/').pop());
+}
+
+/* ================= secciones ================= */
+const VISTAS = [
+  ['preguntar', 'Preguntar', 'Los dos sistemas, misma pregunta'],
+  ['ingerir', 'Ingerir', 'Añadir papers al wiki'],
+  ['wiki', 'Wiki', 'Lo que el agente escribió'],
+  ['resultados', 'Resultados', 'Métricas y costo'],
+  ['sistema', 'Sistema', 'Estado y herramientas'],
+];
+const VISTA_DE = {comparar: 'preguntar', ingerir: 'ingerir', estimar_ingesta: 'ingerir', git_wiki: 'wiki', estimar_corrida: 'resultados', metricas: 'resultados'};
+const vistaDeAccion = (a) => VISTA_DE[a] || 'sistema';
+const WIKI = 'data/wiki/demo';
+
+function ocupado() { return !!(S.estado && S.estado.ocupado) || (S.run && S.run.estado === 'corriendo'); }
+
+/* ================= barra superior y navegación ================= */
+function firmaBarra() {
+  return JSON.stringify([preparacion().nivel, S.estado && S.estado.hora_pico, S.estado && S.estado.modelo, S.estado && S.estado.gasto.agotado, S.estado && S.estado.wiki.ingeridos]);
+}
+function textoGasto() { const g = S.estado.gasto; return 'Gasto de la sesión: ' + usd(g.sesion_usd, 4) + ' / ' + usd(g.tope_usd, 2) + ' USD'; }
+function actualizarGasto() {
+  const el = $('#chip-gasto');
+  if (!el || !S.estado) return;
+  const g = S.estado.gasto;
+  el.textContent = textoGasto();
+  el.className = 'chip ' + (g.agotado ? 'error' : g.sesion_usd > g.tope_usd * 0.8 ? 'aviso' : '');
+}
+function renderBarra() {
+  const e = S.estado;
+  if (!e) return;
+  S.firmaBarra = firmaBarra();
+  const prep = preparacion(), g = e.gasto;
+  poner($('#barra'),
+    h('div', {class: 'grupo'}, h('h1', {texto: 'WikiLLM frente a RAG'}), chip('mismo modelo: ' + e.modelo, 'acento', 'Los dos sistemas usan el mismo modelo')),
+    h('div', {class: 'espacio'}),
+    h('div', {class: 'grupo'},
+      chip('Corpus: ' + e.wiki.ingeridos + ' de ' + e.corpus.total + ' papers ingeridos'),
+      e.hora_pico ? chip('Hora pico del proveedor: tarifa ×2', 'aviso') : null,
+      h('span', {id: 'chip-gasto', class: 'chip ' + (g.agotado ? 'error' : g.sesion_usd > g.tope_usd * 0.8 ? 'aviso' : ''), title: 'Dólares de las llamadas al modelo desde que se abrió el panel'}, textoGasto()),
+      h('button', {class: 'boton chico', onclick: () => cambiarVista('sistema'), title: 'Estado del sistema'}, h('span', {class: 'punto ' + prep.nivel}), ' Estado'),
+      h('button', {class: 'boton chico', onclick: () => mostrarVisor(), title: 'Explorar archivos'}, 'Archivos'),
+      h('button', {class: 'boton chico', onclick: mostrarAyuda, title: 'Acerca del panel'}, '?'),
+      h('button', {class: 'boton chico', onclick: alternarTema, title: 'Tema claro u oscuro'}, '◐')));
+}
+function renderNav() {
+  poner($('#nav'), VISTAS.map(([id, titulo, sub]) => h('button', {class: 'item-paso' + (id === S.vista ? ' actual' : ''), onclick: () => cambiarVista(id), 'aria-current': id === S.vista ? 'page' : null},
+    h('span', {class: 'num', texto: titulo[0]}), h('span', null, h('b', {texto: titulo}), h('small', {texto: sub})))));
+}
+function alternarTema() {
+  const actual = document.documentElement.getAttribute('data-tema') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro');
+  const nuevo = actual === 'oscuro' ? 'claro' : 'oscuro';
+  document.documentElement.setAttribute('data-tema', nuevo); pref.set('tema', nuevo);
+}
+
+/* ================= estado del sistema ================= */
+function preparacion() {
+  const e = S.estado, items = [];
+  if (!e) return {nivel: 'aviso', items: [['aviso', 'Conectando con el panel…']]};
+  items.push([e.clave_presente ? 'ok' : 'error', e.clave_presente ? 'Clave del proveedor presente en .env' : 'Falta DEEPSEEK_API_KEY en .env: no se podrá llamar al modelo']);
+  const cargando = e.ocupado && e.ocupado.accion === 'calentar';
+  items.push([e.rag_listo ? 'ok' : (cargando ? 'aviso' : 'error'), e.rag_listo ? 'Índice del RAG cargado en memoria' : (cargando ? 'Cargando el índice del RAG…' : 'El índice del RAG no está cargado (se carga con «Cargar el índice del RAG»)')]);
+  const w = e.wiki;
+  items.push([w.existe ? 'ok' : 'error', w.existe ? 'Wiki con ' + w.ingeridos + ' papers y ' + w.paginas + ' páginas' : 'Falta data/wiki/demo: usa «Reiniciar el wiki»']);
+  const n = e.grabaciones.filter((g) => g.accion === 'comparar' || g.accion === 'ingerir').length;
+  items.push([n ? 'ok' : 'aviso', n ? n + ' ejecución(es) guardada(s) que se pueden reproducir sin llamar al modelo' : 'Todavía no hay ejecuciones guardadas: cada ejecución real queda guardada']);
+  items.push([e.gasto.agotado ? 'error' : 'ok', 'Tope de gasto de la sesión: ' + usd(e.gasto.tope_usd, 2) + ' USD (gastado ' + usd(e.gasto.sesion_usd, 4) + ')']);
+  if (e.hora_pico) items.push(['aviso', 'Hora pico del proveedor: las llamadas cuestan el doble (siguen siendo centavos)']);
+  const nivel = items.some((x) => x[0] === 'error') ? 'error' : items.some((x) => x[0] === 'aviso') ? 'aviso' : 'ok';
+  return {nivel, items};
+}
+
+/* ================= vistas ================= */
+function cambiarVista(v, sinHash) {
+  if (S.run && S.run.estado !== 'corriendo' && vistaDeAccion(S.run.accion) !== v) S.run = null;
+  S.vista = v;
+  if (!sinHash) { try { history.replaceState(null, '', '#' + v); } catch (e) { /* sin historial */ } }
+  if (v === 'resultados' && !S.metricas) cargarMetricas();
+  if (v === 'wiki') cargarIndiceWiki();
+  renderVista();
+  $('#principal').scrollTop = 0;
+}
+function renderVista() {
+  renderNav();
+  const f = {preguntar: vPreguntar, ingerir: vIngerir, wiki: vWiki, resultados: vResultados, sistema: vSistema}[S.vista];
+  poner($('#vista'), f());
+  renderRun();
+}
+function cabecera(titulo, texto) {
+  return [h('div', {class: 'paso-cab'}, h('h2', {texto: titulo})), h('p', {class: 'objetivo', texto})];
+}
+function botonAccion(accion, parametros, etiqueta, opciones = {}) {
+  const def = S.acciones[accion] || {}, oc = ocupado();
+  return h('button', {class: 'boton ' + (opciones.primario ? 'primario' : (def.destructiva ? 'peligro' : '')), disabled: oc || opciones.deshabilitado, title: oc ? 'Hay un trabajo en curso' : (opciones.titulo || def.resumen), onclick: () => lanzar(accion, parametros)},
+    etiqueta || def.titulo);
+}
+function tarjetaAccion(accion, parametros, etiqueta, opciones) {
+  const def = S.acciones[accion] || {};
+  return h('div', {class: 'accion'}, h('div', {class: 'cab'}, h('b', {texto: etiqueta || def.titulo}), def.gasta ? chip(def.estimacion, 'aviso', 'Estimación del costo') : chip('sin costo', 'ok')),
+    h('p', {class: 'detalle', style: 'margin:.1rem 0 .5rem', texto: def.resumen}), h('div', {class: 'botones'}, botonAccion(accion, parametros, opciones && opciones.boton || 'Ejecutar', opciones)));
+}
+function botonGuardadas(filtro) {
+  const n = guardadas(filtro).length;
+  return h('button', {class: 'boton chico', onclick: () => mostrarGuardadas(filtro), title: 'Repite una ejecución guardada sin llamar al modelo'}, 'Ejecuciones guardadas (' + n + ')');
+}
+
+function vPreguntar() {
+  const e = S.estado, def = S.acciones.comparar;
+  const entrada = h('input', {type: 'text', id: 'pregunta', value: S.pregunta, maxlength: 400, placeholder: 'Escribe una pregunta sobre los papers ingeridos…', 'aria-label': 'Pregunta',
+    oninput: (ev) => { S.pregunta = ev.target.value; }, onkeydown: (ev) => { if (ev.key === 'Enter') preguntar(); }});
+  return [
+    cabecera('Preguntar a los dos sistemas', 'El mismo modelo responde con dos memorias distintas: el RAG recupera fragmentos por similitud y responde en una llamada; el WikiLLM consulta un wiki que un agente mantiene y decide qué buscar y leer.'),
+    h('div', {class: 'accion', style: 'width:100%'},
+      h('div', {class: 'cab'}, h('b', {texto: 'Pregunta'}), h('span', {class: 'grupo'}, chip('corpus: ' + e.wiki.ingeridos + ' papers ingeridos'), chip(def.estimacion, 'aviso', 'Estimación del costo'))),
+      h('div', {class: 'fila-form'}, entrada, h('button', {class: 'boton primario', disabled: ocupado(), onclick: preguntar, title: ocupado() ? 'Hay un trabajo en curso' : def.resumen}, 'Preguntar')),
+      h('div', {class: 'ejemplos'}, h('span', {class: 'etq', texto: 'Ejemplos'}), S.ejemplos.map((x) => h('button', {class: 'ejemplo', onclick: () => { S.pregunta = x.pregunta; const i = $('#pregunta'); i.value = x.pregunta; i.focus(); }}, h('b', {texto: x.pregunta}), h('small', {texto: x.nota})))),
+      h('div', {style: 'margin-top:.5rem'}, botonGuardadas('comparar'))),
+  ];
+}
+async function preguntar() {
+  const pregunta = (S.pregunta || '').trim();
+  if (!pregunta) { toast('Escribe una pregunta', 'error'); return; }
+  lanzar('comparar', {pregunta});
+}
+
+function vIngerir() {
+  const e = S.estado, c = e.corpus, n = e.wiki.ingeridos, sig = c.siguiente;
+  const pct = c.total ? Math.round((n / c.total) * 100) : 0;
+  return [
+    cabecera('Ingerir papers en el wiki', 'Los papers entran en un orden fijo. Por cada uno el agente hace dos llamadas al modelo (un plan y la escritura de las páginas) y el código valida lo que escribió antes de guardarlo y versionarlo.'),
+    h('div', {class: 'accion', style: 'width:100%'},
+      h('div', {class: 'cab'}, h('b', {texto: 'Estado del corpus'}), chip(n + ' de ' + c.total + ' papers ingeridos · ' + e.wiki.paginas + ' páginas')),
+      h('div', {class: 'progreso', role: 'progressbar', 'aria-valuenow': pct, 'aria-valuemin': 0, 'aria-valuemax': 100}, h('i', {style: 'width:' + pct + '%'})),
+      sig ? h('div', {style: 'margin-top:.7rem'}, h('div', {class: 'detalle', texto: 'Siguiente en el orden de ingesta'}), h('b', {texto: 'Paper ' + sig.paso + ' · ' + sig.arxiv_id}), h('div', {texto: sig.titulo})) : h('p', {texto: 'El corpus completo ya está ingerido.'}),
+      h('div', {class: 'botones', style: 'margin-top:.7rem'},
+        sig ? botonAccion('ingerir', {paso: sig.paso}, 'Ingerir el paper ' + sig.paso, {primario: true}) : null,
+        sig ? botonAccion('estimar_ingesta', {paso: sig.paso}, 'Estimar el costo') : null,
+        botonGuardadas('ingerir'))),
+    e.wiki.ids.length ? h('div', {class: 'archivos-paso', style: 'margin-top:.8rem'}, h('span', {class: 'etq', texto: 'Ingeridos:'}), e.wiki.ids.map((id) => chip(id))) : null,
+  ];
+}
+
+async function cargarIndiceWiki() {
+  try { S.indiceWiki = (await api('/api/archivo?ruta=' + encodeURIComponent(WIKI + '/index.md'))).texto; } catch (e) { S.indiceWiki = null; }
+  if (S.vista === 'wiki') renderVista();
+}
+function vWiki() {
+  const e = S.estado, w = e.wiki;
+  return [
+    cabecera('El wiki que mantiene el agente', 'Páginas en Markdown con una cita por afirmación, un índice y un registro que escribe el código. Cada ingesta termina en una copia versionada con su etiqueta.'),
+    h('div', {class: 'tiles'}, h('div', {class: 'tile'}, h('div', {class: 'v', texto: w.ingeridos}), h('div', {class: 'k', texto: 'papers ingeridos'})), h('div', {class: 'tile'}, h('div', {class: 'v', texto: w.paginas}), h('div', {class: 'k', texto: 'páginas'}))),
+    h('div', {class: 'acciones'}, botonAccion('git_wiki', {}, 'Ver el historial versionado'),
+      h('button', {class: 'boton', onclick: () => abrirArchivo(WIKI + '/log.md')}, 'Abrir el registro'), h('button', {class: 'boton', onclick: () => abrirArchivo(WIKI + '/index.md')}, 'Abrir el índice')),
+    h('section', {class: 'comparacion'}, h('h4', {texto: 'Índice del wiki'}), S.indiceWiki ? h('div', {class: 'contenido-inline'}, renderMarkdown(S.indiceWiki, {ruta: WIKI + '/index.md', carpetaPaginas: WIKI + '/pages/'})) : h('p', {class: 'detalle', texto: w.existe ? 'Cargando el índice…' : 'No hay un wiki todavía.'})),
+  ];
+}
+
+function vResultados() {
+  return [
+    cabecera('Resultados y costo', 'Métricas del piloto guardado, calculadas sobre las respuestas de los dos sistemas, y lo que costaría correr el banco completo.'),
+    h('div', {class: 'acciones'}, tarjetaAccion('estimar_corrida', {alcance: 'piloto'}, 'Estimar el piloto', {boton: 'Estimar'}), tarjetaAccion('estimar_corrida', {alcance: 'completa'}, 'Estimar la corrida completa', {boton: 'Estimar'}), tarjetaAccion('metricas', {}, 'Métricas en la consola', {boton: 'Calcular'})),
+    vistaMetricas(),
+  ];
+}
+
+function vSistema() {
+  const p = preparacion();
+  return [
+    cabecera('Estado del sistema', 'Qué está listo y herramientas de mantenimiento.'),
+    h('section', {class: 'comparacion'}, h('ul', {class: 'lista-prep'}, p.items.map(([n, t]) => h('li', null, h('span', {class: 'punto ' + n, style: 'margin-top:.45rem'}), h('span', {texto: t}))))),
+    h('div', {class: 'acciones'}, tarjetaAccion('calentar', {}, null, {boton: 'Cargar'}), tarjetaAccion('verificar', {}, null, {boton: 'Verificar'}), tarjetaAccion('validar_banco', {}, null, {boton: 'Validar'}), tarjetaAccion('reiniciar_wiki', {}, null, {boton: 'Reiniciar'})),
+  ];
+}
+
+/* ================= ejecuciones guardadas ================= */
+function guardadas(accion) {
+  return (S.estado ? S.estado.grabaciones : []).filter((g) => g.accion === accion).reverse();
+}
+function coincideDe(g) {
+  const p = g.parametros || {};
+  if (g.accion === 'comparar') return {pregunta: p.pregunta, paso_wiki: p.paso_wiki};
+  return {paso: p.paso};
+}
+async function mostrarGuardadas(accion) {
+  const lista = guardadas(accion);
+  const filas = (cerrar) => lista.map((g) => {
+    const p = g.parametros || {};
+    const texto = accion === 'comparar' ? '«' + p.pregunta + '» con ' + p.paso_wiki + ' papers ingeridos' : 'Ingesta hasta el paper ' + p.paso;
+    return h('li', {style: 'display:flex;gap:.6rem;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--borde)'},
+      h('span', null, h('div', {texto}), h('small', {class: 'detalle', texto: fechaCorta(g.fecha) + (g.codigo ? ' · terminó con error' : '')})),
+      h('button', {class: 'boton chico', onclick: () => cerrar(g)}, 'Reproducir'));
+  });
+  const r = await modal({titulo: 'Ejecuciones guardadas', cuerpo: (cerrar) => (lista.length ? h('ul', {class: 'lista-prep'}, filas(cerrar)) : h('p', {texto: 'Todavía no hay ejecuciones guardadas. Cada ejecución real queda guardada y se puede reproducir después sin llamar al modelo; la reproducción siempre se marca como tal.'})),
+    botones: [{texto: 'Cerrar', valor: null, primario: true}]});
+  if (!r) return;
+  try {
+    const t = await post('/api/reproducir', {accion: r.accion, coincide: coincideDe(r)});
+    iniciarRun(r.accion, S.acciones[r.accion].titulo, t.trabajo, true, r.parametros || {});
+  } catch (e) { toast(e.message, 'error'); refrescarEstado(); }
+}
+
+/* ================= lanzar acciones ================= */
+async function lanzar(accion, parametros) {
+  if (ocupado()) { toast('Hay un trabajo en curso', 'error'); return; }
+  const def = S.acciones[accion] || {};
+  let confirmo = false;
+  if (def.gasta || def.destructiva) {
+    const e = S.estado;
+    const cuerpo = h('div', null,
+      def.gasta ? h('p', null, 'Esta acción llama al modelo ', h('b', {texto: e.modelo}), '. Costo estimado: ', h('b', {texto: def.estimacion}), '.') : h('p', {texto: def.resumen}),
+      def.gasta ? h('p', {class: 'detalle', texto: 'Gasto de la sesión: ' + usd(e.gasto.sesion_usd, 4) + ' de ' + usd(e.gasto.tope_usd, 2) + ' USD' + (e.hora_pico ? ' · hora pico: tarifa ×2' : '')}) : null,
+      accion === 'comparar' ? h('p', {class: 'detalle'}, 'Pregunta: ', h('i', {texto: parametros.pregunta})) : null);
+    const r = await modal({titulo: def.gasta ? 'Esta acción gasta saldo' : 'Esta acción borra estado', cuerpo,
+      botones: [{texto: 'Cancelar', valor: false}, {texto: def.gasta ? 'Ejecutar' : 'Reiniciar', valor: true, primario: !def.destructiva, clase: def.destructiva ? 'peligro' : ''}]});
+    if (!r) return;
+    confirmo = true;
+  }
+  try {
+    const r = await post('/api/ejecutar', {accion, parametros, confirmo});
+    iniciarRun(accion, def.titulo, r.trabajo, false, parametros);
+  } catch (e) { toast(e.message, 'error'); refrescarEstado(); }
+}
+
+/* ================= ejecución y flujo de eventos ================= */
+function iniciarRun(accion, titulo, id, repro, parametros) {
+  cerrarFlujo();
+  S.run = {id, accion, titulo, params: parametros || {}, repro, reproInfo: null, estado: 'corriendo', codigo: null, lineas: [], llamadas: [], resultado: null, errores: [], activo: null, fase: '', segundos: null, comando: null};
+  S.dock = 'consola'; S.dockGrande = false; S.pegado = true;
+  if (vistaDeAccion(accion) !== S.vista) cambiarVista(vistaDeAccion(accion)); else renderVista();
+  const run = S.run;
+  const es = new EventSource('/api/eventos/' + id);
+  S.es = es;
+  es.onmessage = (m) => { let ev; try { ev = JSON.parse(m.data); } catch (e) { return; } alEvento(run, ev); };
+  es.onerror = () => { if (run.estado === 'corriendo' && es.readyState === EventSource.CLOSED) { run.estado = 'error'; run.errores.push('Se perdió la conexión con el panel'); programarPintado(); } };
+}
+function cerrarFlujo() { if (S.es) { S.es.close(); S.es = null; } }
+function alEvento(run, ev) {
+  if (ev.repro) run.repro = true;
+  switch (ev.t) {
+    case 'repro': run.repro = true; run.reproInfo = {grabacion: ev.grabacion, fecha: ev.fecha}; break;
+    case 'linea': {
+      run.lineas.push({texto: ev.texto, canal: ev.canal || ''});
+      if (ev.canal === 'comando') run.comando = ev.texto;
+      const m = /^Preguntando al brazo (\w+)/.exec(ev.texto || '');
+      if (m) { run.activo = m[1]; run.fase = 'Preguntando al ' + (m[1] === 'rag' ? 'RAG' : 'WikiLLM'); }
+      const p = /^Poniendo el brazo (\w+) en el paso (\d+)/.exec(ev.texto || '');
+      if (p) run.fase = 'Poniendo el ' + (p[1] === 'rag' ? 'RAG' : 'wiki') + ' en el paso ' + p[2];
+      break;
+    }
+    case 'llamando': run.llamadas.push({etiqueta: ev.etiqueta, estado: 'curso', t0: Date.now()}); if (ev.etiqueta === 'rag' || ev.etiqueta === 'wiki') run.activo = ev.etiqueta; break;
+    case 'llamada': {
+      const l = [...run.llamadas].reverse().find((x) => x.etiqueta === ev.etiqueta && x.estado === 'curso') || (run.llamadas.push({etiqueta: ev.etiqueta, t0: Date.now()}), run.llamadas[run.llamadas.length - 1]);
+      Object.assign(l, {estado: 'ok', entrada: ev.tokens_entrada, cache: ev.tokens_cache, salida: ev.tokens_salida, segundos: ev.segundos, usd: ev.usd, texto: ev.texto});
+      if (!ev.repro && S.estado) S.estado.gasto.sesion_usd += ev.usd || 0;
+      break;
+    }
+    case 'llamada_fallida': {
+      const l = [...run.llamadas].reverse().find((x) => x.etiqueta === ev.etiqueta && x.estado === 'curso');
+      if (l) Object.assign(l, {estado: 'fallo', motivo: ev.motivo});
+      run.errores.push('La llamada «' + ev.etiqueta + '» falló: ' + ev.motivo);
+      break;
+    }
+    case 'resultado': run.resultado = ev; break;
+    case 'error': run.errores.push(ev.mensaje); break;
+    case 'fin':
+      run.estado = ev.codigo === 0 ? 'ok' : 'error'; run.codigo = ev.codigo; run.segundos = ev.segundos; run.activo = null;
+      cerrarFlujo();
+      if (run.accion === 'ingerir') S.indiceWiki = null;
+      refrescarEstado().then(() => { if (run.accion === 'reiniciar_wiki' || run.accion === 'ingerir') S.indiceWiki = null; renderVista(); });
+      break;
+    default: break;
+  }
+  programarPintado();
+}
+function programarPintado() {
+  if (S.pendiente) return;
+  S.pendiente = true;
+  requestAnimationFrame(() => { S.pendiente = false; renderRun(); actualizarGasto(); });
+}
+
+/* ================= vista de la ejecución ================= */
+function renderRun() {
+  const cont = $('#principal-run');
+  if (!cont) return;
+  const run = S.run;
+  if (!run) { poner(cont, null); return; }
+  if (vistaDeAccion(run.accion) !== S.vista) {
+    poner(cont, run.estado === 'corriendo' ? h('div', {class: 'vacio'}, 'En curso: ' + run.titulo + '. ', h('button', {class: 'boton chico', onclick: () => cambiarVista(vistaDeAccion(run.accion))}, 'Ver')) : null);
+    return;
+  }
+  const partes = [];
+  const e = run.estado;
+  partes.push(h('div', {class: 'estado-run'},
+    h('h3', {texto: run.titulo}),
+    e === 'corriendo' ? h('span', {class: 'chip acento'}, h('span', {class: 'girando'}), ' ' + (run.fase || 'ejecutando…')) : e === 'ok' ? chip('terminó bien · ' + seg(run.segundos), 'ok') : chip('terminó con error (código ' + run.codigo + ')', 'error'),
+    run.comando ? h('button', {class: 'boton chico', title: 'Copia la orden equivalente de la consola', onclick: () => copiar(run.comando, 'Orden copiada')}, 'Copiar la orden de la consola') : null));
+  if (run.repro) partes.push(h('div', {class: 'aviso-repro', role: 'status'}, 'REPRODUCCIÓN de una ejecución guardada' + (run.reproInfo && run.reproInfo.fecha ? ' (' + fechaCorta(run.reproInfo.fecha) + ')' : '') + '. No es una ejecución en vivo: no se llamó al modelo.'));
+  for (const m of run.errores) partes.push(h('div', {class: 'aviso-error', role: 'alert', texto: m}));
+  const estructurada = run.accion === 'comparar' || run.accion === 'ingerir';
+  if (run.accion === 'comparar') partes.push(vistaComparacion(run));
+  else if (run.accion === 'ingerir') partes.push(vistaIngesta(run));
+  partes.push(dock(run, !estructurada));
+  cont.replaceChildren(...partes);
+  const cuerpoDock = cont.querySelector('.dock-cuerpo');
+  if (cuerpoDock && S.pegado !== false) cuerpoDock.scrollTop = cuerpoDock.scrollHeight;
+}
+
+/* --- comparación --- */
+function parsearAccion(texto) {
+  let o = null;
+  try { o = JSON.parse(texto); } catch (e) { /* texto recortado: se lee a mano */ }
+  if (o && typeof o === 'object') return {accion: String(o.action || '').toLowerCase(), arg: o.query || o.pages || (o.answer ? '' : '')};
+  const a = /"action"\s*:\s*"(\w+)"/.exec(texto || ''); const q = /"query"\s*:\s*"([^"]*)/.exec(texto || '');
+  const p = /"pages"\s*:\s*\[([^\]]*)/.exec(texto || '');
+  return {accion: a ? a[1].toLowerCase() : '', arg: q ? q[1] : p ? p[1].replace(/["\s]/g, '').split(',').filter(Boolean) : ''};
+}
+const VERBO = {search: 'Buscar', read: 'Leer', answer: 'Responder'};
+function paginasChips(slugs, carpeta) {
+  return h('div', {class: 'paginas'}, slugs.map((s) => chipArchivo(s === 'index' ? carpeta.replace(/pages\/$/, '') + 'index.md' : carpeta + s + '.md', s)));
+}
+function pasoAgente(accion, arg, resultado, llamada, carpeta) {
+  const lista = Array.isArray(arg) ? arg : (arg ? [arg] : []);
+  const enCurso = llamada && llamada.estado === 'curso' && !accion;
+  if (enCurso) return h('li', {class: 'curso'}, h('span', {class: 'detalle', texto: 'el agente decide su siguiente acción…'}));
+  const verbo = VERBO[accion] || accion || 'Paso';
+  const principal = accion === 'search' ? ' «' + lista.join(', ') + '»' : accion === 'read' ? ' ' + lista.length + ' página(s)' : '';
+  const slugsLeidos = accion === 'read' ? lista : [];
+  const slugsHallados = accion === 'search' && resultado && !/no pages/i.test(resultado) ? resultado.split(',').map((x) => x.trim()).filter((x) => /^[\w-]+$/.test(x)) : [];
+  return h('li', {class: llamada && llamada.estado === 'curso' ? 'curso' : ''},
+    h('span', {class: 'accion-agente ' + accion, texto: verbo}), principal,
+    slugsLeidos.length ? paginasChips(slugsLeidos, carpeta) : null,
+    slugsHallados.length ? h('div', {class: 'detalle'}, 'Encontró:', paginasChips(slugsHallados, carpeta)) : (accion === 'search' && resultado ? h('div', {class: 'detalle', texto: 'Resultado: ' + resultado}) : null),
+    accion === 'read' && resultado && /not found|not read/.test(resultado) ? h('div', {class: 'detalle', texto: resultado}) : null,
+    llamada && llamada.estado === 'ok' ? h('div', {class: 'detalle', texto: 'llamada al modelo: ' + num(llamada.entrada) + ' tokens de entrada · ' + num(llamada.salida) + ' de salida · ' + seg(llamada.segundos)}) : null);
+}
+function textoConCitas(texto) {
+  const frag = document.createDocumentFragment();
+  const re = /\[([^\]\[#\s]+#[^\]\[\s]+)\]/g; let ultimo = 0, m;
+  while ((m = re.exec(texto))) {
+    if (m.index > ultimo) frag.append(texto.slice(ultimo, m.index));
+    const id = m[1];
+    frag.append(h('span', {class: 'cita-chip', 'data-cita': id, title: 'Ver el fragmento citado', onclick: () => resaltarCita(id)}, id));
+    ultimo = re.lastIndex;
+  }
+  if (ultimo < texto.length) frag.append(texto.slice(ultimo));
+  return frag;
+}
+function resaltarCita(id) {
+  document.querySelectorAll('.cita.resalta,.cita-chip.resalta').forEach((x) => x.classList.remove('resalta'));
+  document.querySelectorAll('[data-cita="' + CSS.escape(id) + '"]').forEach((x) => { x.classList.add('resalta'); if (x.classList.contains('cita')) x.scrollIntoView({block: 'nearest', behavior: 'smooth'}); });
+}
+function columnaSistema(sis, run, datos) {
+  const rag = sis === 'rag';
+  const d = datos ? datos.sistemas.find((s) => s.sistema === sis) : null;
+  const llamadas = run.llamadas.filter((l) => l.etiqueta === sis);
+  const ingerido = (datos && datos.paso) || null;
+  const carpeta = (run.params && run.params.wiki ? run.params.wiki : 'data/wiki/demo') + '/pages/';
+  let estado = d ? 'listo' : run.activo === sis && run.estado === 'corriendo' ? 'trabajando' : llamadas.length && llamadas.every((l) => l.estado === 'ok') ? 'listo' : 'esperando';
+  if (run.estado !== 'corriendo' && !d) estado = llamadas.length ? 'listo' : 'esperando';
+  const estadoChip = d && d.abstuvo ? chip('se abstuvo', 'aviso') : estado === 'trabajando' ? h('span', {class: 'chip acento'}, h('span', {class: 'girando'}), ' trabajando') : estado === 'listo' ? chip('listo', 'ok') : chip('esperando');
+  const cab = h('div', {class: 'col-cab'}, h('div', null, h('b', {texto: rag ? 'RAG simple' : 'WikiLLM'}), h('small', {texto: rag ? 'Recupera los fragmentos más cercanos a la pregunta y responde en una sola llamada.' : 'Un agente busca y lee páginas de un wiki que él mismo mantiene, y después responde.'})), estadoChip);
+
+  const linea = [];
+  if (rag) {
+    const rec = d && d.recuperados;
+    linea.push(h('li', {class: !rec && estado === 'trabajando' && !llamadas.length ? 'curso' : ''}, h('b', {texto: 'Recupera por similitud'}), h('div', {class: 'detalle', texto: rec ? rec.length + ' fragmentos de los ' + (ingerido || '') + ' papers ingeridos' : llamadas.length ? 'fragmentos más cercanos a la pregunta, ya recuperados' : 'busca los fragmentos más cercanos…'})));
+    const l = llamadas[0];
+    linea.push(h('li', {class: l && l.estado === 'curso' ? 'curso' : ''}, h('b', {texto: 'Una llamada al modelo con ese contexto'}), l && l.estado === 'ok' ? h('div', {class: 'detalle', texto: num(l.entrada) + ' tokens de entrada · ' + num(l.salida) + ' de salida · ' + seg(l.segundos)}) : null));
+  } else {
+    const detalle = d && d.traza && d.traza.detalle ? d.traza.detalle : null;
+    if (detalle) detalle.forEach((p, i) => linea.push(pasoAgente(p.accion, p.argumento, p.resultado, llamadas[i], carpeta)));
+    else llamadas.forEach((l) => { const a = l.texto ? parsearAccion(l.texto) : {accion: '', arg: ''}; linea.push(pasoAgente(a.accion, a.arg, '', l, carpeta)); });
+    if (!linea.length) linea.push(h('li', {class: estado === 'trabajando' ? 'curso' : ''}, h('span', {class: 'detalle', texto: estado === 'trabajando' ? 'el agente decide su primera acción…' : 'todavía no empieza'})));
+    if (d && d.traza && (d.traza.incidencias || []).length) d.traza.incidencias.forEach((x) => linea.push(h('li', null, h('span', {class: 'detalle', texto: 'Incidencia: ' + x}))));
+  }
+  const cuerpo = [h('h4', {texto: 'Qué hizo'}), h('ol', {class: 'linea-tiempo'}, linea)];
+  if (d) {
+    cuerpo.push(h('h4', {texto: 'Respuesta'}), h('div', {class: 'respuesta' + (d.abstuvo ? ' abstencion' : '')}, textoConCitas(d.respuesta)));
+    if (d.abstuvo) cuerpo.push(h('p', {class: 'detalle', texto: 'Declara que el corpus ingerido no contiene la información.'}));
+    else if (d.citas.length) {
+      cuerpo.push(h('h4', {texto: 'Citas (' + d.citas.length + ') y el fragmento del corpus que las respalda'}));
+      d.citas.forEach((c) => cuerpo.push(h('div', {class: 'cita', 'data-cita': c.span_id}, h('div', {class: 'id', texto: c.span_id}), h('div', {class: 'texto', texto: c.texto ? '«' + c.texto + '»' : '(fragmento no disponible)'}))));
+    } else cuerpo.push(h('p', {class: 'detalle', texto: 'Sin citas.'}));
+    if (rag && d.recuperados) {
+      cuerpo.push(h('h4', {texto: 'Fragmentos recuperados (★ = citado)'}));
+      d.recuperados.forEach((f) => cuerpo.push(h('div', {class: 'fragmento'},
+        h('div', {class: 'dist'}, h('span', {class: f.citado ? 'citado' : '', texto: (f.citado ? '★ ' : '') + 'dist. ' + dec(f.distancia, 3)}), h('div', {class: 'barra'}, h('i', {style: 'width:' + Math.max(4, (1 - f.distancia) * 100) + '%'}))),
+        h('div', null, h('div', {class: 'id', texto: f.span_ids[0] + (f.span_ids.length > 1 ? ' (+' + (f.span_ids.length - 1) + ')' : '')}), h('div', {texto: f.texto || ''})))));
+    }
+    cuerpo.push(h('h4', {texto: 'Costo'}), h('div', {class: 'costos'},
+      chip(d.llamadas + ' llamada(s)'), chip(num(d.tokens_entrada) + ' tokens de entrada (' + num(d.tokens_contexto) + ' de contexto)'), chip(num(d.tokens_salida) + ' de salida'), chip(seg(d.segundos)), chip(usd(d.usd) + ' USD', 'acento')));
+  } else if (llamadas.length) {
+    const tot = llamadas.reduce((a, l) => a + (l.usd || 0), 0);
+    cuerpo.push(h('h4', {texto: 'Costo hasta ahora'}), h('div', {class: 'costos'}, chip(llamadas.length + ' llamada(s)'), chip(usd(tot) + ' USD', 'acento')));
+  }
+  return h('section', {class: 'col ' + sis + ' ' + estado}, cab, h('div', {class: 'col-cuerpo'}, cuerpo));
+}
+function razon(a, b) { return a > 0 && b > 0 ? '×' + dec(b / a, 1) : '—'; }
+function vistaComparacion(run) {
+  const datos = run.resultado && run.resultado.tipo === 'comparacion' ? run.resultado.datos : null;
+  const pregunta = datos ? datos.pregunta : (run.params && run.params.pregunta) || '';
+  const nodos = [h('div', {class: 'pregunta-run'}, h('small', {texto: 'PREGUNTA' + (datos ? ' · corpus con ' + datos.paso + ' papers ingeridos · ' + datos.modelo : '')}), h('b', {texto: pregunta}))];
+  nodos.push(h('div', {class: 'columnas'}, columnaSistema('rag', run, datos), columnaSistema('wiki', run, datos)));
+  if (datos) {
+    const [r, w] = [datos.sistemas.find((s) => s.sistema === 'rag'), datos.sistemas.find((s) => s.sistema === 'wiki')];
+    if (r && w) {
+      const menor = (k) => (r[k] <= w[k] ? 'rag' : 'wiki');
+      const fila = (s, clase) => h('tr', null, h('td', {class: clase, texto: s.nombre}), h('td', {texto: s.abstuvo ? 'sí' : 'no'}), h('td', {texto: s.citas.length}),
+        ['llamadas', 'tokens_entrada', 'tokens_contexto'].map((k) => h('td', {class: menor(k) === s.sistema && r[k] !== w[k] ? 'mejor' : '', texto: num(s[k])})),
+        h('td', {class: menor('segundos') === s.sistema ? 'mejor' : '', texto: dec(s.segundos, 1)}), h('td', {class: menor('usd') === s.sistema ? 'mejor' : '', texto: usd(s.usd)}));
+      nodos.push(h('section', {class: 'comparacion'}, h('h4', {texto: 'Comparación (lo más bajo, resaltado)'}),
+        h('table', {class: 'tabla'}, h('thead', null, h('tr', null, ['sistema', 'abstención', 'citas', 'llamadas', 't. entrada', 't. contexto', 'segundos', 'USD'].map((x) => h('th', {texto: x})))),
+          h('tbody', null, fila(r, 'rag'), fila(w, 'wiki'))),
+        h('div', {class: 'relativo', texto: 'WikiLLM frente a RAG: ' + razon(r.llamadas, w.llamadas) + ' llamadas · ' + razon(r.tokens_entrada, w.tokens_entrada) + ' tokens de entrada · ' + razon(r.segundos, w.segundos) + ' tiempo · ' + razon(r.usd, w.usd) + ' costo'})));
+    }
+  }
+  return h('div', null, nodos);
+}
+
+/* --- ingesta --- */
+function vistaIngesta(run) {
+  const d = run.resultado && run.resultado.tipo === 'ingesta' ? run.resultado.datos : null;
+  const plan = run.llamadas.find((l) => /^wiki-plan/.test(l.etiqueta)), esc = run.llamadas.find((l) => /^wiki-escritura/.test(l.etiqueta));
+  const carpeta = (run.params && run.params.wiki ? run.params.wiki : 'data/wiki/demo') + '/pages/';
+  const etapa = (titulo, sub, estado) => h('div', {class: 'etapa ' + estado}, h('b', null, estado === 'curso' ? h('span', {class: 'girando'}) : null, estado === 'curso' ? ' ' : '', estado === 'hecha' ? '✓ ' : '', titulo), h('small', {texto: sub}));
+  const llamada = (l) => (l && l.estado === 'ok' ? num(l.entrada) + ' tokens de entrada · ' + num(l.salida) + ' de salida · ' + seg(l.segundos) : 'pendiente');
+  const estadoDe = (l) => (l && l.estado === 'ok' ? 'hecha' : l ? 'curso' : '');
+  const total = run.llamadas.reduce((a, l) => a + (l.usd || 0), 0);
+  const nodos = [h('section', {class: 'ingesta'},
+    h('div', null, h('b', {texto: d ? 'Paper ' + d.paso + ' · ' + d.arxiv_id : 'Ingesta del paper n.º ' + ((run.params && run.params.paso) || '?')}), d ? h('div', {class: 'detalle', texto: d.titulo}) : null),
+    h('div', {class: 'etapas'},
+      etapa('1. Plan', plan ? llamada(plan) : 'decide qué páginas tocar', estadoDe(plan)),
+      etapa('2. Escritura', esc ? llamada(esc) : 'redacta las páginas con citas', estadoDe(esc)),
+      etapa('3. Validación por código', d ? 'citas, enlaces y cifras revisadas' : 'elimina lo que no se puede sustentar', d ? 'hecha' : ''),
+      etapa('4. Copia versionada', d ? 'etiqueta paso-' + d.paso + ' en el repositorio del wiki' : 'una etiqueta por ingesta', d ? 'hecha' : '')))];
+  if (d) {
+    const ok = (n) => (n === 0 ? 'ok' : 'aviso');
+    nodos.push(h('div', {class: 'tiles'},
+      h('div', {class: 'tile'}, h('div', {class: 'v', texto: d.creadas.length}), h('div', {class: 'k', texto: 'páginas creadas'})),
+      h('div', {class: 'tile'}, h('div', {class: 'v', texto: d.actualizadas.length}), h('div', {class: 'k', texto: 'páginas actualizadas'})),
+      h('div', {class: 'tile'}, h('div', {class: 'v', texto: usd(total, 4)}), h('div', {class: 'k', texto: 'USD (' + run.llamadas.length + ' llamadas)'})),
+      h('div', {class: 'tile'}, h('div', {class: 'v', texto: dec(run.segundos, 0) + ' s'}), h('div', {class: 'k', texto: 'tiempo total'}))));
+    nodos.push(h('div', {class: 'costos'}, chip('citas eliminadas: ' + d.citas_eliminadas, ok(d.citas_eliminadas), 'Citas que no resolvieron a un fragmento real y el código quitó'), chip('enlaces rotos: ' + d.enlaces_rotos, ok(d.enlaces_rotos), 'Enlaces a páginas inexistentes, dejados como texto'), chip('líneas numéricas sin cita: ' + d.lineas_sin_cita, ok(d.lineas_sin_cita), 'Afirmaciones con cifras que quedaron sin respaldo')));
+    if (d.creadas.length) nodos.push(h('div', {class: 'archivos-paso', style: 'margin-top:.7rem'}, h('span', {class: 'etq', texto: 'Creadas:'}), d.creadas.map((s) => chipArchivo(carpeta + s + '.md', s))));
+    if (d.actualizadas.length) nodos.push(h('div', {class: 'archivos-paso'}, h('span', {class: 'etq', texto: 'Actualizadas:'}), d.actualizadas.map((s) => chipArchivo(carpeta + s + '.md', s))));
+    nodos.push(h('div', {class: 'archivos-paso'}, h('span', {class: 'etq', texto: 'Registro:'}), chipArchivo(carpeta.replace('/pages/', '/log.md'), 'log.md')));
+    nodos.push(h('p', {class: 'nota-pie', texto: 'El modelo propone qué escribir; el código decide qué se guarda: quita las citas que no resuelven a un fragmento real de un paper ya ingerido, deja como texto los enlaces sin destino y cuenta las afirmaciones numéricas sin cita.'}));
+  } else {
+    nodos.push(h('div', {class: 'costos', style: 'margin-top:.6rem'}, chip(run.llamadas.length + ' llamada(s) hasta ahora'), chip(usd(total, 4) + ' USD', 'acento')));
+  }
+  return h('div', null, nodos);
+}
+
+/* --- métricas del piloto --- */
+async function cargarMetricas() {
+  try { S.metricas = await api('/api/metricas'); programarPintado(); } catch (e) { toast(e.message, 'error'); }
+}
+const VEREDICTO = {
+  correcta_resp: ['✓', 'v-ok', 'respondió bien'], correcta_abst: ['○', 'v-abst', 'se abstuvo y era lo correcto'],
+  incorrecta_resp: ['✗', 'v-mal', 'respondió mal'], incorrecta_abst: ['✗', 'v-mal', 'se abstuvo pero había respuesta'], indeterminada: ['?', 'v-ind', 'indeterminada'],
+};
+function claveVeredicto(q) {
+  if (q.veredicto === 'indeterminada') return 'indeterminada';
+  return q.veredicto + (q.abstuvo ? '_abst' : '_resp');
+}
+function vistaMetricas() {
+  const m = S.metricas;
+  if (!m) return h('div', {class: 'vacio', texto: 'Cargando las métricas del piloto…'});
+  const c = m.corrida || {};
+  const filas = m.filas;
+  const barra = (v, clase) => (v == null ? '—' : h('span', null, h('span', {class: 'barra-h ' + clase, style: 'width:' + Math.round(v * 70) + 'px'}), ' ' + dec(v, 2)));
+  const tabla = h('table', {class: 'tabla'}, h('thead', null, h('tr', null, ['paso', 'sistema', 'respondibles', 'cobertura', 'abstención correcta', 'fundamentación', 'contexto medio (tokens)', 'USD'].map((x) => h('th', {texto: x})))),
+    h('tbody', null, filas.map((f) => h('tr', null, h('td', {texto: f.ingest_step}), h('td', {class: f.system, texto: f.system === 'rag' ? 'RAG simple' : 'WikiLLM'}), h('td', {texto: f.n_respondibles + ' de ' + f.n}),
+      h('td', null, barra(f.cobertura, f.system)), h('td', null, barra(f.abstencion_correcta, f.system)), h('td', null, barra(f.fundamentacion_media, f.system)), h('td', {texto: f.context_tokens_media == null ? '—' : num(Math.round(f.context_tokens_media))}), h('td', {texto: usd(f.costo_usd_total, 4)})))));
+  const ids = [...new Set(m.preguntas.map((q) => q.id))];
+  const col = [[0, 'rag'], [0, 'wiki'], [5, 'rag'], [5, 'wiki']];
+  const pasos = [...new Set(m.preguntas.map((q) => q.paso))].sort((a, b) => a - b);
+  const columnas = pasos.flatMap((p) => ['rag', 'wiki'].map((s) => [p, s]));
+  const grid = h('table', {class: 'tabla'}, h('thead', null, h('tr', null, h('th', {texto: 'pregunta'}), h('th', {texto: 'tipo'}), columnas.map(([p, s]) => h('th', {class: s, texto: (s === 'rag' ? 'RAG' : 'Wiki') + ' · paso ' + p})))),
+    h('tbody', null, ids.map((id) => {
+      const qs = m.preguntas.filter((q) => q.id === id), primera = qs[0];
+      return h('tr', null, h('td', {title: primera.texto, style: 'max-width:26rem;overflow:hidden;text-overflow:ellipsis', texto: id + ' · ' + (primera.texto || '').slice(0, 70)}), h('td', {texto: primera.tipo || ''}),
+        columnas.map(([p, s]) => {
+          const q = qs.find((x) => x.paso === p && x.sistema === s);
+          if (!q) return h('td', {texto: '—'});
+          const [sim, cl, desc] = VEREDICTO[claveVeredicto(q)] || ['?', 'v-ind', ''];
+          return h('td', null, h('span', {class: 'pill-v ' + cl, title: desc + ' · ' + (q.respuesta || '').slice(0, 220), texto: sim}));
+        }));
+    })));
+  return h('div', null,
+    h('div', {class: 'estado-run'}, h('h3', {texto: 'Piloto ' + (c.corrida || '')}), chip((c.preguntas || '?') + ' preguntas × ' + pasos.length + ' pasos × 2 sistemas'), chip(c.modelo || ''),
+      c.valida_para_informe === false ? chip('No vale para el informe: n pequeño y preguntas sin acordar', 'aviso') : null),
+    h('section', {class: 'comparacion'}, h('h4', {texto: 'Métricas por sistema y paso'}), tabla,
+      h('p', {class: 'nota-pie', texto: 'Cobertura: proporción de las preguntas respondibles que el sistema acierta. Con pocas preguntas respondibles en el paso 5, estas cifras solo muestran que la cadena de evaluación funciona de punta a punta.'})),
+    h('section', {class: 'comparacion'}, h('h4', {texto: 'Veredicto por pregunta (✓ acierta · ○ se abstiene bien · ✗ falla · ? indeterminada)'}), grid));
+}
+
+/* --- dock: consola, llamadas, json --- */
+function dock(run, solo) {
+  const grande = solo || S.dockGrande;
+  const tabs = [['consola', 'Consola'], ['llamadas', 'Llamadas al modelo (' + run.llamadas.length + ')'], ['json', 'Resultado en JSON']];
+  const cuerpo = h('div', {class: 'dock-cuerpo mono', onscroll: (e) => { const t = e.target; S.pegado = t.scrollHeight - t.scrollTop - t.clientHeight < 30; }});
+  if (S.dock === 'consola' || solo) {
+    for (const l of run.lineas) cuerpo.append(h('div', {class: 'l ' + (l.canal || ''), texto: (l.canal === 'comando' ? '$ ' : '') + l.texto}));
+    if (run.estado !== 'corriendo') cuerpo.append(h('div', {class: 'l fin', texto: '— terminó con código ' + run.codigo + (run.repro ? ' (reproducción)' : '') + ' —'}));
+  } else if (S.dock === 'llamadas') {
+    let acumulado = 0;
+    const et = (e) => h('span', {class: /^rag/.test(e) ? 'et-rag' : 'et-wiki', texto: e});
+    cuerpo.append(h('table', null, h('thead', null, h('tr', null, ['#', 'etiqueta', 'entrada', 'de caché', 'salida', 'segundos', 'USD', 'acumulado'].map((x) => h('th', {texto: x})))),
+      h('tbody', null, run.llamadas.map((l, i) => { acumulado += l.usd || 0; return h('tr', null, h('td', {texto: i + 1}), h('td', null, et(l.etiqueta)),
+        h('td', {texto: l.estado === 'ok' ? num(l.entrada) : l.estado === 'fallo' ? 'falló' : '…'}), h('td', {texto: l.estado === 'ok' ? num(l.cache) : ''}), h('td', {texto: l.estado === 'ok' ? num(l.salida) : ''}),
+        h('td', {texto: l.estado === 'ok' ? dec(l.segundos, 2) : ''}), h('td', {texto: l.estado === 'ok' ? usd(l.usd) : ''}), h('td', {texto: l.estado === 'ok' ? usd(acumulado) : ''})); }))));
+    if (!run.llamadas.length) cuerpo.append(h('div', {class: 'l', texto: 'Esta acción no llama al modelo.'}));
+  } else {
+    cuerpo.append(h('pre', {class: 'l', texto: run.resultado ? JSON.stringify(run.resultado.datos, null, 2) : 'Todavía no hay un resultado estructurado.'}));
+  }
+  const cab = h('div', {class: 'dock-cab'}, solo ? h('span', {class: 'tab activa', texto: 'Consola'}) : tabs.map(([k, t]) => h('button', {class: 'tab' + (S.dock === k ? ' activa' : ''), onclick: () => { S.dock = k; S.pegado = true; renderRun(); }}, t)),
+    h('span', {class: 'espacio'}),
+    solo ? null : h('button', {class: 'boton', title: 'Agrandar o reducir (C)', onclick: alternarDock}, S.dockGrande ? 'Reducir' : 'Agrandar'));
+  return h('section', {class: 'dock' + (grande ? ' grande' : '') + (solo ? ' solo' : '')}, cab, cuerpo);
+}
+function alternarDock() { S.dockGrande = !S.dockGrande; S.pegado = true; renderRun(); }
+
+
+/* ================= ayuda ================= */
+function mostrarAyuda() {
+  modal({titulo: 'Acerca de este panel', cuerpo: h('div', null,
+    h('p', {texto: 'Compara dos memorias para un agente sobre el mismo corpus de papers de arXiv y con el mismo modelo: un RAG simple (azul) y un wiki que un agente mantiene de forma incremental, el WikiLLM (verde).'}),
+    h('ul', null,
+      h('li', null, h('b', {texto: 'Preguntar: '}), 'hace una pregunta a los dos y muestra qué hizo cada uno, la respuesta, las citas con su fragmento y el costo.'),
+      h('li', null, h('b', {texto: 'Ingerir: '}), 'añade el siguiente paper al wiki; se ve el plan, la escritura y lo que validó el código.'),
+      h('li', null, h('b', {texto: 'Wiki: '}), 'el índice, las páginas y el historial versionado.'),
+      h('li', null, h('b', {texto: 'Resultados: '}), 'métricas del piloto y estimación del costo de una corrida.'),
+      h('li', null, h('b', {texto: 'Sistema: '}), 'estado, verificaciones y reinicio del wiki.')),
+    h('p', {texto: 'Las acciones que llaman al modelo piden confirmación y tienen un tope de gasto por sesión. Cada ejecución queda guardada y puede reproducirse sin llamar al modelo; la reproducción siempre se indica. La consola muestra la misma salida que la orden equivalente.'})),
+    botones: [{texto: 'Entendido', valor: true, primario: true}]});
+}
+
+/* ================= datos y arranque ================= */
+async function cargarBase() {
+  const [estado, archivos] = await Promise.all([api('/api/estado'), api('/api/archivos')]);
+  S.estado = estado; S.archivos = archivos; S.rutasPermitidas = new Set(archivos.map((a) => a.ruta));
+}
+async function refrescarEstado() {
+  try {
+    await cargarBase();
+    if (firmaBarra() !== S.firmaBarra) renderBarra(); else actualizarGasto();
+    return S.estado;
+  } catch (e) { return null; }
+}
+function firma() {
+  if (!S.estado) return '';
+  return JSON.stringify([S.estado.ocupado && S.estado.ocupado.id, S.estado.rag_listo, S.estado.wiki.ingeridos, S.estado.grabaciones.length]);
+}
+function alTecla(e) {
+  if (hayModal() || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'Escape' && !$('#visor').hidden) mostrarVisor(false);
+}
+async function iniciar() {
+  const tema = pref.get('tema', null);
+  if (tema) document.documentElement.setAttribute('data-tema', tema);
+  try {
+    const [acciones, ejemplos] = await Promise.all([api('/api/acciones'), api('/api/ejemplos'), cargarBase()]);
+    acciones.forEach((a) => { S.acciones[a.id] = a; });
+    S.ejemplos = ejemplos;
+  } catch (e) {
+    $('#principal').replaceChildren(h('div', {class: 'aviso-error', texto: 'No se pudo conectar con el panel: ' + e.message + '. ¿Sigue corriendo «python -m wikillm.panel»?'}));
+    return;
+  }
+  const inicial = location.hash.slice(1);
+  S.vista = VISTAS.some(([id]) => id === inicial) ? inicial : 'preguntar';
+  renderBarra();
+  cambiarVista(S.vista, true);
+  if (pref.get('visor', false)) mostrarVisor(true);
+  document.addEventListener('keydown', alTecla);
+  window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (VISTAS.some(([id]) => id === v) && v !== S.vista) cambiarVista(v, true); });
+  setInterval(async () => {
+    if (S.run && S.run.estado === 'corriendo') return;
+    const antes = firma();
+    await refrescarEstado();
+    const editando = document.activeElement && document.activeElement.tagName === 'INPUT' && $('#vista').contains(document.activeElement);
+    if (firma() !== antes && !editando) renderVista();
+  }, 5000);
+  if (S.estado.ocupado && S.estado.ocupado.accion === 'calentar') {
+    const es = new EventSource('/api/eventos/' + S.estado.ocupado.id);
+    es.onmessage = (m) => { let ev; try { ev = JSON.parse(m.data); } catch (x) { return; } if (ev.t === 'fin') { es.close(); refrescarEstado().then(renderVista); } };
+    es.onerror = () => es.close();
+  }
+}
+window.addEventListener('error', (e) => { try { toast('Error en la página: ' + e.message, 'error', 8000); } catch (x) { /* nada */ } });
+iniciar();
+</script>
+</body>
+</html>

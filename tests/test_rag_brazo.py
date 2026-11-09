@@ -157,3 +157,21 @@ def test_sin_pasajes_igual_hace_la_llamada_con_un_contexto_vacio(tmp_path):
     assert len(http.solicitudes) == 1
     assert "(no passages)" in http.solicitudes[0]["messages"][1]["content"]
     assert resultado.abstuvo and resultado.llamadas == 1
+
+
+def test_expone_los_fragmentos_recuperados_de_la_ultima_pregunta(tmp_path):
+    brazo, _ = crear(tmp_path, f"Answer [{S1}].")
+    assert brazo.ultimos_recuperados == []
+    brazo.responder("What algorithm?")
+    assert brazo.ultimos_recuperados == [
+        {"span_ids": [S1], "distancia": 0.1},
+        {"span_ids": [S2, S3], "distancia": 0.1},
+    ]
+
+
+def test_los_fragmentos_recuperados_se_reemplazan_en_cada_pregunta(tmp_path):
+    brazo, _ = crear(tmp_path, f"Answer [{S1}].")
+    brazo.responder("Primera?")
+    brazo._indice.recuperados = RECUPERADOS[:1]
+    brazo.responder("Segunda?")
+    assert [x["span_ids"] for x in brazo.ultimos_recuperados] == [[S1]]

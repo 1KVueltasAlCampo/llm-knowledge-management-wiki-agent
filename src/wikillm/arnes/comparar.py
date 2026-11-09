@@ -38,6 +38,8 @@ class RespuestaDeBrazo:
     sistema: str
     resultado: ResultadoBrazo
     traza: dict[str, Any] | None
+    # Fragmentos que recuperó el sistema ({"span_ids", "distancia"}); None si no recupera.
+    recuperados: list[dict[str, Any]] | None = None
 
 
 @dataclass(frozen=True)
@@ -73,8 +75,14 @@ def comparar(
         avisar(f"Preguntando al brazo {brazo.nombre}…")
         resultado = brazo.responder(pregunta)
         traza = getattr(brazo, "traza", None)
+        recuperados = getattr(brazo, "ultimos_recuperados", None)
         respuestas.append(
-            RespuestaDeBrazo(brazo.nombre, resultado, traza() if callable(traza) else None)
+            RespuestaDeBrazo(
+                brazo.nombre,
+                resultado,
+                traza() if callable(traza) else None,
+                [dict(x) for x in recuperados] if recuperados is not None else None,
+            )
         )
     return Comparacion(
         pregunta=pregunta,
@@ -143,6 +151,16 @@ def _bloque(r: RespuestaDeBrazo, resolutor: Resolutor) -> list[str]:
         lineas += [f"    {_paso_del_agente(i, p)}" for i, p in enumerate(detalle, start=1)]
     for incidencia in (r.traza or {}).get("incidencias") or []:
         lineas.append(f"  Incidencia: {incidencia}")
+    if r.recuperados is not None:
+        citadas = set(res.citas)
+        lineas.append("  Fragmentos que recuperó por similitud (* = citado en la respuesta):")
+        for x in r.recuperados:
+            ids = x["span_ids"]
+            marca = "*" if citadas & set(ids) else " "
+            resto = f" (+{len(ids) - 1})" if len(ids) > 1 else ""
+            lineas.append(
+                f"   {marca} [{ids[0] if ids else '?'}]{resto}  distancia {x['distancia']:.3f}"
+            )
     lineas.append("  Respuesta:")
     lineas += _envolver(res.respuesta, "    ")
     if res.abstuvo:
@@ -212,6 +230,7 @@ def a_linea(c: Comparacion) -> dict[str, Any]:
                 "segundos": round(r.resultado.segundos, 3),
                 "usd": r.resultado.usd,
                 "traza": r.traza,
+                **({"recuperados": r.recuperados} if r.recuperados is not None else {}),
             }
             for r in c.respuestas
         ],

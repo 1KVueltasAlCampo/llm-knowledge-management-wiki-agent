@@ -79,30 +79,38 @@ def _crear_modelo(ajustes: Settings, ruta_registro: Path) -> ClienteModelo:
     return ClienteModelo(ajustes, ruta_registro=ruta_registro)
 
 
-def _crear_brazos_reales(
-    modelo: ClienteModelo, ajustes: Settings, argumentos: argparse.Namespace
-) -> list[Brazo]:
+def crear_indice_rag(ajustes: Settings, argumentos: argparse.Namespace) -> Any:
+    """Abre el índice vectorial y carga el modelo de embeddings (tarda unos segundos)."""
     # importaciones aquí: cargan Chroma y torch, que no hacen falta para estimar
-    from wikillm.rag.brazo import BrazoRag
-    from wikillm.rag.indice import (
-        IndiceRag,
-        cargar_span_ids,
-        crear_embeddings,
-        medidor_de_tokens,
-    )
-    from wikillm.wiki.almacen import Wiki
-    from wikillm.wiki.brazo import BrazoWiki
+    from wikillm.rag.indice import IndiceRag, crear_embeddings, medidor_de_tokens
 
-    spans = cargar_span_ids(argumentos.spans) if argumentos.spans.exists() else None
     carpeta_indice = getattr(argumentos, "chroma", None) or Path("data/chroma") / argumentos.corrida
-    carpeta_wiki = getattr(argumentos, "wiki", None) or Path("data/wiki") / argumentos.corrida
-    indice = IndiceRag(
+    return IndiceRag(
         argumentos.gold,
         carpeta_indice,
         embeddings=crear_embeddings(ajustes),
         medir=medidor_de_tokens(ajustes.embedding_model),
         modelo_embeddings=ajustes.embedding_model,
     )
+
+
+def _crear_brazos_reales(
+    modelo: ClienteModelo, ajustes: Settings, argumentos: argparse.Namespace
+) -> list[Brazo]:
+    return armar_brazos(modelo, ajustes, argumentos, crear_indice_rag(ajustes, argumentos))
+
+
+def armar_brazos(
+    modelo: ClienteModelo, ajustes: Settings, argumentos: argparse.Namespace, indice: Any
+) -> list[Brazo]:
+    """Los dos brazos reales sobre un índice ya abierto (el panel lo reutiliza entre preguntas)."""
+    from wikillm.rag.brazo import BrazoRag
+    from wikillm.rag.indice import cargar_span_ids
+    from wikillm.wiki.almacen import Wiki
+    from wikillm.wiki.brazo import BrazoWiki
+
+    spans = cargar_span_ids(argumentos.spans) if argumentos.spans.exists() else None
+    carpeta_wiki = getattr(argumentos, "wiki", None) or Path("data/wiki") / argumentos.corrida
     return [
         BrazoRag(modelo, indice, k=argumentos.k, spans_validos=spans),
         BrazoWiki(

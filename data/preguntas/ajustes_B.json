@@ -30,14 +30,16 @@
    "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
   },
   {
-   "question_id": "B001-T4-06",
+   "question_id": "B001-T4-05",
    "accion": "agregar",
-   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+   "pregunta": "What is the highest single-step passage Recall@5 on MuSiQue that the corpus reports for HippoRAG, leaving out combinations with iterative retrieval such as IRCoT?",
+   "motivo": "Sustituye a la T4 de RAPTOR en LongMemEval-S, que tenía tres tramos (el paper de Harness también reporta RAPTOR, en escala 0-1) y mezclaba subconjuntos y protocolos. Esta es inequívoca al acotar a un solo paso: el máximo pasa de 52,1 a 53,2 al entrar el paper de HippoRAG 2."
   },
   {
-   "question_id": "B022-T4-05",
+   "question_id": "B001-T4-06",
    "accion": "agregar",
-   "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
+   "motivo": "Sin acotar, «el más alto» incluye «IRCoT + HippoRAG» (93,9 en 2Wiki), que no es HippoRAG de un solo paso; se acota a un solo paso. Con ese criterio el máximo pasa de 89,5 a 90,4 al entrar el paper de HippoRAG 2, y ningún otro paper del corpus reporta un valor mayor.",
+   "pregunta": "What is the highest single-step passage Recall@5 on 2WikiMultiHopQA that the corpus reports for HippoRAG, leaving out combinations with iterative retrieval such as IRCoT?"
   },
   {
    "question_id": "B023-T2-01",

@@ -34,8 +34,14 @@ def main() -> int:
     manifest = Path("data/manifest_corpus.jsonl")
     orden = [f["arxiv_id"] for f in sorted(leer_jsonl(manifest), key=lambda f: f["orden_ingesta"])]
     revisar("manifest con 50 papers", len(orden) == 50, f"{len(orden)} papers")
-    gold = list(Path("data/gold").glob("*.md"))
-    revisar("Gold local con 50 papers", len(gold) == 50, f"{len(gold)} archivos")
+    # Gold may hold extra papers outside the corpus (e.g. the out-of-corpus papers behind the T5
+    # drafts); what matters is that every paper of the manifest has its Gold file.
+    faltan = [a for a in orden if not Path(f"data/gold/{a}.md").exists()]
+    revisar(
+        "Gold local de los papers del manifest",
+        bool(orden) and not faltan,
+        f"faltan {len(faltan)}: {', '.join(faltan[:3])}" if faltan else f"{len(orden)} papers",
+    )
     revisar("fragmentos citables (spans.jsonl)", Path("data/gold/spans.jsonl").exists())
 
     try:

@@ -176,6 +176,35 @@ a{color:var(--acento)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.6rem;margin:.6rem 0}
 .tile{border:1px solid var(--borde);border-radius:.7rem;padding:.5rem .7rem;background:var(--panel2)}
 .tile .v{font-size:1.5rem;font-weight:700}.tile .k{color:var(--suave);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+.recorrido{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:0 0 .9rem;padding:.5rem .6rem;border:1px solid var(--borde);border-radius:.8rem;background:var(--panel);box-shadow:var(--sombra)}
+.recorrido .etq{font-size:.74rem;text-transform:uppercase;letter-spacing:.07em;color:var(--suave);margin-right:.2rem}
+.recorrido button{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .6rem;border-radius:999px;border:1px solid var(--borde);background:var(--panel2);color:var(--texto);font:inherit;font-size:.82rem;cursor:pointer}
+.recorrido button:hover{border-color:var(--acento);color:var(--acento)}
+.recorrido button .n{display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;border-radius:50%;background:var(--borde);font-size:.72rem;font-weight:700}
+.recorrido button.siguiente{border-color:var(--acento);background:var(--acento-fondo);color:var(--acento);font-weight:600}
+.recorrido button.siguiente .n{background:var(--acento);color:var(--panel)}
+.recorrido button.hecho{opacity:.6}
+.recorrido .cerrar{margin-left:auto;border:none;background:none;padding:.1rem .4rem}
+.lectura{border-left:4px solid var(--acento)}
+.lectura ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
+.lectura li{display:flex;gap:.5rem;align-items:flex-start;font-size:.95rem}
+.lectura li .punto{margin-top:.45rem;flex:none}
+.grafo-caja{position:relative;height:520px;border:1px solid var(--borde);border-radius:.7rem;background:var(--panel2);overflow:hidden}
+.grafo-caja svg{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.grafo-caja svg:active{cursor:grabbing}
+.grafo-caja .arista{stroke:var(--suave);stroke-opacity:.35;stroke-width:1.2}
+.grafo-caja .arista.activa{stroke:var(--acento);stroke-opacity:.9;stroke-width:2}
+.grafo-caja .nodo circle{stroke:var(--panel);stroke-width:2;cursor:pointer}
+.grafo-caja .nodo.paper circle{fill:var(--acento)}
+.grafo-caja .nodo.concepto circle{fill:var(--wiki)}
+.grafo-caja .nodo.nuevo .anillo{fill:none;stroke:var(--aviso);stroke-width:3;stroke-dasharray:4 3}
+.grafo-caja .nodo text{font-size:11px;fill:var(--texto);pointer-events:none;paint-order:stroke;stroke:var(--panel2);stroke-width:3px}
+.grafo-caja.enfoque .nodo,.grafo-caja.enfoque .arista{opacity:.15}
+.grafo-caja.enfoque .nodo.vecino,.grafo-caja.enfoque .arista.activa{opacity:1}
+.grafo-leyenda{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;font-size:.82rem;color:var(--suave);margin:.4rem 0 .5rem}
+.grafo-leyenda i{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;margin-right:.3rem;vertical-align:-1px}
+.duelo td.mejor,.tabla td.mejor{font-weight:700}
+.duelo .gana{font-size:.75rem;color:var(--suave)}
 .nota-pie{color:var(--suave);font-size:.88rem;margin-top:.7rem;max-width:56rem}
 
 /* métricas */
@@ -628,8 +657,39 @@ function cambiarVista(v, sinHash) {
 function renderVista() {
   renderNav();
   const f = {preguntar: vPreguntar, ingerir: vIngerir, wiki: vWiki, resultados: vResultados, sistema: vSistema}[S.vista];
-  poner($('#vista'), f());
+  poner($('#vista'), recorrido(), f());
   renderRun();
+}
+
+/* Recorrido guiado de la demostración (docs/demo.md): un botón por paso del guion. */
+function preguntaDeEjemplo(fragmento) {
+  const x = (S.ejemplos || []).find((e) => e.pregunta.includes(fragmento));
+  return x ? x.pregunta : '';
+}
+function irAPreguntar(fragmento) {
+  S.pregunta = preguntaDeEjemplo(fragmento);
+  cambiarVista('preguntar');
+  const i = $('#pregunta');
+  if (i) { i.value = S.pregunta; i.focus(); }
+}
+function recorrido() {
+  if (!S.estado || pref.get('recorrido-oculto', false)) return null;
+  const n = S.estado.wiki.ingeridos;
+  const pasos = [
+    ['El wiki en el paso 5', 'Índice, páginas con citas, registro y copias versionadas', () => cambiarVista('wiki')],
+    ['Preguntar antes', 'BeliefShift aún no está en el corpus: ambos deben abstenerse', () => irAPreguntar('BeliefShift')],
+    ['Ingerir el paper 6', 'Plan, escritura, validación por código y copia versionada', () => cambiarVista('ingerir')],
+    ['Preguntar después', 'La misma pregunta: ahora ambos responden con su cita', () => irAPreguntar('BeliefShift')],
+    ['Evidencia', 'Trazas, llamadas y costos guardados', () => mostrarVisor(true)],
+    ['Resultados', 'Métricas del piloto y costo de la corrida completa', () => cambiarVista('resultados')],
+  ];
+  // Con el wiki en el paso 5 toca preguntar antes de ingerir; desde el paso 6, preguntar después.
+  const siguiente = n <= 5 ? 1 : 3;
+  return h('div', {class: 'recorrido', role: 'navigation', 'aria-label': 'Recorrido de la demostración'},
+    h('span', {class: 'etq', texto: 'Recorrido'}),
+    pasos.map(([titulo, ayuda, ir], i) => h('button', {class: i === siguiente ? 'siguiente' : (n > 5 && i < 3 ? 'hecho' : ''), title: ayuda, onclick: ir},
+      h('span', {class: 'n', texto: String(i + 1)}), titulo)),
+    h('button', {class: 'cerrar', title: 'Ocultar el recorrido', 'aria-label': 'Ocultar el recorrido', onclick: () => { pref.set('recorrido-oculto', true); renderVista(); }}, '×'));
 }
 function cabecera(titulo, texto) {
   return [h('div', {class: 'paso-cab'}, h('h2', {texto: titulo})), h('p', {class: 'objetivo', texto})];
@@ -696,8 +756,132 @@ function vWiki() {
     h('div', {class: 'tiles'}, h('div', {class: 'tile'}, h('div', {class: 'v', texto: w.ingeridos}), h('div', {class: 'k', texto: 'papers ingeridos'})), h('div', {class: 'tile'}, h('div', {class: 'v', texto: w.paginas}), h('div', {class: 'k', texto: 'páginas'}))),
     h('div', {class: 'acciones'}, botonAccion('git_wiki', {}, 'Ver el historial versionado'),
       h('button', {class: 'boton', onclick: () => abrirArchivo(WIKI + '/log.md')}, 'Abrir el registro'), h('button', {class: 'boton', onclick: () => abrirArchivo(WIKI + '/index.md')}, 'Abrir el índice')),
+    w.existe ? seccionGrafo(w) : null,
     h('section', {class: 'comparacion'}, h('h4', {texto: 'Índice del wiki'}), S.indiceWiki ? h('div', {class: 'contenido-inline'}, renderMarkdown(S.indiceWiki, {ruta: WIKI + '/index.md', carpetaPaginas: WIKI + '/pages/'})) : h('p', {class: 'detalle', texto: w.existe ? 'Cargando el índice…' : 'No hay un wiki todavía.'})),
   ];
+}
+
+/* ================= grafo del wiki (vista tipo Obsidian) ================= */
+// Built client-side from the page files: [[slug]] links are the edges, the frontmatter gives the
+// page type and the last ingestion step that touched it. No external library, so it works offline.
+const SVG_NS = 'http://www.w3.org/2000/svg', GW = 1100, GH = 520;
+function sv(tag, attrs, ...hijos) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) if (v != null) el.setAttribute(k, v);
+  hijos.flat().forEach((x) => x && el.append(x));
+  return el;
+}
+function frontmatter(texto) {
+  const m = /^---\n([\s\S]*?)\n---/.exec(texto);
+  const campo = (k) => { const r = new RegExp('^' + k + ":\\s*'?(.*?)'?\\s*$", 'm').exec(m ? m[1] : ''); return r ? r[1] : ''; };
+  return {tipo: campo('tipo'), titulo: campo('titulo'), paso: parseInt(campo('actualizada_en_paso'), 10) || 0};
+}
+async function cargarGrafo(ingeridos) {
+  const rutas = (S.archivos || []).map((a) => a.ruta).filter((r) => r.startsWith(WIKI + '/pages/') && r.endsWith('.md'));
+  const paginas = await Promise.all(rutas.map(async (ruta) => {
+    try { return {ruta, texto: (await api('/api/archivo?ruta=' + encodeURIComponent(ruta))).texto}; } catch (e) { return null; }
+  }));
+  const nodos = [], porSlug = {};
+  for (const p of paginas.filter(Boolean)) {
+    const slug = p.ruta.split('/').pop().replace(/\.md$/, ''), fm = frontmatter(p.texto);
+    const enlaces = [...new Set([...p.texto.matchAll(/\[\[([^\]|#]+)/g)].map((x) => x[1].trim()))];
+    const n = {slug, ruta: p.ruta, tipo: fm.tipo === 'paper' ? 'paper' : 'concepto', titulo: fm.titulo || slug, paso: fm.paso, enlaces, grado: 0};
+    nodos.push(n); porSlug[slug] = n;
+  }
+  const aristas = [], vistas = new Set();
+  for (const n of nodos) for (const destino of n.enlaces) {
+    const clave = [n.slug, destino].sort().join('|');
+    if (porSlug[destino] && destino !== n.slug && !vistas.has(clave)) { vistas.add(clave); aristas.push({a: n, b: porSlug[destino]}); n.grado++; porSlug[destino].grado++; }
+  }
+  const previo = S.grafo && S.grafo.porSlug;  // keep positions so a repaint does not reshuffle the layout
+  nodos.forEach((n, i) => {
+    const p = previo && previo[n.slug];
+    const ang = (i / nodos.length) * Math.PI * 2;
+    n.x = p ? p.x : GW / 2 + Math.cos(ang) * 300; n.y = p ? p.y : GH / 2 + Math.sin(ang) * 200; n.vx = 0; n.vy = 0;
+  });
+  S.grafo = {nodos, aristas, porSlug, ingeridos};
+  if (S.vista === 'wiki') renderVista();
+}
+function seccionGrafo(w) {
+  const caja = h('div', {class: 'grafo-caja'});
+  const g = S.grafo;
+  if (!g || g.ingeridos !== w.ingeridos) {
+    if (!S.cargandoGrafo) { S.cargandoGrafo = true; cargarGrafo(w.ingeridos).finally(() => { S.cargandoGrafo = false; }); }
+    caja.append(h('div', {class: 'vacio', texto: 'Construyendo el grafo del wiki…'}));
+  } else {
+    dibujarGrafo(caja, g, w.ingeridos);
+  }
+  const nuevos = g ? g.nodos.filter((n) => n.paso === w.ingeridos).length : 0;
+  return h('section', {class: 'comparacion'},
+    h('h4', {texto: 'Grafo del wiki: páginas y enlaces'}),
+    h('div', {class: 'grafo-leyenda'},
+      h('span', null, h('i', {style: 'background:var(--acento)'}), 'página de un paper'),
+      h('span', null, h('i', {style: 'background:var(--wiki)'}), 'página de un concepto'),
+      h('span', null, h('i', {style: 'border:2px dashed var(--aviso);background:none'}), 'tocada en la última ingesta (paso ' + w.ingeridos + ')' + (g ? ': ' + nuevos : '')),
+      g ? h('span', {texto: g.nodos.length + ' páginas · ' + g.aristas.length + ' enlaces'}) : null,
+      h('span', {texto: 'Arrastra los nodos; clic para abrir la página.'})),
+    caja);
+}
+function dibujarGrafo(caja, g, ingeridos) {
+  const svg = sv('svg', {viewBox: '0 0 ' + GW + ' ' + GH, role: 'img', 'aria-label': 'Grafo de páginas del wiki'});
+  const capaA = sv('g'), capaN = sv('g');
+  svg.append(capaA, capaN);
+  const lineas = g.aristas.map((e) => { const l = sv('line', {class: 'arista'}); capaA.append(l); return l; });
+  const radio = (n) => 6 + Math.sqrt(n.grado) * 3;
+  const elems = g.nodos.map((n) => {
+    const r = radio(n);
+    const corto = n.titulo.length > 34 ? n.titulo.slice(0, 32) + '…' : n.titulo;
+    const el = sv('g', {class: 'nodo ' + n.tipo + (n.paso === ingeridos ? ' nuevo' : '')},
+      n.paso === ingeridos ? sv('circle', {class: 'anillo', r: r + 5}) : null,
+      sv('circle', {r}), sv('text', {x: r + 4, y: 4}, corto), sv('title', null, n.titulo + ' · ' + n.grado + ' enlaces · actualizada en el paso ' + n.paso));
+    capaN.append(el);
+    return el;
+  });
+  // Hover: highlight the node, its neighbours and the edges between them.
+  const vecinos = (n) => new Set([n, ...g.aristas.filter((e) => e.a === n || e.b === n).flatMap((e) => [e.a, e.b])]);
+  g.nodos.forEach((n, i) => {
+    elems[i].addEventListener('pointerenter', () => {
+      const v = vecinos(n); caja.classList.add('enfoque');
+      g.nodos.forEach((m, j) => elems[j].classList.toggle('vecino', v.has(m)));
+      g.aristas.forEach((e, j) => lineas[j].classList.toggle('activa', e.a === n || e.b === n));
+    });
+    elems[i].addEventListener('pointerleave', () => { caja.classList.remove('enfoque'); lineas.forEach((l) => l.classList.remove('activa')); });
+  });
+  // Drag a node, or click it to open the page in the file viewer.
+  let arrastre = null;
+  const punto = (ev) => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  g.nodos.forEach((n, i) => elems[i].addEventListener('pointerdown', (ev) => { arrastre = {n, movio: false}; svg.setPointerCapture(ev.pointerId); calor = 1; }));
+  svg.addEventListener('pointermove', (ev) => { if (!arrastre) return; const p = punto(ev); arrastre.n.x = p.x; arrastre.n.y = p.y; arrastre.movio = true; calor = Math.max(calor, 0.5); });
+  svg.addEventListener('pointerup', () => { if (arrastre && !arrastre.movio) abrirArchivo(arrastre.n.ruta); arrastre = null; });
+  // Small force simulation: node repulsion, springs on the links and a pull to the centre.
+  let calor = 1;
+  function paso() {
+    if (!caja.isConnected) return;  // the view was repainted: stop this simulation
+    if (calor > 0.02) {
+      const ns = g.nodos;
+      for (let i = 0; i < ns.length; i++) for (let j = i + 1; j < ns.length; j++) {
+        const a = ns[i], b = ns[j]; let dx = a.x - b.x, dy = a.y - b.y; const d2 = Math.max(dx * dx + dy * dy, 25);
+        const f = 9000 / d2, d = Math.sqrt(d2); dx /= d; dy /= d;
+        a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+      }
+      for (const e of g.aristas) {
+        const dx = e.b.x - e.a.x, dy = e.b.y - e.a.y, d = Math.sqrt(dx * dx + dy * dy) || 1, f = (d - 150) * 0.015;
+        e.a.vx += dx / d * f; e.a.vy += dy / d * f; e.b.vx -= dx / d * f; e.b.vy -= dy / d * f;
+      }
+      for (const n of ns) {
+        n.vx += (GW / 2 - n.x) * 0.0015; n.vy += (GH / 2 - n.y) * 0.003;
+        if (arrastre && arrastre.n === n) { n.vx = 0; n.vy = 0; continue; }
+        n.x += n.vx * calor; n.y += n.vy * calor; n.vx *= 0.6; n.vy *= 0.6;
+        n.x = Math.min(GW - 140, Math.max(20, n.x)); n.y = Math.min(GH - 20, Math.max(20, n.y));
+      }
+      calor *= 0.985;
+    }
+    g.aristas.forEach((e, j) => { const l = lineas[j]; l.setAttribute('x1', e.a.x); l.setAttribute('y1', e.a.y); l.setAttribute('x2', e.b.x); l.setAttribute('y2', e.b.y); });
+    g.nodos.forEach((n, i) => elems[i].setAttribute('transform', 'translate(' + n.x.toFixed(1) + ',' + n.y.toFixed(1) + ')'));
+    requestAnimationFrame(paso);
+  }
+  caja.append(svg);
+  requestAnimationFrame(paso);
 }
 
 function vResultados() {
@@ -941,10 +1125,43 @@ function columnaSistema(sis, run, datos) {
   return h('section', {class: 'col ' + sis + ' ' + estado}, cab, h('div', {class: 'col-cuerpo'}, cuerpo));
 }
 function razon(a, b) { return a > 0 && b > 0 ? '×' + dec(b / a, 1) : '—'; }
+/* Frase con el sistema que usó menos de un recurso y cuántas veces menos. */
+function fraseRecurso(r, w, k, recurso, formato) {
+  const a = r[k], b = w[k];
+  if (!(a > 0 && b > 0)) return null;
+  const valores = ' (RAG ' + formato(a) + ' · WikiLLM ' + formato(b) + ')';
+  if (Math.abs(a - b) / Math.max(a, b) < 0.05) return 'Usaron casi lo mismo en ' + recurso + valores + '.';
+  const quien = a < b ? 'El RAG' : 'El WikiLLM';
+  return quien + ' usó ' + dec(Math.max(a, b) / Math.min(a, b), 1) + '× menos ' + recurso + valores + '.';
+}
+function lecturaComparacion(r, w) {
+  const frases = [];
+  if (r.abstuvo && w.abstuvo) {
+    frases.push(['ok', 'Los dos se abstuvieron: el corpus ingerido no contiene la respuesta y ninguno la inventó.']);
+  } else if (r.abstuvo || w.abstuvo) {
+    frases.push(['aviso', (r.abstuvo ? 'Solo el WikiLLM respondió; el RAG' : 'Solo el RAG respondió; el WikiLLM') + ' se abstuvo.']);
+  } else {
+    const delRag = new Set(r.citas.map((c) => c.span_id));
+    const comunes = [...new Set(w.citas.map((c) => c.span_id).filter((id) => delRag.has(id)))];
+    frases.push(comunes.length
+      ? ['ok', 'Los dos respondieron y citan el mismo fragmento del corpus: ' + comunes.join(', ') + '.']
+      : ['aviso', 'Los dos respondieron, pero con citas distintas: compara los fragmentos de cada columna.']);
+  }
+  [fraseRecurso(r, w, 'tokens_entrada', 'tokens de entrada', num), fraseRecurso(r, w, 'llamadas', 'llamadas al modelo', num),
+    fraseRecurso(r, w, 'usd', 'dólares', (x) => usd(x, 5)), fraseRecurso(r, w, 'segundos', 'tiempo', seg)]
+    .forEach((f) => { if (f) frases.push(['', f]); });
+  return h('section', {class: 'comparacion lectura'}, h('h4', {texto: 'Lectura rápida'}),
+    h('ul', null, frases.map(([nivel, texto]) => h('li', null, h('span', {class: 'punto ' + nivel}), h('span', {texto})))),
+    h('p', {class: 'nota-pie', texto: 'Aquí no se juzga la correctitud: eso lo hace la evaluación del banco de preguntas (sección Resultados).'}));
+}
 function vistaComparacion(run) {
   const datos = run.resultado && run.resultado.tipo === 'comparacion' ? run.resultado.datos : null;
   const pregunta = datos ? datos.pregunta : (run.params && run.params.pregunta) || '';
   const nodos = [h('div', {class: 'pregunta-run'}, h('small', {texto: 'PREGUNTA' + (datos ? ' · corpus con ' + datos.paso + ' papers ingeridos · ' + datos.modelo : '')}), h('b', {texto: pregunta}))];
+  if (datos) {
+    const [r0, w0] = [datos.sistemas.find((s) => s.sistema === 'rag'), datos.sistemas.find((s) => s.sistema === 'wiki')];
+    if (r0 && w0) nodos.push(lecturaComparacion(r0, w0));
+  }
   nodos.push(h('div', {class: 'columnas'}, columnaSistema('rag', run, datos), columnaSistema('wiki', run, datos)));
   if (datos) {
     const [r, w] = [datos.sistemas.find((s) => s.sistema === 'rag'), datos.sistemas.find((s) => s.sistema === 'wiki')];
@@ -998,7 +1215,8 @@ function vistaIngesta(run) {
 
 /* --- métricas del piloto --- */
 async function cargarMetricas() {
-  try { S.metricas = await api('/api/metricas'); programarPintado(); } catch (e) { toast(e.message, 'error'); }
+  // The metrics live in the view (#vista), not in the run area, so the view must be repainted.
+  try { S.metricas = await api('/api/metricas'); if (S.vista === 'resultados') renderVista(); } catch (e) { toast(e.message, 'error'); }
 }
 const VEREDICTO = {
   correcta_resp: ['✓', 'v-ok', 'respondió bien'], correcta_abst: ['○', 'v-abst', 'se abstuvo y era lo correcto'],
@@ -1007,6 +1225,44 @@ const VEREDICTO = {
 function claveVeredicto(q) {
   if (q.veredicto === 'indeterminada') return 'indeterminada';
   return q.veredicto + (q.abstuvo ? '_abst' : '_resp');
+}
+/* RAG frente a WikiLLM en el último paso del piloto, con el ganador de cada métrica y su sentido. */
+const METRICAS_DUELO = [
+  ['cobertura', 'Cobertura', 'aciertos entre las preguntas respondibles', 'mayor', (x) => dec(x, 2)],
+  ['abstencion_correcta', 'Abstención correcta', 'se abstiene cuando el corpus no tiene la respuesta', 'mayor', (x) => dec(x, 2)],
+  ['fundamentacion_media', 'Fundamentación', 'citas que resuelven a un fragmento real', 'mayor', (x) => dec(x, 2)],
+  ['context_tokens_media', 'Contexto medio', 'tokens del corpus o del wiki que lee por pregunta', 'menor', (x) => num(Math.round(x))],
+  ['tokens_por_correcta', 'Tokens por acierto', 'tokens de entrada gastados por respuesta correcta', 'menor', (x) => num(Math.round(x))],
+  ['costo_usd_total', 'Costo total', 'dólares de responder el banco en ese paso', 'menor', (x) => usd(x, 4) + ' USD'],
+];
+function dueloMetricas(filas) {
+  const paso = Math.max(...filas.map((f) => f.ingest_step));
+  const r = filas.find((f) => f.system === 'rag' && f.ingest_step === paso), w = filas.find((f) => f.system === 'wiki' && f.ingest_step === paso);
+  if (!r || !w) return null;
+  const filasTabla = METRICAS_DUELO.map(([k, titulo, ayuda, sentido, fmt]) => {
+    const a = r[k], b = w[k];
+    const hay = a != null && b != null && a !== b;
+    const gana = !hay ? null : (sentido === 'mayor' ? (a > b ? 'rag' : 'wiki') : (a < b ? 'rag' : 'wiki'));
+    return h('tr', null, h('td', null, h('b', {texto: titulo}), h('div', {class: 'gana', texto: ayuda + ' · mejor si es ' + sentido})),
+      h('td', {class: 'rag' + (gana === 'rag' ? ' mejor' : ''), texto: a == null ? '—' : fmt(a) + (gana === 'rag' ? ' ✓' : '')}),
+      h('td', {class: 'wiki' + (gana === 'wiki' ? ' mejor' : ''), texto: b == null ? '—' : fmt(b) + (gana === 'wiki' ? ' ✓' : '')}));
+  });
+  const frases = [];
+  if (r.cobertura != null && w.cobertura != null) {
+    const n = r.n_respondibles;
+    const lider = w.cobertura === r.cobertura ? null : (w.cobertura > r.cobertura ? 'El WikiLLM' : 'El RAG');
+    frases.push(lider
+      ? lider + ' acierta más: ' + dec(Math.max(r.cobertura, w.cobertura) * n, 0) + ' de ' + n + ' preguntas respondibles frente a ' + dec(Math.min(r.cobertura, w.cobertura) * n, 0) + '.'
+      : 'Los dos aciertan lo mismo en las ' + n + ' preguntas respondibles.');
+  }
+  if (r.context_tokens_media > 0 && w.context_tokens_media > 0 && r.context_tokens_media !== w.context_tokens_media) {
+    const masLee = w.context_tokens_media > r.context_tokens_media ? 'el WikiLLM' : 'el RAG';
+    frases.push('A cambio, ' + masLee + ' lee ' + dec(Math.max(r.context_tokens_media, w.context_tokens_media) / Math.min(r.context_tokens_media, w.context_tokens_media), 1) + '× más contexto por pregunta.');
+  }
+  return h('section', {class: 'comparacion lectura duelo'}, h('h4', {texto: 'RAG frente a WikiLLM con ' + paso + ' papers ingeridos'}),
+    frases.length ? h('p', {style: 'margin:.1rem 0 .6rem;font-size:1rem', texto: frases.join(' ')}) : null,
+    h('table', {class: 'tabla'}, h('thead', null, h('tr', null, h('th', {texto: 'métrica'}), h('th', {class: 'rag', texto: 'RAG simple'}), h('th', {class: 'wiki', texto: 'WikiLLM'}))), h('tbody', null, filasTabla)),
+    h('p', {class: 'nota-pie', texto: '✓ marca el mejor valor de cada métrica. Piloto con pocas preguntas: muestra que la cadena de evaluación funciona, no es un resultado del informe.'}));
 }
 function vistaMetricas() {
   const m = S.metricas;
@@ -1035,6 +1291,7 @@ function vistaMetricas() {
   return h('div', null,
     h('div', {class: 'estado-run'}, h('h3', {texto: 'Piloto ' + (c.corrida || '')}), chip((c.preguntas || '?') + ' preguntas × ' + pasos.length + ' pasos × 2 sistemas'), chip(c.modelo || ''),
       c.valida_para_informe === false ? chip('No vale para el informe: n pequeño y preguntas sin acordar', 'aviso') : null),
+    dueloMetricas(filas),
     h('section', {class: 'comparacion'}, h('h4', {texto: 'Métricas por sistema y paso'}), tabla,
       h('p', {class: 'nota-pie', texto: 'Cobertura: proporción de las preguntas respondibles que el sistema acierta. Con pocas preguntas respondibles en el paso 5, estas cifras solo muestran que la cadena de evaluación funciona de punta a punta.'})),
     h('section', {class: 'comparacion'}, h('h4', {texto: 'Veredicto por pregunta (✓ acierta · ○ se abstiene bien · ✗ falla · ? indeterminada)'}), grid));

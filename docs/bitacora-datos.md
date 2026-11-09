@@ -306,3 +306,33 @@ ingesta ≤ 30, en estado `borrador` hasta la verificación humana.
 MuSiQue: el RAG toma otra métrica (22,4, de AR@5) y el wiki da 51,9 en vez de 53,2. Es el tipo de
 respuesta que la medida de respuestas obsoletas está pensada para detectar; con un solo caso no
 permite concluir nada sobre cuál sistema actualiza mejor.
+
+## 2026-11-09 (Juan Diego): métricas del piloto recalculadas sobre las respuestas guardadas
+
+Al preparar la demostración en una máquina con Linux, `eval metricas` sobre
+`results/piloto-1/respuestas.jsonl` no reproducía las cifras versionadas. La causa: tras probar la
+reanudación (entrada del arnés, más arriba) se rehicieron las últimas 10 respuestas (5 preguntas T5
+del paso 5 en los dos brazos), pero `evaluados.jsonl` y `metricas_por_paso.*` se habían calculado
+con la primera tanda y no se regeneraron. `respuestas.jsonl` tiene 68 claves únicas: no hay filas
+duplicadas.
+
+Se regeneraron los tres archivos con la capa determinista (sin juez ni llamadas al modelo). El
+cálculo es idempotente: una segunda pasada deja los archivos idénticos. Cambios en el paso 5:
+
+| | Antes (primera tanda) | Ahora (respuestas guardadas) |
+|---|---|---|
+| Wiki, abstención correcta | 0,91 | 1,00 |
+| Wiki, contexto medio | 3.558 tokens | 3.544 tokens |
+| Wiki, tokens por acierto | 12.096 | 12.049 |
+| Costo total RAG / wiki | 0,0035 / 0,0132 USD | 0,0027 / 0,0123 USD |
+
+La cobertura no cambia (0,33 el RAG y 0,83 el wiki). La primera respuesta del wiki a AT5-T5-12,
+que la entrada del piloto daba por perdida, sí quedó en `evaluados.jsonl` del commit `78d2683`:
+«The corpus does not mention "HyperAddress"; the relevant method is HippoRAG 2. Its recall@5
+averages 78.2…» con la cita `2502.14802#s14.p10`. Ante un método inexistente, el agente no se
+abstuvo: lo sustituyó por otro del corpus y respondió con una cita válida. Sirve como ejemplo
+de premisa falsa para el informe.
+
+`scripts/verificar_demo.py` comprobaba que `data/gold/` tuviera exactamente 50 archivos `.md`, y
+fallaba con los Gold de papers fuera del corpus (`2610.09348` y `2610.23313`). Ahora comprueba
+que exista el Gold de cada paper del manifest.

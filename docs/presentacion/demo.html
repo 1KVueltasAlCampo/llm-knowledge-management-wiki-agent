@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo WikiLLM vs RAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ink:#13213a; --ink-2:#2c3d5c; --muted:#6b7a90; --line:#ddd6c7;
+  --paper:#f6f2e9; --card:#fffdf8; --night:#0f1b2d;
+  --rag:#d9694a; --wiki:#23877b; --gold:#c99a2e; --gold-soft:#f3e6c4;
+  --ok:#3d8b4f; --ok-soft:#dcefe0; --bad:#b4443a; --bad-soft:#f3d9d5; --pend:#8a7a5c; --pend-soft:#ece6da;
+  --nodeB:#9aa6b8;
+  --serif:"Fraunces",Georgia,serif; --sans:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font:15px/1.45 var(--sans);display:flex;flex-direction:column;min-height:100vh}
+button,select,input{font:inherit}
+.mono{font-family:var(--mono)}
+header{display:flex;align-items:center;gap:18px;padding:14px 22px;background:var(--night);color:#eef1f6;flex-wrap:wrap}
+header h1{font:700 22px var(--serif);white-space:nowrap}
+header h1 .r{color:#f2a183} header h1 .w{color:#7fd3c6}
+.ctrl{display:flex;align-items:center;gap:10px;flex:1;min-width:320px}
+.ctrl input[type=range]{flex:1;accent-color:#7fd3c6}
+.btn{border:1px solid #3a4c6c;background:#1c2b45;color:#fff;border-radius:8px;padding:7px 12px;cursor:pointer;font:600 13px var(--mono);white-space:nowrap}
+.btn:hover{background:#26385a}
+.btn.primary{background:var(--wiki);border-color:var(--wiki)}
+#stepLbl{font:600 14px var(--mono);min-width:190px}
+select.sm{background:#1c2b45;color:#fff;border:1px solid #3a4c6c;border-radius:8px;padding:6px 8px;font:13px var(--mono)}
+#load input{display:none}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:14px 22px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.kpi b{display:block;font:700 26px/1.1 var(--serif)}
+.kpi span{font-size:12.5px;color:var(--muted)}
+main{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:14px;padding:14px 22px 18px;min-height:0}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;position:relative;min-width:0}
+#left{display:grid;grid-template-rows:minmax(0,1fr) 190px;gap:14px;min-height:560px}
+#graphBox{overflow:hidden}
+#graph{width:100%;height:100%;display:block}
+.legend{position:absolute;left:14px;top:10px;font:12px var(--mono);color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;pointer-events:none}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
+#tip{position:absolute;pointer-events:none;background:var(--night);color:#fff;font:13px/1.35 var(--sans);padding:8px 10px;border-radius:8px;max-width:320px;display:none;z-index:3}
+#curveBox{padding:10px 14px 6px;display:flex;flex-direction:column}
+#curveBox h3,.sec{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#curve{flex:1;width:100%;display:block}
+#right{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tab{flex:1;padding:12px;background:none;border:0;border-bottom:3px solid transparent;cursor:pointer;font:600 13px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tab.on{color:var(--ink);border-color:var(--wiki)}
+.pane{display:none;flex-direction:column;gap:12px;padding:14px;overflow:auto;min-height:0;flex:1}
+.pane.on{display:flex}
+.pane>*{flex-shrink:0}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 10px;cursor:pointer;font:600 12px var(--mono);color:var(--ink-2)}
+.fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+#qlist{height:160px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.qi{display:grid;grid-template-columns:12px 92px 1fr;gap:8px;align-items:center;padding:7px 10px;cursor:pointer;border-bottom:1px solid #eee7d8;font-size:13px}
+.qi:last-child{border-bottom:0}
+.qi:hover{background:#f4efe3}
+.qi.on{background:#e6f1ee}
+.qi .dot{width:10px;height:10px;border-radius:50%}
+.qi .id{font:600 12px var(--mono);color:var(--ink-2)}
+.qi .tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink-2)}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.card .q{font-size:16px;color:var(--ink);margin:6px 0 8px}
+.chip{display:inline-block;font:600 11.5px/1 var(--mono);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.c-ok{background:var(--ok-soft);color:var(--ok)} .c-bad{background:var(--bad-soft);color:var(--bad)} .c-pend{background:var(--pend-soft);color:var(--pend)} .c-warn{background:var(--gold-soft);color:#8a6512}
+.cmp{display:grid;grid-template-columns:1fr;gap:8px}
+.cmp .card{padding:10px;font-size:13px;overflow-wrap:anywhere}
+.cmp .card.dash{border-style:dashed;background:transparent}
+.cmp h4{font:600 11.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.meta{font-size:12.5px;color:var(--muted);margin-top:6px}
+.link{color:var(--wiki);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+ul.plain{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:13.5px}
+#drop{position:fixed;inset:0;background:#0f1b2dcc;color:#fff;display:none;place-items:center;font:600 22px var(--mono);z-index:20}
+#toast{position:fixed;right:20px;bottom:20px;background:var(--night);color:#fff;padding:10px 14px;border-radius:10px;font-size:13.5px;max-width:420px;display:none;z-index:21}
+footer{padding:0 22px 12px;font:12px var(--mono);color:var(--muted)}
+@media (max-width:1100px){
+  main{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #left{min-height:480px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="w">WikiLLM</span> vs <span class="r">RAG</span> · demo</h1>
+  <div class="ctrl">
+    <button class="btn primary" id="play" title="Espacio">▶ Ingerir</button>
+    <button class="btn" id="reset" title="Volver al paso 0">↺</button>
+    <input type="range" id="step" min="0" max="50" value="50" aria-label="Paso de ingesta">
+    <span id="stepLbl"></span>
+    <select class="sm" id="speed" aria-label="Velocidad">
+      <option value="500">lento</option><option value="250" selected>normal</option><option value="90">rápido</option>
+    </select>
+  </div>
+  <label class="btn" id="load" title="O arrastra el archivo a la ventana">⤒ Cargar corrida (.jsonl)<input type="file" accept=".jsonl,.json,.txt" multiple></label>
+</header>
+
+<section class="kpis">
+  <div class="kpi"><b id="kPapers">—</b><span>papers ingeridos</span></div>
+  <div class="kpi"><b id="kTokens">—</b><span>tokens en el corpus hasta este paso</span></div>
+  <div class="kpi"><b id="kEdges">—</b><span>citas cruzadas visibles</span></div>
+  <div class="kpi"><b id="kResp">—</b><span>preguntas T1–T4 respondibles</span></div>
+  <div class="kpi"><b id="kRuns">—</b><span id="kRunsLbl">corridas cargadas</span></div>
+</section>
+
+<main>
+  <div id="left">
+    <div class="box" id="graphBox">
+      <div class="legend">
+        <span><i style="background:var(--gold)"></i>semilla antes del corte</span>
+        <span><i style="background:var(--ink-2)"></i>mitad A</span>
+        <span><i style="background:var(--nodeB)"></i>mitad B</span>
+        <span><i style="border:2px solid var(--wiki)"></i>tiene código</span>
+        <span><i style="background:var(--rag)"></i>fuente de la pregunta</span>
+        <span>tamaño = veces citado · eje x = orden de ingesta</span>
+      </div>
+      <svg id="graph" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Grafo de citas del corpus"></svg>
+      <div id="tip"></div>
+    </div>
+    <div class="box" id="curveBox">
+      <h3><span>Curva por paso</span><span id="curveLegend"></span></h3>
+      <svg id="curve" viewBox="0 0 1000 150" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <div class="box" id="right">
+    <div class="tabs">
+      <button class="tab on" data-tab="pq">Pregunta</button>
+      <button class="tab" data-tab="pp">Paper</button>
+    </div>
+    <div class="pane on" id="pq">
+      <div class="filters" id="filters"></div>
+      <div id="qlist"></div>
+      <div id="qdetail"></div>
+    </div>
+    <div class="pane" id="pp"><div id="pdetail" class="meta">Haz clic en un nodo del grafo.</div></div>
+  </div>
+</main>
+<footer>Datos reales del repo: manifest del corpus, banco verificado de la mitad A y control a libro cerrado. RAG y WikiLLM se muestran solo si cargas una corrida del arnés (contrato en specs/contrato-resultados.md). Teclas: espacio = ingerir · ← → = paso.</footer>
+<div id="drop">Suelta aquí respuestas.jsonl o evaluados.jsonl</div>
+<div id="toast"></div>
+
+<script>
+const PAPERS=[{"o":1,"id":"2405.14831","t":"HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models","f":"2024-05-23","m":"A","pc":1,"c":1,"k":17534,"r":[]},{"o":2,"id":"2502.14802","t":"From RAG to Memory: Non-Parametric Continual Learning for Large Language Models","f":"2025-02-20","m":"B","pc":1,"c":1,"k":16056,"r":["2405.14831"]},{"o":3,"id":"2602.06052","t":"A Survey of Agent Memory in the Second Half: Towards Self-Evolving and Long-Horizon Agents","f":"2026-01-14","m":"A","pc":0,"c":1,"k":56863,"r":["2405.14831"]},{"o":4,"id":"2603.02473","t":"Diagnosing Retrieval vs. Utilization Bottlenecks in LLM Agent Memory","f":"2026-03-02","m":"B","pc":0,"c":1,"k":4938,"r":[]},{"o":5,"id":"2603.11768","t":"Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the Stability and Safety Governed Memory (SSGM) Framework","f":"2026-03-12","m":"A","pc":0,"c":0,"k":11580,"r":["2405.14831"]},{"o":6,"id":"2603.23848","t":"BeliefShift: Benchmarking Temporal Belief Consistency and Opinion Drift in LLM Agents","f":"2026-03-25","m":"B","pc":0,"c":0,"k":12079,"r":[]},{"o":7,"id":"2604.11364","t":"The Missing Knowledge Layer in Cognitive Architectures for AI Agents","f":"2026-04-13","m":"A","pc":0,"c":1,"k":10544,"r":[]},{"o":8,"id":"2604.12034","t":"Memory as Metabolism: A Design for Companion Knowledge Systems","f":"2026-04-13","m":"B","pc":0,"c":1,"k":35585,"r":[]},{"o":9,"id":"2605.06527","t":"STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?","f":"2026-05-07","m":"A","pc":0,"c":1,"k":27536,"r":["2502.14802"]},{"o":10,"id":"2605.07068","t":"WiCER: Wiki-memory Compile, Evaluate, Refine Iterative Knowledge Compilation for LLM Wiki Systems","f":"2026-05-08","m":"B","pc":0,"c":1,"k":19346,"r":[]},{"o":11,"id":"2605.10488","t":"DeepRefine: Agentic Knowledge Refinement via Reinforcement Learning","f":"2026-05-11","m":"A","pc":0,"c":0,"k":14798,"r":["2405.14831","2502.14802"]},{"o":12,"id":"2605.17596","t":"NeuSymMS: A Hybrid Neuro-Symbolic Memory System for Persistent, Self-Curating LLM Agents","f":"2026-05-17","m":"B","pc":0,"c":0,"k":8337,"r":[]},{"o":13,"id":"2605.18490","t":"Single-Round Vector RAG vs an LLM-Compiled Wiki: A Preregistered Comparison on a Small Multi-Domain Research Corpus","f":"2026-05-18","m":"A","pc":0,"c":1,"k":25992,"r":["2605.07068"]},{"o":14,"id":"2605.20926","t":"MemConflict: Evaluating Long-Term Memory Systems Under Memory Conflicts","f":"2026-05-20","m":"B","pc":0,"c":1,"k":23263,"r":["2603.23848"]},{"o":15,"id":"2605.25480","t":"Retrieval as Reasoning: Self-Evolving Agent-Native Retrieval via LLM-Wiki","f":"2026-05-25","m":"A","pc":0,"c":0,"k":13594,"r":["2405.14831","2502.14802"]},{"o":16,"id":"2607.24759","t":"Beyond Memory: A Templated Substrate for Heterogeneous Collaborative Knowledge Work with LLM Agents","f":"2026-05-29","m":"B","pc":0,"c":1,"k":12289,"r":[]},{"o":17,"id":"2606.09877","t":"Streaming Knowledge Compilation: Proactive Materiality-Scored Pinning for Time-Evolving LLM Wikis","f":"2026-06-03","m":"A","pc":0,"c":0,"k":24284,"r":["2605.07068"]},{"o":18,"id":"2606.06240","t":"TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in LLM-Agent Persistent Memory","f":"2026-06-04","m":"B","pc":0,"c":1,"k":59821,"r":["2405.14831","2603.23848","2604.11364","2605.06527"]},{"o":19,"id":"2606.09090","t":"Context Rot in AI-Assisted Software Development: Repurposing Documentation Consistency for AI Configuration Artifacts","f":"2026-06-08","m":"A","pc":0,"c":0,"k":6161,"r":[]},{"o":20,"id":"2606.22528","t":"Governance Decay: How Context Compaction Silently Erases Safety Constraints in Long-Horizon LLM Agents","f":"2026-06-21","m":"B","pc":0,"c":0,"k":9234,"r":[]},{"o":21,"id":"2606.25656","t":"Is GraphRAG Needed? From Basic RAG to Graph-/Agentic Solutions with Context Optimization","f":"2026-06-24","m":"A","pc":0,"c":0,"k":14529,"r":[]},{"o":22,"id":"2606.26511","t":"Temporal Validity in Retrieval Memory: Eliminating Stale-Fact Errors for AI Agents over Evolving Knowledge","f":"2026-06-25","m":"B","pc":0,"c":0,"k":13975,"r":[]},{"o":23,"id":"2607.02609","t":"Knowledge-Centric Information Systems","f":"2026-07-01","m":"A","pc":0,"c":0,"k":7715,"r":[]},{"o":24,"id":"2607.04576","t":"Progressive Disclosure for LLM-Maintained Wiki Knowledge Bases: a Preregistered Ablation","f":"2026-07-06","m":"B","pc":0,"c":0,"k":10857,"r":["2605.18490"]},{"o":25,"id":"2607.12893","t":"MemOps: Benchmarking Lifecycle Memory Operations in Long-Horizon Conversations","f":"2026-07-14","m":"A","pc":0,"c":1,"k":13464,"r":[]},{"o":26,"id":"2609.05441","t":"When Does Memory Help? A Cost-Aware Evaluation of Long-Term Memory in Tool-Using LLM Agents","f":"2026-07-26","m":"B","pc":0,"c":1,"k":9226,"r":[]},{"o":27,"id":"2607.26604","t":"WikiLoop: Jointly Learning to Build and Navigate Agent-Native Wikis with Downstream Feedback","f":"2026-07-29","m":"A","pc":0,"c":0,"k":15706,"r":["2405.14831","2502.14802","2605.25480"]},{"o":28,"id":"2607.26637","t":"Filesystem-Based Memory for LLM Agents: Organization, Evolution, and Sustainability","f":"2026-07-29","m":"B","pc":0,"c":0,"k":55755,"r":[]},{"o":29,"id":"2607.27773","t":"ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory","f":"2026-07-30","m":"A","pc":0,"c":0,"k":11301,"r":[]},{"o":30,"id":"2608.00967","t":"TrajWiki: Source-Grounded Memory Trajectories for Long-Horizon Dialogue Agents","f":"2026-08-02","m":"B","pc":0,"c":0,"k":18297,"r":["2405.14831"]},{"o":31,"id":"2608.07429","t":"TEPA: Revoking Stale Memories for Conflict-Robust Language Agents","f":"2026-08-07","m":"A","pc":0,"c":0,"k":14028,"r":["2605.06527"]},{"o":32,"id":"2608.08995","t":"Muscle Memory for Agents: Compile not Merely Retrieve","f":"2026-08-10","m":"B","pc":0,"c":1,"k":10121,"r":[]},{"o":33,"id":"2608.10502","t":"From Faulty Memories to Corrected Actions: Dependency-Guided Rollback Repair for Memory-Augmented Agents","f":"2026-08-11","m":"A","pc":0,"c":1,"k":24219,"r":["2605.06527"]},{"o":34,"id":"2608.12888","t":"When Your Agent Opens the Chat App: Agent-Controlled Search over Raw Chat Logs Rivals Structured Memory","f":"2026-08-13","m":"B","pc":0,"c":0,"k":14291,"r":["2405.14831","2502.14802"]},{"o":35,"id":"2608.13883","t":"MemoryLake on MemoryArena: A Matched Study of Agent Memory Backends","f":"2026-08-14","m":"A","pc":0,"c":1,"k":11113,"r":[]},{"o":36,"id":"2608.15008","t":"Harness the Memory: A Holistic Evaluation of Memory Substrates in Memory Agents","f":"2026-08-15","m":"B","pc":0,"c":1,"k":44378,"r":["2405.14831","2502.14802","2602.06052"]},{"o":37,"id":"2608.29606","t":"Agent Zero Memory: Provenance-Aware Long-Term Memory for LLM Agents","f":"2026-08-30","m":"A","pc":0,"c":0,"k":11643,"r":["2405.14831"]},{"o":38,"id":"2608.29612","t":"LLMs Interpret, Embeddings Organize, Graphs Emerge: Agent-Driven Compilation of Scientific Knowledge","f":"2026-08-30","m":"B","pc":0,"c":0,"k":20413,"r":[]},{"o":39,"id":"2609.01852","t":"The Memory Trust Gap: Capability-Dependent Failures in Persistent-Memory Agents","f":"2026-09-01","m":"A","pc":0,"c":0,"k":10218,"r":["2605.06527"]},{"o":40,"id":"2609.16073","t":"The Immutable Past: Formalizing State Mutability and Conflict Resolution in Mutable RAG","f":"2026-09-13","m":"B","pc":0,"c":0,"k":11872,"r":["2405.14831"]},{"o":41,"id":"2609.18182","t":"WFM: Wiki Foundation Model for Complex Agentic Reasoning","f":"2026-09-16","m":"A","pc":0,"c":0,"k":12245,"r":["2405.14831","2502.14802"]},{"o":42,"id":"2609.24971","t":"DolphinBench: Mapping the Pareto Frontier of Agent Memory","f":"2026-09-21","m":"B","pc":0,"c":0,"k":5710,"r":[]},{"o":43,"id":"2609.25303","t":"Potential for Enhanced Learning in Machine Learning Classes by Using Wiki LLM Indexing","f":"2026-09-21","m":"A","pc":0,"c":0,"k":10164,"r":["2605.18490"]},{"o":44,"id":"2610.02472","t":"APDMem: Agent-Controlled Progressive Disclosure for Query-Adaptive Long-Term Memory","f":"2026-10-01","m":"B","pc":0,"c":0,"k":12032,"r":[]},{"o":45,"id":"2610.03902","t":"When Evidence Changes: Evaluating Memory Repair and Re-reading in Language-Model Agents","f":"2026-10-02","m":"A","pc":0,"c":1,"k":39631,"r":["2605.06527","2608.07429","2608.10502","2609.05441"]},{"o":46,"id":"2610.04794","t":"Knowing the Store: What a Memory Backend Must Write Down Before an Agent Can Read It","f":"2026-10-03","m":"B","pc":0,"c":1,"k":112449,"r":["2605.06527"]},{"o":47,"id":"2610.05732","t":"PACMI: Provenance-Aware Cascading Memory Invalidation for Long-Term LLM Agents","f":"2026-10-05","m":"A","pc":0,"c":0,"k":18891,"r":["2405.14831","2605.06527","2605.20926"]},{"o":48,"id":"2610.22209","t":"Beyond Downstream QA: Rethinking How We Evaluate Agent Memory","f":"2026-10-15","m":"B","pc":0,"c":1,"k":15600,"r":["2602.06052"]},{"o":49,"id":"2610.30755","t":"Is Complex Agentic Memory Always Needed? Naive RAG Is Stronger Than We Thought","f":"2026-10-22","m":"A","pc":0,"c":0,"k":45319,"r":["2405.14831","2608.12888","2608.29606"]},{"o":50,"id":"2611.02361","t":"Agent Memory as Rate-Limited Filtering: Explicit State Outlasts Long Context Beyond a Reader-Dependent Horizon","f":"2026-11-02","m":"B","pc":0,"c":1,"k":57977,"r":["2605.06527"]}];
+const QUESTIONS=[{"id":"A001-T1-01","tx":"What is the synonymy threshold tau used by default in HippoRAG?","tp":"T1","ans":"0.8","key":["0.8"],"src":["2405.14831"],"im":1,"cb":{"a":"0.8","ab":false,"v":"correcta","src":"determinista"}},{"id":"A002-T1-01","tx":"How many key articles were ultimately selected for the survey's systematic literature collection, and what publication period do they cover?","tp":"T1","ans":"218 key articles published between 2023 Q1 and 2025 Q4","key":["218","2023 Q1","2025 Q4"],"src":["2602.06052"],"im":3,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A002-T1-02","tx":"In the Memory-R1 system, what are the four discrete editing actions that the memory manager agent is allowed to perform on memory?","tp":"T1","ans":"ADD, UPDATE, DELETE, and NOOP","key":["ADD","UPDATE","DELETE","NOOP"],"src":["2602.06052"],"im":3,"cb":{"a":"ADD, UPDATE, DELETE, NOOP","ab":false,"v":"correcta","src":"determinista"}},{"id":"A003-T2-01","tx":"How do HippoRAG and the survey of agent memory both conceptualize the role of knowledge graphs in memory systems, and what specific algorithm does HippoRAG use on its graph?","tp":"T2","ans":"The response is almost accurate but there are some elements that the papers do not mention directly as \"Structural Store\" but the response is correct. ","key":["Personalized PageRank","PPR","Structural Store"],"src":["2405.14831","2602.06052"],"im":3,"cb":{"a":"HippoRAG and agent-memory surveys both treat knowledge graphs as structured long-term memory that supports retrieval and reasoning by linking entities/relations. HippoRAG specifically uses the Personalized PageRank (PPR) algorithm on its graph.","ab":false,"v":"correcta","src":"juez"}},{"id":"A003-T3-02","tx":"On the 2WikiMultiHopQA dataset, by how many percentage points does HippoRAG outperform the best single-step retrieval baseline (ColBERTv2) in terms of Recall@5, and what does the survey paper identify as a limitation of such static, context-limited benchmarks?","tp":"T3","ans":"HippoRAG (ColBERTv2) reaches 89.1 Recall@5 on 2WikiMultiHopQA versus 68.2 for ColBERTv2, a gain of 20.9 points (the paper rounds it to about 20%). The survey notes that such benchmarks are configured in context-limited simple environments that substantially under-specify the memory demands faced by real-world agents.","key":["20.9"],"src":["2405.14831","2602.06052"],"im":3,"cb":{"a":"HippoRAG outperforms ColBERTv2 by **~10 percentage points** in Recall@5 (roughly 71.7 vs 61.6). The survey notes such static benchmarks are **context-limited**—they assume a fixed retrieved context and don't capture dynamic, multi-turn or evolving information needs.","ab":false,"v":"incorrecta","src":"juez"}},{"id":"A004-T1-01","tx":"In the SSGM framework, what is the name of the append-only memory structure that serves as the operational source of truth for reversible reconciliation?","tp":"T1","ans":"Immutable Episodic Log","key":["Immutable Episodic Log"],"src":["2603.11768"],"im":5,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A005-T3-02","tx":"Which framework, HippoRAG or SSGM, demonstrates superior performance on multi-hop question answering benchmarks, and by what percentage does it outperform state-of-the-art RAG methods?","tp":"T3","ans":"HippoRAG outperforms state-of-the-art RAG methods by up to 20% on multi-hop QA benchmarks, while SSGM does not report empirical QA benchmark results.","key":["20%"],"src":["2405.14831","2603.11768"],"im":5,"cb":{"a":"HippoRAG demonstrates superior performance on multi-hop QA benchmarks, outperforming state-of-the-art RAG methods by up to 20%.","ab":false,"v":"correcta","src":"determinista"}},{"id":"A006-T1-02","tx":"According to the paper, what is the half-life assigned to semantic memories in NornicDB's three-tier cognitive decay model?","tp":"T1","ans":"69 days","key":["69-day","69 days"],"src":["2604.11364"],"im":7,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A008-T2-01","tx":"How do HippoRAG 2 and CUPMem differ in their approach to handling outdated information in memory?","tp":"T2","ans":"HippoRAG 2 extends HippoRAG's Personalized PageRank retrieval with passage nodes and more effective online use of an LLM; the paper does not describe a mechanism for deciding whether older memories are stale. CUPMem treats new evidence as a potential state update and decides, before query time, whether older memories remain usable, should be revised, or should be blocked (for example marking them STALE or UNKNOWN_CURRENT).","key":["before query time"],"src":["2502.14802","2605.06527"],"im":9,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A016-T2-01","tx":"How do HippoRAG 2 and LLM-Wiki differ in their approach to exposing knowledge for retrieval, and what specific structural artifact does each system use?","tp":"T2","ans":"HippoRAG 2 exposes knowledge through an open knowledge graph built offline from passages, with phrase nodes and passage nodes, searched with Personalized PageRank. LLM-Wiki compiles documents into structured Wiki pages with bidirectional links and exposes search, read and link-following operations through tool calls.","key":["passage nodes","bidirectional links"],"src":["2502.14802","2605.25480"],"im":15,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A016-T3-02","tx":"According to the LLM-Wiki paper's main results, which method achieves a higher F1 on MuSiQue, LLM-Wiki or HippoRAG 2, and by how many F1 points?","tp":"T1","ans":"LLM-Wiki, with 0.739 F1 versus 0.624 for HippoRAG 2: 11.5 points higher.","key":["11.5"],"src":["2605.25480"],"im":15,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A017-T1-01","tx":"What AUROC does the classification head achieve on the held-out finance test set for predicting abnormal stock volatility?","tp":"T1","ans":"0.728","key":["0.728"],"src":["2606.09877"],"im":17,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A018-T3-02","tx":"Which paper's evaluation methodology is shown by the later paper to be unreliable for post-training facts, and what alternative metric does the later paper propose as the reliable evaluation for compiled knowledge systems?","tp":"T3","ans":"The later paper shows that LLM-as-judge evaluation (used in the earlier WiCER paper) is confounded on post-training facts, and proposes regret analysis on matched pairs as the reliable metric.","key":["LLM-as-judge","regret analysis","matched pairs"],"src":["2605.07068","2606.09877"],"im":17,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A018-T4-03","tx":"What do the WiCER paper and the later Streaming Knowledge Compilation paper report about the quality of compiled-wiki inference in finance: how much of the quality lost by blind compilation does WiCER recover, and what cumulative regret does Online WiCER reach over 173 matched finance pairs?","tp":"T2","ans":"WiCER recovers 80% of the quality lost by blind compilation (mean 3.24 vs. 3.47 for raw full context); the later paper reports a finance cumulative regret of -20.0 (-0.12 per step) for Online WiCER.","key":["80%","-20.0"],"src":["2605.07068","2606.09877"],"im":17,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A019-T1-01","tx":"In the preliminary study, how many repositories out of the 356 analyzed were found to contain at least one stale code element reference?","tp":"T1","ans":"82 repositories","key":["82"],"src":["2606.09090"],"im":19,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A025-T2-01","tx":"How do HippoRAG 2 and WikiLoop differ in their approach to using downstream feedback for improving structured knowledge bases?","tp":"T2","ans":"HippoRAG 2 builds its knowledge graph offline (an LLM extracts open KG triples from passages) and retrieves with Personalized PageRank; the paper does not describe learning from downstream feedback. WikiLoop is feedback-coupled: it jointly learns to build and navigate an agent-native Wiki, using downstream navigation utility as the training signal for constructing it.","key":["downstream navigation utility"],"src":["2502.14802","2607.26604"],"im":27,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A026-T3-02","tx":"On AuthTrace, which system achieves higher All AC, WikiLoop or LLM-Wiki base, and by how many points?","tp":"T3","ans":"WikiLoop achieves higher All AC than LLM-Wiki base by 6.3 points (62.6 vs 56.3).","key":["6.3"],"src":["2605.25480","2607.26604"],"im":27,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A027-T1-01","tx":"On the LoCoMo dataset, what is the Recall@1 percentage achieved by ChronoMem for semantic version selection?","tp":"T1","ans":"20.5%","key":["20.5%"],"src":["2607.27773"],"im":29,"cb":{"a":"I DON'T KNOW","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A044-T3-02","tx":"On the MemoryAgentBench SH-6k single-hop conflict-resolution benchmark, which method achieves the same substring exact match as TEPA-Rev, and what is that score?","tp":"T3","ans":"Last-write-wins achieves the same substring exact match as TEPA-Rev, at 0.890.","key":["Last-write-wins","0.890"],"src":["2608.07429","2610.03902"],"im":45,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A047-T1-01","tx":"What is the exact McNemar p-value for the paired comparison between PACMI and A-MEM-style on final accuracy over all 300 queries?","tp":"T1","ans":"2.55601 × 10^-6","key":["2.55601","10^-6"],"src":["2610.05732"],"im":47,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A053-T2-01","tx":"What is the key architectural difference between ReFind and Raw-RAG in how they retrieve evidence from raw chat history?","tp":"T2","ans":"ReFind uses an agent-controlled iterative keyword-search loop with chat-native controls (session-aware rank fusion, local context expansion, temporal narrowing, and seen-session filtering), while Raw-RAG uses a fixed dense retrieval and cross-encoder reranking pipeline without agentic search control.","key":["agent-controlled iterative keyword-search","fixed dense retrieval and cross-encoder reranking"],"src":["2608.12888","2610.30755"],"im":49,"cb":{"a":"ReFind uses a **two-stage retrieve-then-rerank** pipeline over raw chat history (dense retrieval followed by LLM-based reranking), whereas Raw-RAG feeds the **entire raw history directly** into the model without retrieval.","ab":false,"v":"incorrecta","src":"juez"}},{"id":"A054-T2-01","tx":"How do Agent Zero Memory and Raw-RAG differ in their approach to handling knowledge updates and superseded facts, and what design principle does each paper emphasize to support their respective approach?","tp":"T2","ans":"Agent Zero Memory uses a non-destructive, append-only Memory Events timeline that records when facts were asserted and superseded, so a superseded fact is distinguished from its correction rather than overwritten. Raw-RAG retrieves raw history and relies on the reader LLM to resolve temporal order and state changes directly from the retrieved evidence, without explicit state maintenance or mutation.","key":["non-destructive","append-only","reader LLM","raw history"],"src":["2608.29606","2610.30755"],"im":49,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"AT5-T5-07","tx":"What strict-judge score does EdgeMem achieve on the LoCoMo benchmark?","tp":"T5","ans":"Abstain: the ingested corpus does not contain this information.","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-09","tx":"What is the maximum relative gain in overall LLM-judge accuracy that Memory as Code achieves over the strongest baseline on LoCoMo and LongMemEval?","tp":"T5","ans":"Experiments on LoCoMo and LongMemEval show relative gains of up to 15.91% in overall LLM-judge accuracy over the strongest baseline in each setting","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-10","tx":"What is the maximum evidence recall that RAGU achieves on GraphRAG-Bench (Medical)?","tp":"T5","ans":"On GraphRAG-Bench (Medical), RAGU retrieves the most complete context at every factoid level (evidence recall up to 0.84 vs. $\\leq$0.76)","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-11","tx":"What is the largest average gap in F1 and BLEU-1 that Bio-Memory achieves under face-based personalization on the CALFW dataset?","tp":"T5","ans":"Under face-based personalization, the largest average gap reaches 27.29% / 21.15% in F1 / BLEU-1 on CALFW","key":[],"src":[],"im":null,"cb":null},{"id":"AT5-T5-12","tx":"By how many points of Recall@5 does HyperAddress outperform the strongest baseline on average across MuSiQue, 2WikiMultiHopQA, and HotpotQA?","tp":"T5","ans":"Abstain: the ingested corpus does not contain this information.","key":[],"src":[],"im":null,"cb":null},{"id":"A039-T4-03","tx":"What passage Recall@5 on MuSiQue has been reported for HippoRAG 2? If more than one paper in the corpus reports it, give the most recent report.","tp":"T4","ans":"74.7 (HippoRAG 2 paper, Table 3).","key":["74.7"],"src":["2502.14802","2609.18182"],"im":2,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A016-T4-03","tx":"What F1 on 2WikiMultiHopQA has been reported for HippoRAG 2? If more than one paper in the corpus reports it, give the most recent report.","tp":"T4","ans":"71.0 F1 (HippoRAG 2 paper, Table 2, Llama-3.3-70B reader).","key":["71.0"],"src":["2502.14802","2605.25480"],"im":2,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}},{"id":"A013-T3-02","tx":"On the question of whether an LLM-compiled wiki outperforms RAG on answer quality, how do the two papers' headline results conflict, and what do they identify as the key factor explaining the disagreement?","tp":"T3","ans":"The earlier paper (WiCER) reports that full-context KV cache inference on a compiled wiki outperforms RAG on curated knowledge (4.38 vs. 4.08/5) but degrades below RAG at scale (3.47 vs. 3.64), while the later paper reports that a tool-browsing wiki beats single-round RAG on synthesis structure but loses on point-source groundedness and costs 21x more per query; the later paper attributes the disagreement to serving strategy (cached context vs. tool-using agent traversal) and retrieval baseline.","key":["4.38","21"],"src":["2605.07068","2605.18490"],"im":13,"cb":{"a":"I DON'T KNOW.","ab":true,"v":"incorrecta","src":"determinista"}}];
+
+</script>
+<script>
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const $ = id => document.getElementById(id);
+  const el = (tag, attrs, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    parent && parent.appendChild(n);
+    return n;
+  };
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = n => n.toLocaleString('es');
+  const short = t => t.split(/[:—]/)[0];
+  const toast = msg => { const t = $('toast'); t.innerHTML = msg; t.style.display = 'block'; clearTimeout(toast.h); toast.h = setTimeout(() => t.style.display = 'none', 6000); };
+
+  /* ---------- data ---------- */
+  const byId = Object.fromEntries(PAPERS.map(p => [p.id, p]));
+  const citedBy = Object.fromEntries(PAPERS.map(p => [p.id, []]));
+  const edges = [];
+  PAPERS.forEach(p => p.r.forEach(t => { if (byId[t]) { edges.push([p.id, t]); citedBy[t].push(p.id); } }));
+  const qByPaper = {};
+  QUESTIONS.forEach(q => q.src.forEach(s => (qByPaper[s] ||= []).push(q)));
+  const answerable = QUESTIONS.filter(q => q.tp !== 'T5');
+
+  // Loaded harness rows: runs[system] = Map(question_id -> rows sorted by ingest_step).
+  const runs = {};
+  const runMeta = {};
+
+  /* ---------- graph ---------- */
+  const W = 1000, top = 70, bottom = 530;
+  const nodes = PAPERS.map((p, i) => ({
+    p, x: 40 + (p.o - 1) / 49 * (W - 80),
+    y: (top + bottom) / 2 + ((i * 97) % 200 - 100) * 1.6,
+    r: 7 + Math.sqrt(citedBy[p.id].length) * 4.2
+  }));
+  const N = Object.fromEntries(nodes.map(n => [n.p.id, n]));
+  // Deterministic relaxation: x stays fixed by ingestion order, only y moves.
+  for (let it = 0; it < 400; it++) {
+    const f = nodes.map(() => 0);
+    nodes.forEach((a, i) => nodes.forEach((b, j) => {
+      if (i === j) return;
+      const dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy + 1;
+      if (d2 < 140 * 140) f[i] += dy / d2 * 900;
+    }));
+    edges.forEach(([s, t]) => {
+      const a = N[s], b = N[t], dy = b.y - a.y;
+      f[nodes.indexOf(a)] += dy * 0.01; f[nodes.indexOf(b)] -= dy * 0.01;
+    });
+    nodes.forEach((n, i) => {
+      n.y += Math.max(-6, Math.min(6, f[i] + ((top + bottom) / 2 - n.y) * 0.004));
+      n.y = Math.max(top + n.r, Math.min(bottom - n.r, n.y));
+    });
+  }
+  const colorOf = p => p.pc ? 'var(--gold)' : (p.m === 'A' ? 'var(--ink-2)' : 'var(--nodeB)');
+  const svg = $('graph');
+  const gE = el('g', {}, svg), gN = el('g', {}, svg), gL = el('g', {}, svg);
+  const marker = el('line', { y1: top - 18, y2: bottom + 12, stroke: 'var(--rag)', 'stroke-width': 2, 'stroke-dasharray': '6 5', opacity: 0 }, svg);
+  const markerTxt = el('text', { y: top - 24, fill: 'var(--rag)', 'font-size': 13, 'font-family': 'JetBrains Mono', 'text-anchor': 'middle', opacity: 0 }, svg);
+  const cursor = el('line', { y1: top - 8, y2: bottom + 12, stroke: 'var(--wiki)', 'stroke-width': 1.5, opacity: .5 }, svg);
+  const eEls = edges.map(([s, t]) => {
+    const a = N[s], b = N[t], mx = (a.x + b.x) / 2, my = Math.min(a.y, b.y) - Math.abs(a.x - b.x) * 0.18;
+    return el('path', { d: `M${a.x},${a.y} Q${mx},${my} ${b.x},${b.y}`, fill: 'none', stroke: '#9aa6b8', 'stroke-width': 1.3 }, gE);
+  });
+  const tip = $('tip');
+  const nEls = nodes.map(n => {
+    const c = el('circle', { cx: n.x, cy: n.y, r: n.r, fill: colorOf(n.p), stroke: n.p.c ? 'var(--wiki)' : '#fff', 'stroke-width': n.p.c ? 3 : 1.5, style: 'cursor:pointer;transition:opacity .25s,r .2s', tabindex: 0 }, gN);
+    c.addEventListener('mousemove', ev => {
+      const box = $('graphBox').getBoundingClientRect();
+      tip.style.display = 'block';
+      tip.innerHTML = `<b>${n.p.o}. ${esc(n.p.t)}</b><br>${n.p.f} · citado ${citedBy[n.p.id].length} veces`;
+      tip.style.left = Math.min(ev.clientX - box.left + 14, box.width - 330) + 'px';
+      tip.style.top = (ev.clientY - box.top + 14) + 'px';
+    });
+    c.addEventListener('mouseleave', () => tip.style.display = 'none');
+    c.addEventListener('click', () => selectPaper(n.p.id));
+    c.addEventListener('keydown', e => { if (e.key === 'Enter') selectPaper(n.p.id); });
+    return c;
+  });
+  [[1, 'HippoRAG'], [2, 'HippoRAG 2'], [9, 'STALE'], [31, 'TEPA'], [49, 'Naive RAG']].forEach(([o, label]) => {
+    const n = nodes[o - 1];
+    el('text', { x: Math.max(n.x, 40), y: n.y + n.r + 15, 'text-anchor': 'middle', 'font-size': 12, 'font-family': 'JetBrains Mono', fill: 'var(--muted)' }, gL).textContent = label;
+  });
+
+  /* ---------- state ---------- */
+  let step = 50, q = null, paper = null, filter = 'Todos', timer = null;
+  const range = $('step');
+
+  const rowAt = (system, qid) => {
+    // Each snapshot answers at its own step; show the latest one not after the current step.
+    const rows = runs[system]?.get(qid);
+    if (!rows) return null;
+    let best = null;
+    for (const r of rows) if (r.ingest_step <= step) best = r;
+    return best;
+  };
+
+  const expectedAt = qq => {
+    if (qq.tp === 'T5') return { k: 'abst', html: '<span class="chip c-pend">abstenerse siempre</span> La respuesta no está en el corpus.' };
+    if (step < qq.im) return { k: 'abst', html: `<span class="chip c-pend">abstenerse</span> En el paso ${step} faltan fuentes: lo correcto es no responder.` };
+    return { k: 'resp', html: `<span class="chip c-ok">respondible</span> ${esc(qq.ans)}` };
+  };
+
+  /* ---------- curve ---------- */
+  const curve = $('curve');
+  const CW = 1000, CH = 150, pad = 26;
+  const cx = s => pad + s / 50 * (CW - pad * 2);
+  const respAt = s => answerable.filter(x => x.im <= s).length;
+  const coverageAt = (system, s) => {
+    // Coverage over loaded rows at exactly that step, using the harness verdict when present.
+    const rows = runMeta[system]?.byStep.get(s);
+    if (!rows || !rows.length) return null;
+    const judged = rows.filter(r => r.veredicto);
+    if (!judged.length) return null;
+    return judged.filter(r => r.veredicto === 'correcta').length / judged.length;
+  };
+  const drawCurve = () => {
+    curve.innerHTML = '';
+    const max = answerable.length;
+    const cy = v => CH - 18 - v * (CH - 30);
+    [0, .5, 1].forEach(v => {
+      el('line', { x1: pad, x2: CW - pad, y1: cy(v), y2: cy(v), stroke: '#ece5d6', 'stroke-width': 1 }, curve);
+    });
+    let d = '';
+    for (let s = 0; s <= 50; s++) d += `${s ? 'L' : 'M'}${cx(s)},${cy(respAt(s) / max)} `;
+    el('path', { d: d + `L${cx(50)},${cy(0)} L${cx(0)},${cy(0)} Z`, fill: '#2c3d5c18', stroke: 'none' }, curve);
+    el('path', { d, fill: 'none', stroke: 'var(--ink-2)', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke' }, curve);
+    const legend = ['<span style="color:var(--ink-2)">▬ preguntas respondibles (techo de cobertura)</span>'];
+    [['rag', 'var(--rag)', 'RAG'], ['wiki', 'var(--wiki)', 'WikiLLM']].forEach(([sys, col, lbl]) => {
+      const pts = [];
+      for (let s = 0; s <= 50; s++) { const v = coverageAt(sys, s); if (v !== null) pts.push([s, v]); }
+      if (!pts.length) { legend.push(`<span style="color:${col}">${lbl}: sin corrida</span>`); return; }
+      el('path', { d: pts.map(([s, v], i) => `${i ? 'L' : 'M'}${cx(s)},${cy(v)}`).join(' '), fill: 'none', stroke: col, 'stroke-width': 2.5, 'vector-effect': 'non-scaling-stroke' }, curve);
+      pts.forEach(([s, v]) => el('circle', { cx: cx(s), cy: cy(v), r: 3, fill: col }, curve));
+      legend.push(`<span style="color:${col}">● ${lbl}: cobertura medida</span>`);
+    });
+    el('line', { x1: cx(step), x2: cx(step), y1: 6, y2: CH - 18, stroke: 'var(--wiki)', 'stroke-width': 2, 'vector-effect': 'non-scaling-stroke' }, curve);
+    if (q && q.im) el('line', { x1: cx(q.im), x2: cx(q.im), y1: 6, y2: CH - 18, stroke: 'var(--rag)', 'stroke-dasharray': '5 4', 'stroke-width': 1.5, 'vector-effect': 'non-scaling-stroke' }, curve);
+    [0, 10, 20, 30, 40, 50].forEach(s => {
+      const t = el('text', { x: cx(s), y: CH - 3, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--muted)', 'font-family': 'JetBrains Mono' }, curve);
+      t.textContent = s;
+    });
+    $('curveLegend').innerHTML = legend.join(' &nbsp; ');
+  };
+
+  /* ---------- render ---------- */
+  const render = () => {
+    range.value = step;
+    $('stepLbl').textContent = step === 0 ? 'Paso 0 · corpus vacío' : `Paso ${step} · ${PAPERS[step - 1].f}`;
+    const src = new Set(q ? q.src : []);
+    nodes.forEach((n, i) => {
+      const on = n.p.o <= step, sel = paper === n.p.id;
+      nEls[i].style.opacity = on ? 1 : 0.08;
+      nEls[i].setAttribute('fill', src.has(n.p.id) ? 'var(--rag)' : colorOf(n.p));
+      nEls[i].setAttribute('r', n.r + (src.has(n.p.id) || sel ? 3 : 0));
+      nEls[i].setAttribute('stroke', sel ? 'var(--night)' : (n.p.c ? 'var(--wiki)' : '#fff'));
+    });
+    let visible = 0;
+    edges.forEach(([s, t], i) => {
+      const on = byId[s].o <= step && byId[t].o <= step;
+      const hot = (src.has(s) && src.has(t)) || (paper && (s === paper || t === paper));
+      if (on) visible++;
+      eEls[i].style.opacity = on ? (hot ? 1 : .45) : 0;
+      eEls[i].setAttribute('stroke', hot ? (paper && !src.size ? 'var(--night)' : 'var(--rag)') : '#9aa6b8');
+      eEls[i].setAttribute('stroke-width', hot ? 2.6 : 1.3);
+    });
+    const x = 40 + Math.max(0, step - 1) / 49 * (W - 80);
+    cursor.setAttribute('x1', x); cursor.setAttribute('x2', x); cursor.setAttribute('opacity', step ? .5 : 0);
+    if (q && q.im) {
+      const mx = 40 + (q.im - 1) / 49 * (W - 80);
+      marker.setAttribute('x1', mx); marker.setAttribute('x2', mx); marker.setAttribute('opacity', 1);
+      markerTxt.setAttribute('x', Math.min(Math.max(mx, 110), 890)); markerTxt.setAttribute('opacity', 1);
+      markerTxt.textContent = `respondible desde el paso ${q.im}`;
+    } else { marker.setAttribute('opacity', 0); markerTxt.setAttribute('opacity', 0); }
+
+    $('kPapers').textContent = `${step} / 50`;
+    $('kTokens').textContent = fmt(PAPERS.slice(0, step).reduce((s, p) => s + p.k, 0));
+    $('kEdges').textContent = `${visible} / ${edges.length}`;
+    $('kResp').textContent = `${respAt(step)} / ${answerable.length}`;
+    const loaded = Object.keys(runMeta);
+    $('kRuns').textContent = loaded.length ? loaded.map(s => s === 'rag' ? 'RAG' : 'Wiki').join(' + ') : 'ninguna';
+    $('kRunsLbl').textContent = loaded.length ? loaded.map(s => `${s}: ${fmt(runMeta[s].n)} filas (${esc(runMeta[s].runIds.join(', '))})`).join(' · ') : 'carga respuestas.jsonl del arnés';
+
+    renderList(); renderQuestion(); renderPaper(); drawCurve();
+  };
+
+  const statusColor = qq => {
+    const e = expectedAt(qq);
+    return e.k === 'resp' ? 'var(--ok)' : 'var(--pend)';
+  };
+
+  const renderList = () => {
+    const types = ['Todos', 'T1', 'T2', 'T3', 'T4', 'T5'];
+    $('filters').innerHTML = types.map(t => {
+      const n = t === 'Todos' ? QUESTIONS.length : QUESTIONS.filter(x => x.tp === t).length;
+      return `<button class="fchip ${filter === t ? 'on' : ''}" data-f="${t}">${t} · ${n}</button>`;
+    }).join('');
+    const list = QUESTIONS.filter(x => filter === 'Todos' || x.tp === filter);
+    $('qlist').innerHTML = list.map(x => `<div class="qi ${q === x ? 'on' : ''}" data-q="${esc(x.id)}" title="${esc(x.tx)}">
+      <span class="dot" style="background:${statusColor(x)}"></span><span class="id">${esc(x.id)}</span><span class="tx">${esc(x.tx)}</span></div>`).join('');
+  };
+
+  const sysCard = (system, label, color) => {
+    if (!runs[system]) {
+      return `<div class="card dash"><h4 style="color:${color}">${label}</h4><span class="chip c-pend">sin corrida</span>
+        <div class="meta">Carga un respuestas.jsonl con system="${system}" para ver su respuesta, citas y tokens de contexto en este paso.</div></div>`;
+    }
+    const r = rowAt(system, q.id);
+    if (!r) return `<div class="card"><h4 style="color:${color}">${label}</h4><span class="chip c-pend">sin fila ≤ paso ${step}</span></div>`;
+    const v = r.veredicto === 'correcta' ? '<span class="chip c-ok">correcta</span>'
+      : r.veredicto === 'incorrecta' ? '<span class="chip c-bad">incorrecta</span>'
+      : r.veredicto ? `<span class="chip c-warn">${esc(r.veredicto)}</span>` : '<span class="chip c-pend">sin evaluar</span>';
+    const cites = (r.citations || []).slice(0, 4).map(c => `<span class="mono">${esc(c)}</span>`).join(', ');
+    return `<div class="card"><h4 style="color:${color}">${label} · paso ${r.ingest_step}</h4>${r.abstained ? '<span class="chip c-pend">se abstuvo</span> ' : ''}${v}
+      <div style="margin-top:6px">${esc(String(r.answer ?? '').slice(0, 220))}</div>
+      <div class="meta">${r.context_tokens != null ? fmt(r.context_tokens) + ' tokens de contexto' : ''}${r.cost_usd != null ? ' · US$ ' + Number(r.cost_usd).toFixed(5) : ''}${cites ? '<br>citas: ' + cites : ''}</div></div>`;
+  };
+
+  const renderQuestion = () => {
+    const box = $('qdetail');
+    if (!q) { box.innerHTML = '<div class="meta">Elige una pregunta: sus fuentes se resaltan en el grafo y en la curva aparece desde qué paso se puede responder.</div>'; return; }
+    const e = expectedAt(q);
+    const srcs = q.src.map(id => byId[id]
+      ? `<span class="link" data-p="${esc(id)}">${byId[id].o}. ${esc(short(byId[id].t))}</span>`
+      : `<span class="mono">${esc(id)}</span> (fuera del corpus)`).join(' · ');
+    let cb;
+    if (q.cb) {
+      const v = q.cb.ab ? '<span class="chip c-pend">se abstuvo</span>'
+        : q.cb.v === 'correcta' ? '<span class="chip c-warn">acertó: contaminada</span>' : '<span class="chip c-bad">incorrecta</span>';
+      cb = `<div class="card"><h4>Libro cerrado</h4>${v}<div style="margin-top:6px">${esc(q.cb.a.slice(0, 220))}${q.cb.a.length > 220 ? '…' : ''}</div><div class="meta">sin contexto · decidió: ${esc(q.cb.src)}</div></div>`;
+    } else {
+      cb = '<div class="card"><h4>Libro cerrado</h4><span class="chip c-pend">no aplica</span><div class="meta">Las T5 se redactaron después del control.</div></div>';
+    }
+    box.innerHTML = `<div class="card">
+        <div class="sec"><span>${esc(q.id)} · ${q.tp}</span><span>${q.im ? 'paso mínimo ' + q.im : 'no respondible'}</span></div>
+        <div class="q">${esc(q.tx)}</div>
+        <div><b>Esperado en el paso ${step}:</b> ${e.html}</div>
+        <div class="meta">Clave: ${q.key.map(k => `<span class="mono">${esc(k)}</span>`).join(', ') || '—'}<br>Fuentes: ${srcs}</div>
+      </div>
+      <div class="sec"><span>Comparación en el paso ${step}</span><span>contrato de resultados</span></div>
+      <div class="cmp">${cb}${sysCard('rag', 'RAG', 'var(--rag)')}${sysCard('wiki', 'WikiLLM', 'var(--wiki)')}</div>`;
+  };
+
+  const renderPaper = () => {
+    const box = $('pdetail');
+    if (!paper) { box.innerHTML = 'Haz clic en un nodo del grafo.'; box.className = 'meta'; return; }
+    box.className = '';
+    const p = byId[paper];
+    const item = id => `<li><span class="link" data-p="${esc(id)}">${byId[id].o}. ${esc(short(byId[id].t))}</span>${byId[id].o > step ? ' <span class="chip c-pend">aún no ingerido</span>' : ''}</li>`;
+    const qs = qByPaper[paper] || [];
+    box.innerHTML = `<div class="card">
+        <div class="sec"><span>Paso ${p.o} · mitad ${p.m}</span><span>${esc(p.id)}</span></div>
+        <div class="q">${esc(p.t)}</div>
+        <div class="meta">${p.f} · ${fmt(p.k)} tokens · ${p.c ? 'con código' : 'sin código'}${p.pc ? ' · <b class="mono" style="color:var(--gold)">antes del corte</b>' : ''}
+        ${p.o > step ? '<br><span class="chip c-pend">todavía no ingerido en el paso ' + step + '</span>' : ''}</div>
+      </div>
+      <div class="sec"><span>Cita a (${p.r.filter(x => byId[x]).length})</span></div>
+      <ul class="plain">${p.r.filter(x => byId[x]).map(item).join('') || '<li class="meta">Ningún paper del corpus.</li>'}</ul>
+      <div class="sec"><span>Citado por (${citedBy[paper].length})</span></div>
+      <ul class="plain">${citedBy[paper].map(item).join('') || '<li class="meta">Ningún paper del corpus.</li>'}</ul>
+      <div class="sec"><span>Preguntas del banco que lo usan (${qs.length})</span></div>
+      <ul class="plain">${qs.map(x => `<li><span class="link" data-q="${esc(x.id)}">${esc(x.id)}</span> · ${esc(x.tx.slice(0, 70))}…</li>`).join('') || '<li class="meta">Ninguna en la mitad A.</li>'}</ul>`;
+  };
+
+  /* ---------- interaction ---------- */
+  const tab = name => document.querySelectorAll('.tab').forEach(t => {
+    const on = t.dataset.tab === name;
+    t.classList.toggle('on', on); $(t.dataset.tab).classList.toggle('on', on);
+  });
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => tab(t.dataset.tab)));
+  const selectPaper = id => { paper = id; tab('pp'); render(); };
+  const selectQuestion = id => { q = QUESTIONS.find(x => x.id === id) || null; tab('pq'); render(); };
+
+  document.body.addEventListener('click', e => {
+    const f = e.target.closest('[data-f]'); if (f) { filter = f.dataset.f; render(); return; }
+    const qi = e.target.closest('[data-q]'); if (qi) { selectQuestion(qi.dataset.q); return; }
+    const pi = e.target.closest('[data-p]'); if (pi) selectPaper(pi.dataset.p);
+  });
+  range.addEventListener('input', () => { step = +range.value; render(); });
+
+  const stop = () => { clearInterval(timer); timer = null; $('play').textContent = '▶ Ingerir'; };
+  const play = () => {
+    if (timer) return stop();
+    if (step >= 50) step = 0;
+    $('play').textContent = '❚❚ Pausa';
+    timer = setInterval(() => { step++; render(); if (step >= 50) stop(); }, +$('speed').value);
+  };
+  $('play').addEventListener('click', play);
+  $('speed').addEventListener('change', () => { if (timer) { stop(); play(); } });
+  $('reset').addEventListener('click', () => { stop(); step = 0; render(); });
+  addEventListener('keydown', e => {
+    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName) && document.activeElement.type !== 'range') return;
+    if (e.key === ' ') { e.preventDefault(); play(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); stop(); step = Math.min(50, step + 1); render(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); stop(); step = Math.max(0, step - 1); render(); }
+  });
+
+  /* ---------- loading harness results ---------- */
+  const ingest = (name, text) => {
+    let ok = 0, bad = 0, other = 0;
+    text.split(/\r?\n/).forEach(line => {
+      if (!line.trim()) return;
+      let r;
+      try { r = JSON.parse(line); } catch { bad++; return; }
+      if (!r || typeof r !== 'object' || !r.question_id || !Number.isInteger(r.ingest_step)) { bad++; return; }
+      if (r.system !== 'rag' && r.system !== 'wiki') { other++; return; }
+      const m = (runs[r.system] ||= new Map());
+      if (!m.has(r.question_id)) m.set(r.question_id, []);
+      m.get(r.question_id).push(r);
+      const meta = (runMeta[r.system] ||= { n: 0, runIds: [], byStep: new Map() });
+      meta.n++;
+      if (r.run_id && !meta.runIds.includes(r.run_id)) meta.runIds.push(String(r.run_id));
+      if (!meta.byStep.has(r.ingest_step)) meta.byStep.set(r.ingest_step, []);
+      meta.byStep.get(r.ingest_step).push(r);
+      ok++;
+    });
+    Object.values(runs).forEach(m => m.forEach(rows => rows.sort((a, b) => a.ingest_step - b.ingest_step)));
+    const known = new Set(QUESTIONS.map(x => x.id));
+    const matched = Object.values(runs).reduce((s, m) => s + [...m.keys()].filter(k => known.has(k)).length, 0);
+    toast(`<b>${esc(name)}</b>: ${ok} filas de rag/wiki cargadas${other ? `, ${other} de otros sistemas ignoradas` : ''}${bad ? `, ${bad} líneas inválidas` : ''}.` +
+      (ok && !matched ? '<br>Ninguna question_id coincide con el banco A: solo se actualiza la curva.' : ''));
+    render();
+  };
+  const readFiles = files => [...files].forEach(f => f.text().then(t => ingest(f.name, t)));
+  document.querySelector('#load input').addEventListener('change', e => { readFiles(e.target.files); e.target.value = ''; });
+  addEventListener('dragover', e => { e.preventDefault(); $('drop').style.display = 'grid'; });
+  $('drop').addEventListener('dragleave', () => $('drop').style.display = 'none');
+  addEventListener('drop', e => { e.preventDefault(); $('drop').style.display = 'none'; readFiles(e.dataTransfer.files); });
+
+  window.demoIngest = ingest;
+  q = QUESTIONS.find(x => x.id === 'A005-T3-02') || null;
+  render();
+})();
+</script>
+</body>
+</html>

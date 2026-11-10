@@ -89,6 +89,7 @@ class Panel:
                 "agotado": self.gasto.agotado,
             },
             "rag_listo": self.ejecutor.rag_listo,
+            "rag_fragmentos": self.ejecutor.rag_fragmentos,
             "modelo": self.ajustes.model,
             "clave_presente": bool(self.ajustes.api_key),
             "hora_pico": es_hora_pico(datetime.now(UTC)),

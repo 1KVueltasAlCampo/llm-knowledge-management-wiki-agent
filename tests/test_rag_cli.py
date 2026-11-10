@@ -97,3 +97,13 @@ def test_el_tope_de_gasto_devuelve_codigo_1(tmp_path, capsys):
     )
     assert codigo == 1
     assert "Tope alcanzado" in capsys.readouterr().err
+
+
+def test_la_carpeta_del_indice_es_qdrant_y_chroma_queda_como_alias():
+    from pathlib import Path
+
+    from wikillm.rag.__main__ import _analizar
+
+    assert _analizar(["indexar"]).indice == Path("data/qdrant")
+    assert _analizar(["indexar", "--indice", "otra"]).indice == Path("otra")
+    assert _analizar(["indexar", "--chroma", "vieja"]).indice == Path("vieja")

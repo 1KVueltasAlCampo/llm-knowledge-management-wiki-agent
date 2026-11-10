@@ -13,6 +13,7 @@ data/gold/*
 
 # Índices vectoriales y cachés locales
 chroma/
+qdrant/
 .chroma/
 *.sqlite3
 

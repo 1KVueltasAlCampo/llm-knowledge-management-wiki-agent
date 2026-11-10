@@ -7,8 +7,10 @@ Uso: uv run python scripts/verificar_demo.py
 """
 
 import json
+import os
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 from wikillm.common.config import load_settings
@@ -18,6 +20,20 @@ REVISIONES: list[tuple[str, bool, str]] = []
 
 def revisar(nombre: str, correcto: bool, detalle: str = "") -> None:
     REVISIONES.append((nombre, correcto, detalle))
+
+
+def fragmentos_del_panel() -> int | None:
+    """Fragmentos del índice que tiene abierto el panel, o None si no corre o no lo cargó.
+
+    Qdrant local deja abrir su carpeta a un solo proceso: si el panel la tiene abierta, esta
+    revisión no puede abrirla y le pregunta al panel.
+    """
+    url = os.environ.get("WIKILLM_PANEL_URL", "http://127.0.0.1:8765/").rstrip("/")
+    try:
+        with urllib.request.urlopen(f"{url}/api/estado", timeout=2) as respuesta:
+            return json.load(respuesta).get("rag_fragmentos")
+    except (OSError, ValueError):
+        return None
 
 
 def leer_jsonl(ruta: Path) -> list[dict]:
@@ -51,17 +67,24 @@ def main() -> int:
     except ImportError:
         revisar("GPU para los embeddings", False, "torch no está instalado")
 
-    try:
-        import chromadb
+    total = fragmentos_del_panel()
+    if total is not None:
+        detalle = f"{total} fragmentos (abierto en el panel)"
+        revisar("índice vectorial del RAG", total > 5000, detalle)
+    else:
+        try:
+            from qdrant_client import QdrantClient
 
-        from wikillm.rag.indice import NOMBRE_COLECCION
+            from wikillm.rag.indice import NOMBRE_COLECCION, RUTA_INDICE_POR_DEFECTO
 
-        coleccion = chromadb.PersistentClient(path="data/chroma").get_collection(NOMBRE_COLECCION)
-        revisar(
-            "índice vectorial del RAG", coleccion.count() > 5000, f"{coleccion.count()} fragmentos"
-        )
-    except Exception as error:  # noqa: BLE001
-        revisar("índice vectorial del RAG", False, str(error)[:80])
+            cliente = QdrantClient(path=str(RUTA_INDICE_POR_DEFECTO))
+            try:
+                total = cliente.count(NOMBRE_COLECCION, exact=True).count
+            finally:
+                cliente.close()
+            revisar("índice vectorial del RAG", total > 5000, f"{total} fragmentos")
+        except Exception as error:  # noqa: BLE001
+            revisar("índice vectorial del RAG", False, str(error)[:80])
 
     estado = Path("data/wiki/demo/estado.json")
     if estado.exists():

@@ -396,3 +396,32 @@ revisadas por los dos autores). A018-T2-01, el reemplazo de A005-T3-02, se cerr�
 David por falta de tiempo, sin la lectura previa de Juan Diego; conviene decirlo si se pregunta. La
 estimación de la corrida completa es de 4,67 USD como cota alta (1,50 de ingesta y 3,17 de preguntas)
 y no lleva el aviso de «no vale para el informe». El banco queda cerrado.
+
+### 2026-11-10 · El RAG pasa de Chroma a Qdrant (decisión 0005)
+
+Por recomendación del profesor, y con el acuerdo de Juan David (dueño de `src/wikillm/rag/` y
+`src/wikillm/panel/`), el índice del RAG pasa a Qdrant en modo local
+(`openspec/changes/2026-11-09-rag-qdrant`). Se reconstruyó en `data/qdrant` con los mismos 5.430
+fragmentos. `data/chroma` queda sin uso y se puede borrar.
+
+El piloto se repitió como `results/piloto-2`, con las mismas 17 preguntas y pasos (0 y 5) que
+`piloto-1`. Costó 0,0907 USD, en hora pico.
+
+| Paso 5 | piloto-1 (Chroma) | piloto-2 (Qdrant) |
+|---|---|---|
+| RAG, cobertura | 0,33 | 0,33 |
+| RAG, contexto medio | 1.217 tokens | 1.217 tokens |
+| RAG, tokens por acierto | 10.341 | 10.341 |
+| Wiki, cobertura | 0,83 | 0,83 |
+| Wiki, abstención correcta | 1,00 | 0,91 |
+| Wiki, contexto medio | 3.544 tokens | 3.495 tokens |
+
+En las 17 preguntas del paso 5, el RAG con Qdrant tuvo el mismo `context_tokens`, las mismas citas y
+la misma abstención que con Chroma: recuperó los mismos fragmentos. Las diferencias del wiki vienen
+de que cada corrida reconstruye su wiki con nuevas llamadas al modelo, no de la base vectorial. Los
+costos de piloto-2 son más altos porque corrió en hora pico (tarifa ×2).
+
+La demostración se probó en vivo sobre Qdrant: antes de ingerir el paper 6, los dos sistemas se
+abstienen ante la pregunta de BeliefShift; después, los dos responden citando `2603.23848#s18.p3`.
+Durante esa prueba se encontró que la presentación automática se detenía si ya había una ingesta en
+curso, y ahora la sigue.

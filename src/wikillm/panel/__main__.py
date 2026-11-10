@@ -62,6 +62,9 @@ def principal(argv: Sequence[str] | None = None) -> int:
         )
         return 1
     url = f"http://127.0.0.1:{servidor.server_port}/"
+    # verificar_demo.py (que el panel lanza como subproceso) pregunta aquí por el índice: Qdrant
+    # local no deja abrir la carpeta mientras el panel la tiene abierta.
+    os.environ["WIKILLM_PANEL_URL"] = url
     print(f"Panel de la demostración en {url}  (Ctrl+C para detenerlo)")
     print(f"Tope de gasto de la sesión: {argumentos.tope_usd:.2f} USD · raíz: {raiz}")
     if not argumentos.sin_calentar:

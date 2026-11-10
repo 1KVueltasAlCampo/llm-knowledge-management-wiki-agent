@@ -23,7 +23,7 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
 | Componente | Estado |
 |---|---|
 | Corpus de 50 papers (Bronze → Silver → Gold, manifest y fragmentos citables) | Listo. Ver [docs/corpus.md](docs/corpus.md). |
-| RAG simple (LangChain y Chroma) | Listo, con citas verificadas contra el corpus. |
+| RAG simple (LangChain y Qdrant local) | Listo, con citas verificadas contra el corpus. |
 | WikiLLM (ingesta controlada y consulta por agente) | Listo. |
 | Arnés de comparación (reanudable, con control de costo) y comparación puntual de una pregunta | Listo; ejecutado en un piloto que no se usa en el informe. |
 | Métricas (correctitud, fundamentación, cobertura, abstención, respuestas obsoletas, acuerdo) | Listas y probadas con resultados sintéticos. |
@@ -54,7 +54,7 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
 
 **Fragmentos citables.** Cada párrafo, tabla, ecuación o pie de figura del Gold tiene un identificador (`span_id`, por ejemplo `2405.14831#s11.p1`) y su huella. Las citas de ambos sistemas solo valen si resuelven a un fragmento real del corpus.
 
-**RAG simple.** Búsqueda vectorial y nada más, sin agentes ni delegación: fragmentos de hasta 400 tokens alineados con los fragmentos citables, embeddings `bge-small-en-v1.5` en GPU, almacén Chroma y una sola llamada al modelo con los 5 fragmentos más cercanos.
+**RAG simple.** Búsqueda vectorial y nada más, sin agentes ni delegación: fragmentos de hasta 400 tokens alineados con los fragmentos citables, embeddings `bge-small-en-v1.5` en GPU, almacén Qdrant en modo local (búsqueda exacta, [decisión 0005](docs/decisiones/0005-qdrant-como-base-vectorial.md)) y una sola llamada al modelo con los 5 fragmentos más cercanos.
 
 **WikiLLM.** El wiki es una carpeta de páginas Markdown con índice y registro, versionada en un repositorio Git propio con una copia por paso de ingesta. La ingesta es un proceso controlado de dos llamadas por paper (plan y escritura) cuya salida valida el código: se descartan las citas que no resuelven a un fragmento de un paper ya ingerido, los enlaces entre páginas sin destino se dejan como texto y se cuentan las afirmaciones numéricas sin cita. La consulta es un agente con dos herramientas, búsqueda de páginas y lectura de páginas, con un tope de acciones, que responde con las mismas reglas que el RAG.
 

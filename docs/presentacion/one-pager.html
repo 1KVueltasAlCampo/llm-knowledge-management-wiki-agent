@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WikiLLM frente a RAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#13213a;--ink-2:#2c3d5c;--muted:#6b7a90;--line:#d9d2c3;
+  --paper:#f6f2e9;--card:#fffdf8;--night:#0f1b2d;
+  --rag:#d9694a;--rag-soft:#f8e4dc;--wiki:#23877b;--wiki-soft:#dcefeb;
+  --gold:#c99a2e;--gold-soft:#f5ead0;--ok:#3d8b4f;--pend:#8a7a5c;--warn:#b26a14;
+  --serif:"Fraunces",Georgia,serif;--sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45}
+.hoja{max-width:1320px;margin:0 auto;padding:28px 32px 36px}
+header{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:14px}
+.kicker{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--serif);font-size:2.6rem;line-height:1.05;margin:.25rem 0 .35rem;font-weight:700}
+h1 .rag{color:var(--rag)}h1 .wiki{color:var(--wiki)}
+.sub{font-size:1.08rem;color:var(--ink-2);max-width:62ch;margin:0}
+.autores{text-align:right;font-size:.88rem;color:var(--ink-2)}
+.autores b{display:block;font-size:1rem;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-top:8px}
+.chip{font-size:.76rem;border:1px solid var(--line);background:var(--card);padding:2px 9px;border-radius:999px;white-space:nowrap}
+.chip.m{font-family:var(--mono);font-size:.72rem}
+h2{font-family:var(--serif);font-size:1.12rem;margin:0 0 8px;font-weight:700}
+h2 small{font-family:var(--sans);font-weight:500;font-size:.75rem;color:var(--muted);letter-spacing:.04em;margin-left:6px}
+.fila{display:grid;gap:16px;margin-top:16px}
+.f3{grid-template-columns:1.15fr 1fr 1.1fr}
+.f-bajo{grid-template-columns:1.45fr 1fr 1.15fr}
+.tarjeta{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.pregunta{font-family:var(--serif);font-style:italic;font-size:1.02rem;border-left:3px solid var(--gold);padding:2px 0 2px 10px;margin:8px 0}
+p{margin:.35rem 0}
+ul.limpia{list-style:none;margin:0;padding:0}
+ul.limpia li{padding:3px 0 3px 18px;position:relative}
+ul.limpia li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--ink-2)}
+.estado{width:100%;border-collapse:collapse;font-size:.86rem}
+.estado td{padding:3.5px 4px;border-bottom:1px dashed var(--line);vertical-align:top}
+.estado td:first-child{width:22px;text-align:center;font-weight:700}
+.estado tr:last-child td{border-bottom:none}
+.ok{color:var(--ok)}.medio{color:var(--warn)}.pend{color:var(--pend)}
+.nota{font-size:.78rem;color:var(--muted)}
+code,.mono{font-family:var(--mono);font-size:.82em}
+/* arquitectura */
+.arq{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px 10px;margin-top:16px}
+.arq-cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:.76rem;color:var(--ink-2);align-items:center}
+.leyenda svg{vertical-align:middle;margin-right:4px}
+.diagrama{width:100%;height:auto;display:block;margin-top:6px}
+.diagrama text{font-family:var(--sans);fill:var(--ink)}
+.diagrama .t{font-weight:700;font-size:13px}
+.diagrama .d{font-size:11px;fill:var(--ink-2)}
+.diagrama .m{font-family:var(--mono);font-size:10.5px;fill:var(--muted)}
+.diagrama .col{font-size:10.5px;letter-spacing:.12em;font-weight:700;fill:var(--muted)}
+.diagrama .caja{fill:var(--card);stroke:var(--ink-2);stroke-width:1.2}
+.diagrama .ext{fill:#fbf8f1;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4}
+.diagrama .alm{fill:#f1ece0;stroke:var(--ink-2);stroke-width:1.2}
+.diagrama .flecha{stroke:var(--ink-2);stroke-width:1.4;fill:none}
+.diagrama .flecha.suave{stroke:var(--muted);stroke-dasharray:4 3}
+.diagrama .et{font-size:10px;fill:var(--muted);font-style:italic}
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.paso{border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#fbf8f1;font-size:.84rem}
+.paso b{display:flex;align-items:center;gap:6px;font-size:.86rem}
+.paso b i{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--card);font-size:.72rem}
+.paso span{color:var(--ink-2)}
+.cifras{display:grid;grid-template-columns:auto 1fr 1fr;gap:4px 12px;font-size:.88rem;align-items:baseline;margin:6px 0}
+.cifras .cab{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.cifras .r{color:var(--rag);font-weight:700}.cifras .w{color:var(--wiki);font-weight:700}
+.aviso{font-size:.78rem;background:var(--gold-soft);border-radius:6px;padding:6px 8px;margin-top:6px}
+.cambio{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:.84rem}
+.cambio dt{font-weight:700;color:var(--ink-2)}
+.cambio dd{margin:0}
+/* algoritmos */
+.algos{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.algo{border:1px solid var(--line);border-radius:9px;background:#fbf8f1;overflow:hidden;display:flex;flex-direction:column}
+.algo-cab{padding:7px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.algo-cab b{font-family:var(--serif);font-size:.98rem}
+.algo-cab span{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.algo.rag .algo-cab{background:var(--rag-soft);border-top:3px solid var(--rag)}
+.algo.wiki .algo-cab{background:var(--wiki-soft);border-top:3px solid var(--wiki)}
+.algo.arnes .algo-cab{background:var(--gold-soft);border-top:3px solid var(--gold)}
+.algo .entrada{font-family:var(--mono);font-size:.74rem;color:var(--ink-2);padding:6px 12px 2px}
+.algo .entrada b{color:var(--ink)}
+ol.pc{list-style:none;counter-reset:l;margin:0;padding:4px 10px 8px 0;font-family:var(--mono);font-size:.76rem;line-height:1.5;flex:1}
+ol.pc li{counter-increment:l;position:relative;padding-left:36px;padding-right:4px}
+ol.pc li::before{content:counter(l);position:absolute;left:0;width:24px;text-align:right;color:#b3a993;font-size:.7rem}
+ol.pc .i1{padding-left:52px}ol.pc .i2{padding-left:68px}
+ol.pc .k{font-weight:700;color:var(--ink)}
+ol.pc .c{color:var(--muted);font-style:italic}
+ol.pc .llm{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.04em;padding:0 5px;border-radius:4px;background:var(--ink);color:var(--card);margin-left:4px;vertical-align:1px}
+.algo-pie{border-top:1px dashed var(--line);padding:5px 12px;font-size:.76rem;color:var(--ink-2);background:var(--card)}
+.algo-pie b{color:var(--ink)}
+@media (max-width:1050px){.algos{grid-template-columns:1fr}}
+footer{margin-top:14px;font-size:.76rem;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:1050px){.f3,.f-bajo{grid-template-columns:1fr}header{grid-template-columns:1fr}.autores{text-align:left}.chips{justify-content:flex-start}.pasos{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.hoja{padding:16px}h1{font-size:2rem}.pasos{grid-template-columns:1fr}}
+@media print{@page{size:A3 landscape;margin:10mm}body{background:#fff}.hoja{max-width:none;padding:0}.tarjeta,.arq{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main class="hoja">
+
+<header>
+  <div>
+    <div class="kicker">Maestría en IA Aplicada · Primera sustentación · 9 de noviembre de 2026</div>
+    <h1><span class="wiki">WikiLLM</span> frente a <span class="rag">RAG</span></h1>
+    <p class="sub">¿Conviene <b>compilar</b> el conocimiento por adelantado en un wiki que mantiene un agente, o <b>recuperarlo</b> en cada consulta? Una comparación controlada sobre 50 preprints de arXiv.</p>
+  </div>
+  <div class="autores">
+    <b>Juan David Cruz · Juan Diego Ramírez</b>
+    <div class="chips">
+      <span class="chip">mismo modelo: <span class="mono">deepseek-flash</span></span>
+      <span class="chip">50 preprints · 2024–2026</span>
+      <span class="chip">60 preguntas</span>
+      <span class="chip m">github.com/1KVueltasAlCampo/llm-knowledge-management-wiki-agent</span>
+    </div>
+  </div>
+</header>
+
+<section class="fila f3">
+  <article class="tarjeta">
+    <h2>Problema y pregunta</h2>
+    <p>Un RAG resuelve cada consulta recuperando los fragmentos más parecidos a la pregunta, sin distinguir una fuente reciente de una superada, y repite la síntesis en cada respuesta. Un wiki mantenido por un LLM traslada ese trabajo a la ingesta, a cambio de un costo de mantenimiento. La literatura que compara ambos enfoques usa corpus, modelos y métricas distintos y no converge.</p>
+    <p class="pregunta">¿Cómo se comparan un RAG simple y un WikiLLM, con el mismo modelo, a medida que se ingiere un corpus en orden cronológico, en correctitud, fundamentación, costo y tiempo?</p>
+    <p><b>Hipótesis.</b> La similitud tiende a devolver el dato más parecido aunque esté superado; un wiki mantenido incrementalmente puede reflejar el más reciente (preguntas T4). La contrapartida esperada es un costo mayor. Un resultado desfavorable al WikiLLM también es válido.</p>
+  </article>
+
+  <article class="tarjeta">
+    <h2>Diseño: una sola variable</h2>
+    <ul class="limpia">
+      <li><b>Lo único que cambia es la arquitectura.</b> Mismo modelo, corpus, preguntas, frase de abstención y extracción de citas.</li>
+      <li><b>Ingesta cronológica.</b> Los papers entran de uno en uno; en los pasos 0, 5, 10 … 50 se hacen las mismas preguntas a ambos.</li>
+      <li><b>Citas verificables.</b> Cada párrafo, tabla o ecuación del corpus tiene un <code>span_id</code> con su huella; una cita solo vale si resuelve a uno real.</li>
+      <li><b>Respuestas fijadas por humanos.</b> Una pregunta cuenta cuando los dos autores la verifican contra el paper; se reporta su acuerdo.</li>
+      <li><b>Nadie se evalúa a sí mismo.</b> Primero una capa determinista; lo indeterminado lo juzga otro modelo (<code>gemini-3.1-flash-lite</code>).</li>
+      <li><b>Todo costo se registra:</b> tokens, segundos y dólares por llamada, con un tope por corrida.</li>
+    </ul>
+  </article>
+
+  <article class="tarjeta">
+    <h2>Qué hay hoy <small>verificado en el repositorio</small></h2>
+    <table class="estado">
+      <tr><td class="ok">✓</td><td><b>Corpus</b>: 50 papers Bronze → Silver → Gold, manifest y 5.430 fragmentos indexados</td></tr>
+      <tr><td class="ok">✓</td><td><b>RAG simple</b>: Qdrant local, embeddings en GPU, top-5 exacto y una llamada</td></tr>
+      <tr><td class="ok">✓</td><td><b>WikiLLM</b>: ingesta validada por código, wiki versionado con Git y agente de consulta</td></tr>
+      <tr><td class="ok">✓</td><td><b>Arnés</b> reanudable con control de costo; piloto de 68 respuestas (0,056 USD)</td></tr>
+      <tr><td class="ok">✓</td><td><b>Métricas</b>: correctitud, fundamentación, cobertura, abstención, obsoletas, contexto y costo</td></tr>
+      <tr><td class="ok">✓</td><td><b>Panel web</b> para preguntar, ingerir en vivo, ver el grafo del wiki y los resultados</td></tr>
+      <tr><td class="medio">◐</td><td><b>Banco de 60 preguntas</b>: 30 verificadas por un autor; 30 en borrador</td></tr>
+      <tr><td class="pend">○</td><td>Acuerdo entre autores, calibración del juez, corrida completa (cota 4,67 USD) e informe</td></tr>
+    </table>
+    <p class="nota">449 pruebas automáticas; ninguna llama a la API real.</p>
+  </article>
+</section>
+
+<section class="arq" aria-labelledby="t-arq">
+  <div class="arq-cab">
+    <h2 id="t-arq">Arquitectura implementada <small>diagrama de contenedores · paquetes de <code>src/wikillm/</code></small></h2>
+    <div class="leyenda">
+      <span><svg width="22" height="14"><rect x="1" y="1" width="20" height="12" rx="3" fill="#fffdf8" stroke="#2c3d5c"/></svg>componente</span>
+      <span><svg width="22" height="16"><path d="M2 4 v8 a9 3 0 0 0 18 0 v-8" fill="#f1ece0" stroke="#2c3d5c"/><ellipse cx="11" cy="4" rx="9" ry="3" fill="#f1ece0" stroke="#2c3d5c"/></svg>almacén de datos</span>
+      <span><svg width="22" height="14"><rect x="1" y="1" width="20" height="12" rx="3" fill="#fbf8f1" stroke="#6b7a90" stroke-dasharray="4 3"/></svg>externo</span>
+      <span><svg width="26" height="10"><line x1="1" y1="5" x2="20" y2="5" stroke="#2c3d5c" stroke-width="1.4"/><path d="M19 1 L25 5 L19 9 z" fill="#2c3d5c"/></svg>flujo de datos</span>
+      <span><svg width="26" height="10"><line x1="1" y1="5" x2="24" y2="5" stroke="#6b7a90" stroke-width="1.4" stroke-dasharray="4 3"/></svg>llamada al modelo</span>
+    </div>
+  </div>
+
+  <svg class="diagrama" viewBox="0 0 1240 560" role="img" aria-label="Arquitectura: fuentes de arXiv, pipeline de corpus, los dos sistemas comparados con el mismo modelo, arnés y evaluación, y panel web">
+    <defs>
+      <marker id="pf" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2c3d5c"/></marker>
+    </defs>
+
+    <!-- encabezados de columna -->
+    <text class="col" x="20" y="20">FUENTES</text>
+    <text class="col" x="230" y="20">CORPUS · ingest/ corpus/</text>
+    <text class="col" x="470" y="20">SISTEMAS COMPARADOS</text>
+    <text class="col" x="850" y="20">ARNÉS Y EVALUACIÓN</text>
+    <text class="col" x="1062" y="20">PRESENTACIÓN · panel/</text>
+
+    <!-- FUENTES -->
+    <rect class="ext" x="20" y="44" width="180" height="58" rx="7"/>
+    <text class="t" x="32" y="66">API de arXiv</text>
+    <text class="d" x="32" y="84">metadatos verificados</text>
+    <rect class="ext" x="20" y="128" width="180" height="58" rx="7"/>
+    <text class="t" x="32" y="150">arXiv (HTML)</text>
+    <text class="d" x="32" y="168">texto · respeta robots.txt</text>
+
+    <!-- CORPUS -->
+    <rect class="caja" x="228" y="44" width="212" height="142" rx="8"/>
+    <text class="t" x="240" y="66">Pipeline del corpus</text>
+    <rect x="240" y="80" width="58" height="30" rx="5" fill="#ece6d8" stroke="#8a7a5c"/>
+    <text class="d" x="249" y="100">Bronze</text>
+    <rect x="311" y="80" width="58" height="30" rx="5" fill="#e4e2df" stroke="#8a7a5c"/>
+    <text class="d" x="324" y="100">Silver</text>
+    <rect x="382" y="80" width="50" height="30" rx="5" fill="var(--gold-soft)" stroke="var(--gold)"/>
+    <text class="d" x="393" y="100">Gold</text>
+    <path class="flecha" d="M298 95 H309" marker-end="url(#pf)"/>
+    <path class="flecha" d="M369 95 H380" marker-end="url(#pf)"/>
+    <text class="d" x="240" y="132">selección de los 50 papers</text>
+    <text class="d" x="240" y="148">manifest · orden de ingesta</text>
+    <text class="m" x="240" y="170">fragmentos citables (span_id)</text>
+
+    <!-- almacén Gold -->
+    <path class="alm" d="M228 232 v96 a106 12 0 0 0 212 0 v-96"/>
+    <ellipse class="alm" cx="334" cy="232" rx="106" ry="12"/>
+    <text class="t" x="244" y="266">Gold + spans.jsonl</text>
+    <text class="d" x="244" y="284">50 papers en Markdown</text>
+    <text class="d" x="244" y="300">span_id con huella de contenido</text>
+    <text class="m" x="244" y="316">texto no versionado (regla 8)</text>
+
+    <path class="flecha" d="M200 73 H226" marker-end="url(#pf)"/>
+    <path class="flecha" d="M200 157 H226" marker-end="url(#pf)"/>
+    <path class="flecha" d="M334 186 V218" marker-end="url(#pf)"/>
+
+    <!-- carril RAG -->
+    <rect x="466" y="40" width="356" height="160" rx="10" fill="var(--rag-soft)" stroke="var(--rag)" stroke-width="1.2"/>
+    <text class="t" x="480" y="60" style="fill:var(--rag)">RAG simple · rag/</text>
+    <path class="alm" d="M480 86 v74 a66 10 0 0 0 132 0 v-74"/>
+    <ellipse class="alm" cx="546" cy="86" rx="66" ry="10"/>
+    <text class="t" x="490" y="116">Índice Qdrant</text>
+    <text class="d" x="490" y="134">local · bge-small · GPU</text>
+    <text class="d" x="490" y="150">5.430 fragmentos</text>
+    <rect class="caja" x="650" y="80" width="158" height="96" rx="8"/>
+    <text class="t" x="662" y="104">Recuperación</text>
+    <text class="d" x="662" y="122">top-5 por similitud</text>
+    <text class="d" x="662" y="138">1 llamada con el contexto</text>
+    <text class="d" x="662" y="154">respuesta + citas</text>
+    <path class="flecha" d="M612 128 H648" marker-end="url(#pf)"/>
+
+    <!-- carril WikiLLM -->
+    <rect x="466" y="216" width="356" height="196" rx="10" fill="var(--wiki-soft)" stroke="var(--wiki)" stroke-width="1.2"/>
+    <text class="t" x="480" y="236" style="fill:var(--wiki)">WikiLLM · wiki/</text>
+    <rect class="caja" x="480" y="250" width="150" height="58" rx="8"/>
+    <text class="t" x="492" y="272">Ingesta por paper</text>
+    <text class="d" x="492" y="290">plan + escritura</text>
+    <rect class="caja" x="480" y="330" width="150" height="66" rx="8"/>
+    <text class="t" x="492" y="352">Validación (código)</text>
+    <text class="d" x="492" y="370">quita citas inválidas,</text>
+    <text class="d" x="492" y="385">enlaces rotos, cifras</text>
+    <path class="flecha" d="M555 308 V328" marker-end="url(#pf)"/>
+    <path class="alm" d="M656 260 v62 a76 10 0 0 0 152 0 v-62"/>
+    <ellipse class="alm" cx="732" cy="260" rx="76" ry="10"/>
+    <text class="t" x="668" y="288">Wiki en Markdown</text>
+    <text class="d" x="668" y="305">índice · log · [[enlaces]]</text>
+    <text class="m" x="668" y="321">Git: paso-1 … paso-N</text>
+    <rect class="caja" x="656" y="344" width="152" height="60" rx="8"/>
+    <text class="t" x="668" y="363">Agente de consulta</text>
+    <text class="d" x="668" y="379">search · read · answer</text>
+    <text class="m" x="668" y="395">hasta 8 acciones</text>
+    <path class="flecha" d="M630 363 C645 363 642 300 654 300" marker-end="url(#pf)"/>
+    <path class="flecha" d="M732 332 V342" marker-end="url(#pf)"/>
+
+    <!-- Gold alimenta a los dos -->
+    <path class="flecha" d="M440 252 C458 252 458 128 478 128" marker-end="url(#pf)"/>
+    <path class="flecha" d="M440 280 H478" marker-end="url(#pf)"/>
+
+    <!-- cliente de modelo -->
+    <rect x="466" y="436" width="356" height="62" rx="9" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.4"/>
+    <text class="t" x="480" y="460">ClienteModelo · common/ → deepseek-flash</text>
+    <text class="d" x="480" y="478">el MISMO modelo y temperatura en los dos sistemas</text>
+    <text class="m" x="480" y="492">tokens · segundos · USD · tope MAX_USD_PER_RUN</text>
+    <path class="flecha suave" d="M800 176 V200 H836 V466 H824"/>
+    <path class="flecha suave" d="M555 396 V434"/>
+    <path class="flecha suave" d="M732 404 V434"/>
+
+    <!-- ARNÉS Y EVALUACIÓN -->
+    <rect class="caja" x="850" y="44" width="186" height="86" rx="8"/>
+    <text class="t" x="862" y="66">Arnés · arnes/</text>
+    <text class="d" x="862" y="84">mismas preguntas en los</text>
+    <text class="d" x="862" y="100">pasos 0, 5, 10 … 50</text>
+    <text class="m" x="862" y="118">reanudable · con tope</text>
+    <path class="flecha" d="M808 110 H848" marker-end="url(#pf)"/>
+    <path class="flecha" d="M808 372 C830 372 828 122 848 122" marker-end="url(#pf)"/>
+
+    <path class="alm" d="M850 162 v52 a93 10 0 0 0 186 0 v-52"/>
+    <ellipse class="alm" cx="943" cy="162" rx="93" ry="10"/>
+    <text class="t" x="864" y="190">results/</text>
+    <text class="d" x="864" y="207">respuestas · trazas · llamadas</text>
+    <path class="flecha" d="M943 130 V150" marker-end="url(#pf)"/>
+
+    <rect class="caja" x="850" y="248" width="186" height="96" rx="8"/>
+    <text class="t" x="862" y="270">Evaluación · eval/</text>
+    <text class="d" x="862" y="288">1. capa determinista</text>
+    <text class="d" x="862" y="304">2. juez para lo indeterminado:</text>
+    <text class="m" x="862" y="320">gemini-3.1-flash-lite</text>
+    <text class="d" x="862" y="336">métricas por sistema y paso</text>
+    <path class="flecha" d="M943 226 V246" marker-end="url(#pf)"/>
+
+    <path class="alm" d="M850 382 v74 a93 10 0 0 0 186 0 v-74"/>
+    <ellipse class="alm" cx="943" cy="382" rx="93" ry="10"/>
+    <text class="t" x="864" y="406">Banco · 60 preguntas</text>
+    <text class="d" x="864" y="423">T1 hecho · T2 síntesis</text>
+    <text class="d" x="864" y="438" textLength="164" lengthAdjust="spacingAndGlyphs">T3 comparación · T4 actualización</text>
+    <text class="d" x="864" y="453">T5 no respondible</text>
+    <path class="flecha" d="M943 372 V346" marker-end="url(#pf)"/>
+    <path class="flecha" d="M1036 400 C1050 400 1050 92 1038 92" marker-end="url(#pf)"/>
+
+    <!-- autores -->
+    <rect class="ext" x="20" y="470" width="180" height="62" rx="7"/>
+    <circle cx="42" cy="492" r="7" fill="none" stroke="#2c3d5c" stroke-width="1.3"/>
+    <path d="M30 516 a12 10 0 0 1 24 0" fill="none" stroke="#2c3d5c" stroke-width="1.3"/>
+    <text class="t" x="62" y="494">Dos autores</text>
+    <text class="d" x="62" y="512">fijan y verifican las</text>
+    <text class="d" x="62" y="526">respuestas</text>
+    <path class="flecha" d="M200 524 H943 V468" marker-end="url(#pf)"/>
+    <text class="et" x="520" y="518">verificado_a / verificado_b → acordado (el código solo crea borradores)</text>
+
+    <!-- PRESENTACIÓN -->
+    <rect class="caja" x="1062" y="44" width="162" height="86" rx="8"/>
+    <text class="t" x="1074" y="66">Servidor local</text>
+    <text class="m" x="1074" y="84">127.0.0.1:8765</text>
+    <text class="d" x="1074" y="102">HTTP + eventos (SSE)</text>
+    <text class="d" x="1074" y="118">tope de gasto por sesión</text>
+    <path class="flecha" d="M1036 70 H1060" marker-start="url(#pf)" marker-end="url(#pf)"/>
+
+    <rect class="caja" x="1062" y="156" width="162" height="246" rx="8"/>
+    <rect x="1062" y="156" width="162" height="22" rx="8" fill="var(--ink)"/>
+    <circle cx="1074" cy="167" r="3" fill="#d9694a"/><circle cx="1084" cy="167" r="3" fill="#c99a2e"/><circle cx="1094" cy="167" r="3" fill="#23877b"/>
+    <text x="1104" y="171" style="font-size:10px;fill:#fffdf8">Navegador</text>
+    <text class="t" x="1074" y="200">Preguntar</text>
+    <text class="d" x="1074" y="216">RAG y WikiLLM lado a lado</text>
+    <text class="t" x="1074" y="242">Ingerir</text>
+    <text class="d" x="1074" y="258">un paper en vivo</text>
+    <text class="t" x="1074" y="284">Wiki</text>
+    <text class="d" x="1074" y="300">grafo de páginas y enlaces</text>
+    <text class="t" x="1074" y="326">Resultados</text>
+    <text class="d" x="1074" y="342">métricas y costo estimado</text>
+    <text class="t" x="1074" y="368">Sistema</text>
+    <text class="d" x="1074" y="384">verificación y reinicio</text>
+    <path class="flecha" d="M1143 130 V154" marker-end="url(#pf)"/>
+    <path class="flecha" d="M1036 296 H1060" marker-end="url(#pf)"/>
+
+    <rect class="ext" x="1062" y="470" width="162" height="62" rx="7"/>
+    <circle cx="1084" cy="492" r="7" fill="none" stroke="#2c3d5c" stroke-width="1.3"/>
+    <path d="M1072 516 a12 10 0 0 1 24 0" fill="none" stroke="#2c3d5c" stroke-width="1.3"/>
+    <text class="t" x="1102" y="494">Presentadores</text>
+    <text class="d" x="1102" y="512">y jurado</text>
+    <path class="flecha" d="M1143 468 V404" marker-end="url(#pf)"/>
+  </svg>
+</section>
+
+<section class="arq" aria-labelledby="t-algos">
+  <div class="arq-cab">
+    <h2 id="t-algos">Cómo funciona por dentro <small>pseudocódigo fiel a <code>rag/brazo.py</code>, <code>wiki/ingesta.py</code>, <code>wiki/consulta.py</code>, <code>arnes/corrida.py</code> y <code>eval/</code></small></h2>
+    <div class="leyenda"><span><span style="font-family:var(--mono);font-size:.62rem;font-weight:700;padding:0 5px;border-radius:4px;background:var(--ink);color:var(--card)">LLM</span> llamada al modelo (deepseek-flash, la misma en ambos)</span><span>▷ comentario</span></div>
+  </div>
+  <div class="algos">
+
+    <article class="algo rag">
+      <div class="algo-cab"><b>Algoritmo 1 · RAG: responder</b><span>rag/brazo.py</span></div>
+      <div class="entrada"><b>Entrada:</b> pregunta q · papers ingeridos I · k = 5<br><b>Ingesta:</b> I ← I ∪ {p} <span style="color:var(--muted)">▷ el índice de los 50 se calcula una vez</span></div>
+      <ol class="pc">
+        <li>F ← los k fragmentos más cercanos a q en Qdrant <span class="c">▷ búsqueda exacta, coseno</span></li>
+        <li class="i1"><span class="k">filtrando</span> arxiv_id ∈ I <span class="c">▷ embeddings bge-small en GPU</span></li>
+        <li>contexto ← F con su [span_id] delante de cada fragmento</li>
+        <li>r ← generar(instrucciones, q, contexto)<span class="llm">LLM</span></li>
+        <li>citas ← { s entre corchetes de r | s ∈ span_ids(F) ∧ s ∈ Gold }</li>
+        <li><span class="k">devolver</span> r, citas, tokens, segundos, USD</li>
+      </ol>
+      <div class="algo-pie"><b>1 llamada</b> por pregunta. Contexto fijo: los 5 fragmentos, sean o no útiles.</div>
+    </article>
+
+    <article class="algo wiki">
+      <div class="algo-cab"><b>Algoritmo 2 · WikiLLM: ingerir un paper</b><span>wiki/ingesta.py</span></div>
+      <div class="entrada"><b>Entrada:</b> Gold del paper p · wiki W en el paso n</div>
+      <ol class="pc">
+        <li><span class="k">si</span> p ∈ W.ingeridos <span class="k">entonces devolver</span></li>
+        <li>plan ← generar(p, índice(W))<span class="llm">LLM</span> <span class="c">▷ páginas a actualizar y nuevas</span></li>
+        <li>borradores ← generar(p, plan, páginas actuales)<span class="llm">LLM</span></li>
+        <li><span class="k">para cada</span> borrador b <span class="k">hacer</span> <span class="c">▷ validación por código</span></li>
+        <li class="i1">quitar [s] <span class="k">si</span> paper(s) ∉ ingeridos ∪ {p} <span class="k">o</span> s ∉ Gold</li>
+        <li class="i1">[[x]] sin página destino → texto plano</li>
+        <li class="i1">contar las líneas con cifras y sin cita</li>
+        <li class="i1">escribir página (tipo, fuentes, actualizada_en_paso = n+1)</li>
+        <li>regenerar índice · anotar en log.md</li>
+        <li>git commit + etiqueta paso-(n+1)</li>
+      </ol>
+      <div class="algo-pie"><b>2 llamadas</b> por paper. El modelo propone; <b>el código decide</b> qué se guarda.</div>
+    </article>
+
+    <article class="algo wiki">
+      <div class="algo-cab"><b>Algoritmo 3 · WikiLLM: responder (agente)</b><span>wiki/consulta.py</span></div>
+      <div class="entrada"><b>Entrada:</b> pregunta q · wiki W · máx. 8 acciones · paciencia 3</div>
+      <ol class="pc">
+        <li>mensajes ← [instrucciones, q] ; leído ← ∅</li>
+        <li><span class="k">repetir</span></li>
+        <li class="i1"><span class="k">si</span> acciones ≥ 8 <span class="k">o</span> 3 búsquedas vacías seguidas: exigir answer</li>
+        <li class="i1">a ← generar(mensajes)<span class="llm">LLM</span> <span class="c">▷ un objeto JSON</span></li>
+        <li class="i1"><span class="k">según</span> a:</li>
+        <li class="i2">search(c) → hasta 8 páginas por puntaje IDF de palabras</li>
+        <li class="i2">read(slugs) → hasta 3 páginas; leído ← leído ∪ span_ids</li>
+        <li class="i2">answer(r) → <span class="k">si</span> no leyó ninguna página: rechazar</li>
+        <li class="i2">&emsp;&emsp;&ensp;<span class="k">si no devolver</span> r, citas ⊆ leído ∩ Gold</li>
+        <li class="i1">añadir el resultado y las acciones restantes a mensajes</li>
+      </ol>
+      <div class="algo-pie"><b>1 llamada por turno</b> (2 a 4 en la demo). El agente decide qué leer: el contexto varía por pregunta.</div>
+    </article>
+
+    <article class="algo arnes">
+      <div class="algo-cab"><b>Algoritmo 4 · Arnés y evaluación</b><span>arnes/ · eval/</span></div>
+      <div class="entrada"><b>Entrada:</b> orden O (50 papers) · pasos P = {0, 5, …, 50} · banco Q · {RAG, WikiLLM}</div>
+      <ol class="pc">
+        <li><span class="k">para cada</span> paso t ∈ P <span class="k">hacer</span></li>
+        <li class="i1">ingerir en ambos los papers O[hechos .. t] <span class="c">▷ registra su costo</span></li>
+        <li class="i1"><span class="k">para cada</span> (q, S) aún sin respuesta <span class="c">▷ reanudable</span></li>
+        <li class="i2">anexar S.responder(q) a respuestas.jsonl</li>
+        <li><span class="k">para cada</span> respuesta <span class="k">hacer</span> <span class="c">▷ capa determinista</span></li>
+        <li class="i1"><span class="k">si</span> t &lt; ingesta_mínima(q): correcta ⇔ se abstuvo</li>
+        <li class="i1"><span class="k">si no, si</span> se abstuvo: incorrecta</li>
+        <li class="i1"><span class="k">si no, si</span> contiene todas las claves del paso t: correcta <span class="c">▷ en T4 cambian</span></li>
+        <li class="i1"><span class="k">si no</span>: juez gemini-3.1-flash-lite<span class="llm">LLM</span> <span class="c">▷ otro modelo</span></li>
+        <li>métricas por sistema y paso: cobertura, abstención, fundamentación, obsoletas, contexto, costo</li>
+      </ol>
+      <div class="algo-pie"><b>Mismas preguntas</b> en cada paso para ambos; el juez solo ve lo indeterminado.</div>
+    </article>
+
+  </div>
+</section>
+
+<section class="fila f-bajo">
+  <article class="tarjeta">
+    <h2>Qué vamos a mostrar hoy <small>demo en vivo · menos de 0,02 USD</small></h2>
+    <div class="pasos">
+      <div class="paso"><b><i>1</i>El wiki en el paso 5</b><span>Grafo de 18 páginas y 39 enlaces, una cita por afirmación y copias versionadas.</span></div>
+      <div class="paso"><b><i>2</i>Preguntar antes</b><span>BeliefShift aún no está en el corpus: los dos sistemas se abstienen.</span></div>
+      <div class="paso"><b><i>3</i>Ingerir el paper 6</b><span>Plan, escritura y validación por código; el grafo crece en vivo.</span></div>
+      <div class="paso"><b><i>4</i>Preguntar después</b><span>Ambos responden 68,160 y citan el mismo fragmento.</span></div>
+      <div class="paso"><b><i>5</i>Evidencia</b><span>Trazas, llamadas y costos guardados por cada ejecución.</span></div>
+      <div class="paso"><b><i>6</i>Resultados</b><span>Métricas del piloto y costo estimado de la corrida completa.</span></div>
+    </div>
+  </article>
+
+  <article class="tarjeta">
+    <h2>Primeras señales <small>piloto, paso 5</small></h2>
+    <div class="cifras">
+      <span></span><span class="cab r">RAG</span><span class="cab w">WikiLLM</span>
+      <span>Cobertura (6 respondibles)</span><span class="r">0,33</span><span class="w">0,83</span>
+      <span>Abstención correcta</span><span class="r">1,00</span><span class="w">1,00</span>
+      <span>Contexto medio (tokens)</span><span class="r">1.217</span><span class="w">3.544</span>
+      <span>Tokens por acierto</span><span class="r">10.341</span><span class="w">12.049</span>
+      <span>Costo, 17 respuestas (USD)</span><span class="r">0,0027</span><span class="w">0,0123</span>
+    </div>
+    <div class="aviso"><b>No es un resultado del informe:</b> 17 preguntas en borrador y solo 6 respondibles. Muestra que la cadena arnés → métricas funciona de punta a punta.</div>
+  </article>
+
+  <article class="tarjeta">
+    <h2>Del anteproyecto a lo implementado</h2>
+    <dl class="cambio">
+      <dt>Se mantiene</dt><dd>Mismo modelo, corpus y preguntas; ingesta cronológica; 60 preguntas con respuestas fijadas por los autores; el contexto consumido como métrica central.</dd>
+      <dt>Se concretó</dt><dd>Un cliente propio (SDK compatible con OpenAI) registra tokens, tiempo y dólares; el código, no el modelo, decide qué entra al wiki.</dd>
+      <dt>Fuera de alcance</dt><dd>Revisión automática (<i>lint</i>), aprobación humana de cambios y Obsidian como visor; el panel ofrece una vista de grafo equivalente.</dd>
+      <dt>Contradicciones</dt><dd>En lugar de inyectar errores, el corpus incluye a propósito resultados que se superan; las T4 miden respuestas obsoletas.</dd>
+    </dl>
+  </article>
+</section>
+
+<footer>
+  <span>Reglas del experimento: <code>CONSTITUTION.md</code> · Diseño y estado: <code>README.md</code> · Decisiones: <code>docs/decisiones/</code></span>
+  <span>Cifras del piloto: <code>results/piloto-1/</code> · Demo: <code>uv run python -m wikillm.panel</code></span>
+</footer>
+
+</main>
+</body>
+</html>

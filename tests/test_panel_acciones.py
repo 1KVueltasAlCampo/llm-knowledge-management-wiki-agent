@@ -422,6 +422,14 @@ def test_calentar_carga_el_indice_y_dice_cuantos_fragmentos_tiene(raiz):
     assert any("5430 fragmentos" in x for x in lineas(eventos))
 
 
+def test_calentar_con_el_indice_ya_cargado_dice_que_ya_estaba_listo(raiz):
+    fabrica = FabricaFalsa()
+    fabrica.listo = True
+    codigo, eventos = correr(ejecutor(raiz, fabrica), "calentar", {}, confirmo=False)
+    assert codigo == 0
+    assert lineas(eventos) == ["El índice del RAG ya estaba cargado en memoria: 5430 fragmentos."]
+
+
 def test_calentar_sin_indice_que_cargar_lo_dice(raiz):
     ej = ejecutor(raiz, lambda *a: [])  # una fábrica que no sabe calentar
     _, eventos = correr(ej, "calentar", {}, confirmo=False)

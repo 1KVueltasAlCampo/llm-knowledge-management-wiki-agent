@@ -3,6 +3,7 @@ uv run python -m wikillm.eval validar-banco
 uv run python -m wikillm.eval sinteticos --salida results/sintetico/respuestas.jsonl
 uv run python -m wikillm.eval metricas --respuestas results/<corrida>/respuestas.jsonl [--juez]
 uv run python -m wikillm.eval acuerdo --a hoja_a.csv --b hoja_b.csv [--columna veredicto]
+uv run python -m wikillm.eval acordar --mitad A [--pendientes ID,ID] [--ejecutar]
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from wikillm.corpus.candidatos import escribir_jsonl, leer_jsonl
+from wikillm.eval.acordar import acordar, medir_acuerdo
 from wikillm.eval.acuerdo import acuerdo_de_hojas
 from wikillm.eval.banco import leer_banco, validar_banco
 from wikillm.eval.metricas import agregar, evaluar_resultados, leer_resultados
@@ -33,6 +35,64 @@ def _orden(ruta_manifest: str) -> dict[str, int]:
 def _spans(ruta: str) -> dict[str, dict[str, Any]]:
     archivo = Path(ruta)
     return {s["span_id"]: s for s in leer_jsonl(archivo)} if archivo.exists() else {}
+
+
+def _acordar(args: argparse.Namespace) -> int:
+    carpeta = Path(args.datos) / "preguntas"
+    mitad = args.mitad
+    banco = leer_jsonl(carpeta / f"banco_{mitad}.jsonl")
+    revisiones = {
+        r: json.loads((carpeta / f"revision_{mitad}_por_{r}.json").read_text(encoding="utf-8"))
+        for r in ("A", "B")
+    }
+    pendientes = [i.strip() for i in (args.pendientes or "").split(",") if i.strip()]
+    acuerdo, discrepan = medir_acuerdo(revisiones["A"], revisiones["B"], {p["id"] for p in banco})
+    kappa = "n/d" if acuerdo.kappa is None else f"{acuerdo.kappa:.3f}"
+    print(
+        f"mitad {mitad}: {acuerdo.n} preguntas decididas por los dos autores, acuerdo "
+        f"{acuerdo.porcentaje:.1%}, kappa {kappa}; discrepan: {', '.join(discrepan) or 'ninguna'}"
+    )
+    print(f"pendientes de lectura (conservan su estado): {', '.join(pendientes) or 'ninguna'}")
+    if not args.ejecutar:
+        print("Simulación: añade --ejecutar para pasar el resto a «acordado».")
+        return 0
+    nuevo = acordar(banco, pendientes=pendientes, fecha=args.fecha, acuerdo=acuerdo)
+    escribir_jsonl(carpeta / f"banco_{mitad}.jsonl", nuevo)
+    completo = []
+    for parte in ("A", "B"):
+        ruta = carpeta / f"banco_{parte}.jsonl"
+        if ruta.exists():
+            completo += leer_jsonl(ruta)
+    escribir_jsonl(carpeta / "banco.jsonl", completo)
+    resumen = Path("results") / "banco" / f"acuerdo_{mitad}.json"
+    resumen.parent.mkdir(parents=True, exist_ok=True)
+    resumen.write_text(
+        json.dumps(
+            {
+                "mitad": mitad,
+                "fecha": args.fecha,
+                "n": acuerdo.n,
+                "porcentaje": round(acuerdo.porcentaje, 4),
+                "kappa": None if acuerdo.kappa is None else round(acuerdo.kappa, 4),
+                "discrepan": discrepan,
+                "nota": (
+                    "Cada autor decidió sobre la versión del texto que tenía delante: la revisión "
+                    "del segundo autor suele ser posterior a las correcciones del primero, así que "
+                    "las discrepancias incluyen correcciones que el otro ya había aceptado. Las "
+                    "discrepancias de fondo y su resolución están en docs/bitacora-datos.md."
+                ),
+                "pendientes": pendientes,
+                "acordadas": [p["id"] for p in nuevo if p["estado_verificacion"] == "acordado"],
+            },
+            ensure_ascii=False,
+            indent=1,
+        )
+        + chr(10),
+        encoding="utf-8",
+    )
+    acordadas = sum(1 for p in nuevo if p["estado_verificacion"] == "acordado")
+    print(f"banco_{mitad}: {acordadas} acordadas; resumen en {resumen}")
+    return 0
 
 
 def _escribir_csv(ruta: Path, filas: list[dict[str, Any]]) -> None:
@@ -262,6 +322,14 @@ def main() -> int:
     aplicar.add_argument("--manifest", default=MANIFEST)
     aplicar.add_argument("--spans", default=SPANS)
     aplicar.add_argument("--datos", default="data")
+    acordar_ = ordenes.add_parser(
+        "acordar", help="mide el acuerdo entre autores y acuerda una mitad"
+    )
+    acordar_.add_argument("--mitad", required=True, choices=["A", "B"])
+    acordar_.add_argument("--pendientes", help="preguntas que algún autor aún no ha leído")
+    acordar_.add_argument("--fecha", default=__import__("datetime").date.today().isoformat())
+    acordar_.add_argument("--datos", default="data")
+    acordar_.add_argument("--ejecutar", action="store_true", help="escribe el estado acordado")
     cerrado = ordenes.add_parser("libro-cerrado", help="control de contaminación (gasta)")
     cerrado.add_argument("--banco", default=BANCO)
     cerrado.add_argument("--paso", type=int, default=50, help="paso en que todo es respondible")
@@ -278,6 +346,9 @@ def main() -> int:
         kappa = "n/d" if resultado.kappa is None else f"{resultado.kappa:.3f}"
         print(f"n={resultado.n} acuerdo={resultado.porcentaje:.1%} kappa={kappa}")
         return 0
+
+    if args.orden == "acordar":
+        return _acordar(args)
 
     if args.orden == "borradores":
         return _borradores(args)

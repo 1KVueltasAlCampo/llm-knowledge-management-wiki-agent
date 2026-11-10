@@ -353,3 +353,17 @@ y 30 `verificado_b`); la mitad A no cambia. Dos ajustes de transcripción, hecho
 
 Se comprobó que las 14 correcciones de la revisión quedaron en `banco_B.jsonl`. Falta la
 verificación cruzada (cada autor revisa la mitad del otro) para el estado `acordado`.
+
+### 2026-11-09 · Revisión cruzada de la mitad B por A
+
+Juan Diego revisó las 30 preguntas finales de B con la página de revisión
+(`revision_B_por_A.json`): 26 aceptadas, 2 corregidas y 2 sin decisión marcada (B006-T1-01 y
+BT5-T5-01, que quedaron elegidas). Antes hubo una revisión mecánica sin llamadas al modelo: las 35
+citas resuelven contra el Gold, la ingesta mínima cuadra con el manifest y los términos de las T5 no
+aparecen en ningún paper del corpus.
+
+Las dos corregidas son B002-T3-02 y B020-T3-05, que piden una diferencia que no está escrita en los
+papers: 22.8 (74.7 − 51.9) y 36.5 (56.8 − 20.3). El 36.5% de la tabla A.10 de 2609.16073 es otra
+cifra. La propuesta es dejar como claves solo las cifras que sí están en el paper y conservar la
+diferencia en la respuesta de referencia. Es un desacuerdo con la versión de B (que tiene la
+diferencia como clave), así que el banco no se cambia hasta acordarlo entre los dos autores.

@@ -357,8 +357,7 @@ verificación cruzada (cada autor revisa la mitad del otro) para el estado `acor
 ### 2026-11-09 · Revisión cruzada de la mitad B por A
 
 Juan Diego revisó las 30 preguntas finales de B con la página de revisión
-(`revision_B_por_A.json`): 26 aceptadas, 2 corregidas y 2 sin decisión marcada (B006-T1-01 y
-BT5-T5-01, que quedaron elegidas). Antes hubo una revisión mecánica sin llamadas al modelo: las 35
+(`revision_B_por_A.json`): 28 aceptadas y 2 corregidas. Antes hubo una revisión mecánica sin llamadas al modelo: las 35
 citas resuelven contra el Gold, la ingesta mínima cuadra con el manifest y los términos de las T5 no
 aparecen en ningún paper del corpus.
 

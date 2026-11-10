@@ -1012,8 +1012,18 @@ function esperarPres(ms) {
 }
 async function ejecutarPres(accion, parametros) {
   if (PRES.detener) throw new Error('detenida');
-  const r = await post('/api/ejecutar', {accion, parametros, confirmo: true});
-  iniciarRun(accion, (S.acciones[accion] || {}).titulo, r.trabajo, false, parametros);
+  let id;
+  try {
+    id = (await post('/api/ejecutar', {accion, parametros, confirmo: true})).trabajo;
+  } catch (err) {
+    // Another tab (or a double submit) already started this same action: follow it instead of failing.
+    await refrescarEstado();
+    const oc = S.estado && S.estado.ocupado;
+    if (err.estado !== 409 || !oc || oc.accion !== accion) throw err;
+    id = oc.id;
+    toast('Ya había un trabajo «' + oc.titulo + '» en curso: la presentación lo sigue', '', 6000);
+  }
+  iniciarRun(accion, (S.acciones[accion] || {}).titulo, id, false, parametros);
   const run = S.run;
   await new Promise((listo) => { const tic = () => { if (run.estado !== 'corriendo') { listo(); return; } resaltar(); setTimeout(tic, 300); }; tic(); });
   if (run.estado !== 'ok') throw new Error('«' + run.titulo + '» terminó con error' + (run.errores.length ? ': ' + run.errores[0] : ''));

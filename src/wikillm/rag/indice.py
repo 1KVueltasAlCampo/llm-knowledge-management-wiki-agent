@@ -12,6 +12,7 @@ carpeta (decisión 0005).
 
 from __future__ import annotations
 
+import atexit
 import hashlib
 import json
 import time
@@ -98,6 +99,13 @@ def _hashes_versionados(ruta: Path) -> dict[str, str]:
 
 
 _CLIENTES: dict[str, QdrantClient] = {}
+
+
+@atexit.register
+def _cerrar_clientes() -> None:
+    # Si se cierran en el __del__ del intérprete que ya se apaga, qdrant-client imprime un error.
+    while _CLIENTES:
+        _CLIENTES.popitem()[1].close()
 
 
 def _cliente(ruta: Path) -> QdrantClient:

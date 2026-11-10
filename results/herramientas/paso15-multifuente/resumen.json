@@ -1,0 +1,35 @@
+[
+ {
+  "variante": "actual",
+  "n": 9,
+  "correctas": 1,
+  "llamadas": 4.0,
+  "tokens_entrada": 11588,
+  "tokens_contexto": 4458,
+  "tokens_salida": 622,
+  "usd": 0.000958,
+  "segundos": 7.2
+ },
+ {
+  "variante": "graphify",
+  "n": 9,
+  "correctas": 6,
+  "llamadas": 4.33,
+  "tokens_entrada": 13408,
+  "tokens_contexto": 5299,
+  "tokens_salida": 351,
+  "usd": 0.00071,
+  "segundos": 9.3
+ },
+ {
+  "variante": "vecinos",
+  "n": 9,
+  "correctas": 3,
+  "llamadas": 4.22,
+  "tokens_entrada": 13098,
+  "tokens_contexto": 4372,
+  "tokens_salida": 465,
+  "usd": 0.000791,
+  "segundos": 7.1
+ }
+]

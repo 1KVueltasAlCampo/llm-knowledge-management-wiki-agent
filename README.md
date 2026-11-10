@@ -147,6 +147,7 @@ Desarrollo guiado por especificaciones con [OpenSpec](https://github.com/Fission
 | Documento | Contenido |
 |---|---|
 | [Demostración](docs/demo.md) | Recorrido de punta a punta con la evidencia que produce. |
+| [tgrep y graphify](docs/evaluacion-tgrep-graphify.md) | Evaluación exploratoria de dos herramientas para reducir los tokens de la consulta del wiki. |
 | [Estado del arte](docs/estado-del-arte.md) | Revisión de literatura, implementaciones existentes, vacíos y encuadre. |
 | [Selección del corpus](docs/corpus.md) | Criterios, fuentes de candidatos y resultado de la selección de los 50 papers. |
 | [Bitácora](docs/bitacora-datos.md) | Qué se hizo, qué se decidió y qué falta, con las mediciones de cada etapa. |

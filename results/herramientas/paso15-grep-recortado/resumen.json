@@ -1,0 +1,13 @@
+[
+ {
+  "variante": "grep_recortado",
+  "n": 9,
+  "correctas": 9,
+  "llamadas": 4.33,
+  "tokens_entrada": 7288,
+  "tokens_contexto": 2794,
+  "tokens_salida": 128,
+  "usd": 0.000442,
+  "segundos": 5.4
+ }
+]

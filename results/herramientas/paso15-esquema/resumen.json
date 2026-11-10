@@ -1,0 +1,13 @@
+[
+ {
+  "variante": "esquema",
+  "n": 25,
+  "correctas": 10,
+  "llamadas": 5.28,
+  "tokens_entrada": 11319,
+  "tokens_contexto": 2732,
+  "tokens_salida": 290,
+  "usd": 0.001063,
+  "segundos": 7.4
+ }
+]

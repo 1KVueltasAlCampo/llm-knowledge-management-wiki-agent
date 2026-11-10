@@ -1,0 +1,57 @@
+[
+ {
+  "variante": "actual",
+  "n": 25,
+  "correctas": 14,
+  "llamadas": 5.52,
+  "tokens_entrada": 15005,
+  "tokens_contexto": 4490,
+  "tokens_salida": 458,
+  "usd": 0.000666,
+  "segundos": 8.1
+ },
+ {
+  "variante": "generico",
+  "n": 25,
+  "correctas": 15,
+  "llamadas": 5.6,
+  "tokens_entrada": 15797,
+  "tokens_contexto": 4474,
+  "tokens_salida": 218,
+  "usd": 0.000424,
+  "segundos": 7.4
+ },
+ {
+  "variante": "fragmentos",
+  "n": 25,
+  "correctas": 15,
+  "llamadas": 4.56,
+  "tokens_entrada": 13781,
+  "tokens_contexto": 3599,
+  "tokens_salida": 174,
+  "usd": 0.000526,
+  "segundos": 6.0
+ },
+ {
+  "variante": "gist",
+  "n": 25,
+  "correctas": 15,
+  "llamadas": 5.0,
+  "tokens_entrada": 17953,
+  "tokens_contexto": 5680,
+  "tokens_salida": 187,
+  "usd": 0.000615,
+  "segundos": 6.7
+ },
+ {
+  "variante": "vecinos",
+  "n": 25,
+  "correctas": 15,
+  "llamadas": 5.32,
+  "tokens_entrada": 13534,
+  "tokens_contexto": 3771,
+  "tokens_salida": 257,
+  "usd": 0.000742,
+  "segundos": 7.0
+ }
+]

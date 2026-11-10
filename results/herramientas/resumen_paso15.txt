@@ -1,0 +1,45 @@
+150 corridas de results\herramientas\paso15, results\herramientas\paso15-b, results\herramientas\paso15-esquema
+
+== Por variante (todas las corridas)
+variante            n   ok  llam.  t.entrada  mediana   t.ctx  t.sal       USD    seg
+actual+generico    50   30    5.2      13806     6345    4288    205  0.001184    7.0
+grep               25   16    5.0      18301    11473    4338    185  0.001352    6.8
+secciones          25   15    6.0      12953    10918    2924    360  0.001259    8.5
+esquema            25   10    5.3      11319     5329    2732    290  0.001063    7.4
+graphify           25   15    5.3      10313     9233    2876    188  0.000959   13.7
+
+== Mediana de tokens de entrada por pregunta (y aciertos / corridas)
+pregunta           actual+generico                  grep             secciones               esquema              graphify
+A002-T1-02           6345 10/10            9814  5/5             5098  5/5             5329  0/5             9233  5/5    
+A003-T3-02          37680  0/10           41652  1/5            25077  0/5            17341  0/5            16046  0/5    
+B001-T4-06           5207  0/10           11473  0/5             3784  0/5             3647  0/5             4151  0/5    
+B006-T1-01           3095 10/10            2837  5/5            10918  5/5             3000  5/5             5631  5/5    
+BT5-T5-07           19077 10/10           23456  5/5            21171  5/5            17513  5/5            11152  5/5    
+
+== Preguntas que todas las variantes aciertan siempre: B006-T1-01, BT5-T5-07
+variante            n  llam.  t.entrada   t.ctx       USD
+actual+generico    20    6.2      12420    3697  0.001271   (+0% frente a la base)
+grep               10    5.0      13464    2922  0.001030   (+8% frente a la base)
+secciones          10    7.6      15643    3212  0.001273   (+26% frente a la base)
+esquema            10    5.7      11195    2539  0.000789   (-10% frente a la base)
+graphify           10    5.9       9080    2575  0.000938   (-27% frente a la base)
+
+== Tokens que devuelve cada herramienta por llamada (media)
+variante         herramienta llamadas  tokens/llamada
+actual+generico  read             32            2234
+actual+generico  search           66             476
+grep             grep             79            1001
+grep             read             15            1958
+secciones        read             47             902
+secciones        search           65             472
+esquema          read             39             574
+esquema          search           61             753
+graphify         graph            62             486
+graphify         read             42             995
+
+== Diferencia frente a la base de la media por pregunta (IC 95 % por remuestreo)
+variante                          t.entrada                   USD (x1000)
+grep               +4494.7 [+2655.8, +6569.0]             +0.2 [-0.1, +0.4]
+secciones           -853.3 [-2955.1, +1295.5]             +0.1 [-0.1, +0.3]
+esquema            -2487.2 [-4694.2, +29.6]             -0.1 [-0.3, +0.1]
+graphify           -3493.7 [-5247.4, -1380.3]             -0.2 [-0.5, +0.0]

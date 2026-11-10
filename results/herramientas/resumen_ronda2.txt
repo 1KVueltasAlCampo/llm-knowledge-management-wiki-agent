@@ -1,0 +1,48 @@
+125 corridas de results\herramientas\paso15-ronda2
+
+== Por variante (todas las corridas)
+variante            n   ok  llam.  t.entrada  mediana   t.ctx  t.sal       USD    seg
+actual+generico    50   29    5.6      15401     8288    4482    338  0.000545    7.7
+fragmentos         25   15    4.6      13781     4922    3599    174  0.000526    6.0
+gist               25   15    5.0      17953    10311    5680    187  0.000615    6.7
+vecinos            25   15    5.3      13534     5303    3771    257  0.000742    7.0
+
+== Mediana de tokens de entrada por pregunta (y aciertos / corridas)
+pregunta           actual+generico                  grep             secciones               esquema              graphify            fragmentos                  gist               vecinos
+A002-T1-02           6345 10/10                        -                     -                     -                     -         3685  5/5             8860  5/5             5088  5/5    
+A003-T3-02          41223  0/10                        -                     -                     -                     -        29054  0/5            39536  0/5            32330  0/5    
+B001-T4-06           5207  0/10                        -                     -                     -                     -         4922  0/5             6618  0/5             5303  0/5    
+B006-T1-01           7346  9/10                        -                     -                     -                     -         1893  5/5            10311  5/5             3191  5/5    
+BT5-T5-07           19928 10/10                        -                     -                     -                     -        23903  5/5            31905  5/5            18893  5/5    
+
+== Preguntas que todas las variantes aciertan siempre: A002-T1-02, BT5-T5-07
+variante            n  llam.  t.entrada   t.ctx       USD
+actual+generico    20    6.7      13518    4507  0.000494   (+0% frente a la base)
+fragmentos         10    5.7      15104    3387  0.000456   (+12% frente a la base)
+gist               10    6.1      20904    6164  0.000515   (+55% frente a la base)
+vecinos            10    6.6      13223    3506  0.000614   (-2% frente a la base)
+
+== Tokens que devuelve cada herramienta por llamada (media)
+variante         herramienta llamadas  tokens/llamada
+actual+generico  read             34            2268
+actual+generico  search           72             482
+fragmentos       read             15            1968
+fragmentos       search           69             876
+gist             read             31            2123
+gist             search           63            1209
+vecinos          links             1             379
+vecinos          read             32            1980
+vecinos          search           64             477
+
+== Facturación por corrida (de llamadas.jsonl)
+variante          corr.  llam.  sin caché  en caché  % caché  salida       USD
+actual+generico      50    5.6       2016     13386      87%     338  0.000545
+fragmentos           25    4.6       2590     11192      81%     174  0.000526
+gist                 25    5.0       3059     14894      83%     187  0.000615
+vecinos              25    5.3       3724      9810      72%     257  0.000742
+
+== Diferencia frente a la base de la media por pregunta (IC 95 % por remuestreo)
+variante                          t.entrada                   USD (x1000)
+fragmentos         -1619.7 [-2783.1, -405.1]             -0.0 [-0.2, +0.1]
+gist               +2551.6 [-997.8, +5658.3]             +0.1 [-0.2, +0.3]
+vecinos            -1867.2 [-5513.9, +1575.1]             +0.2 [-0.0, +0.4]

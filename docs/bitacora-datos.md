@@ -360,3 +360,39 @@ y 30 `verificado_b`); la mitad A no cambia. Dos ajustes de transcripción, hecho
 
 Se comprobó que las 14 correcciones de la revisión quedaron en `banco_B.jsonl`. Falta la
 verificación cruzada (cada autor revisa la mitad del otro) para el estado `acordado`.
+
+## 2026-11-09 (Juan David): revisión cruzada aplicada y banco acordado
+
+**Mitad A.** Se aplicó la revisión cruzada de Juan David (`propuesta_ajustes_A.json`, 7-nov), que Juan
+Diego autorizó por mensaje, fusionada con sus ajustes (`ajustes_A.json`): cambian 15 preguntas (cuatro
+pasan a T1 por tener una sola fuente, las cinco T5 quedan con la frase de abstención exacta y el resto
+ajusta respuestas y claves). A005-T3-02 se descarta (comparaba un método con resultados y un marco
+conceptual sin ellos) y se reemplaza por **A018-T2-01**, que necesita WiCER y el paper posterior
+(ingesta 17); sus claves `materiality signal` y `high-AER edit` no estaban en las dos evidencias y
+pasan a `prediction` y `high-volatility news item`. Un primer reemplazo, A045-T3-02, se descartó
+porque Juan Diego ya la había descartado y la fusión había pisado esa decisión.
+
+**Mitad B.** Juan Diego revisó las 30 finales (`revision_B_por_A.json`: 28 aceptadas y 2 corregidas,
+B002-T3-02 y B020-T3-05). Su observación es válida: la diferencia (22.8 y 36.5) no está escrita en los
+papers y el 36.5% de la tabla A.10 de 2609.16073 es otra cifra, así que no puede ser clave. Se aceptó
+su propuesta: las claves quedan en las cifras del paper (`74.7 | 51.9` y `20.3 | 56.8`) y la
+diferencia se conserva en la respuesta de referencia (cambia solo `respuesta_clave` de esas dos).
+
+**Acuerdo.** Nueva orden `eval acordar` (cambio OpenSpec `banco-acordado`). Resultados en
+`results/banco/acuerdo_A.json` y `acuerdo_B.json`:
+
+| Mitad | Preguntas decididas por ambos | Acuerdo | kappa |
+|---|---|---|---|
+| A | 26 | 69,2 % | 0,40 |
+| B | 30 | 60,0 % | 0,15 |
+
+Las cifras subestiman el acuerdo de fondo: cada autor decidió sobre la versión que tenía delante, y en B
+las 12 discrepancias son preguntas que Juan David ya había corregido y Juan Diego aceptó tal cual; en
+las dos de fondo (B002 y B020-T3-05) ambos pidieron ajustar y se resolvieron. En A, las 8 discrepancias son correcciones de
+detalle de Juan David.
+
+**Estado.** Las 60 preguntas quedan en `acordado` (26 T1, 12 T2, 8 T3, 4 T4 y 10 T5, con las dos mitades
+revisadas por los dos autores). A018-T2-01, el reemplazo de A005-T3-02, se cerró por decisión de Juan
+David por falta de tiempo, sin la lectura previa de Juan Diego; conviene decirlo si se pregunta. La
+estimación de la corrida completa es de 4,67 USD como cota alta (1,50 de ingesta y 3,17 de preguntas)
+y no lleva el aviso de «no vale para el informe». El banco queda cerrado.

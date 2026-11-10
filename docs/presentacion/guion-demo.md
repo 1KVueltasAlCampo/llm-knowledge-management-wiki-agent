@@ -21,7 +21,7 @@ de pasos del agente y los centavos pueden variar un poco.
 | 5 | Revisar la hora | Fuera de la hora pico de DeepSeek: 01–04 y 06–10 UTC (20–23 h y 01–05 h en Colombia) |
 | 6 | Dejar el panel en **Preguntar**, con la barra Recorrido visible | El paso 2 «Preguntar antes» aparece resaltado |
 
-**Si se reinstala el entorno.** `data/chroma` (índice del RAG) y `data/wiki/dev2` (wiki base de
+**Si se reinstala el entorno.** `data/qdrant` (índice del RAG, en Qdrant local) y `data/wiki/dev2` (wiki base de
 5 papers) no se versionan. Se reconstruyen así:
 `uv run python -m wikillm.rag indexar` (gratis, unos 75 s en GPU) y
 `uv run python -m wikillm.wiki ingerir --paso 5 --wiki data/wiki/dev2` (≈ 0,04 USD).

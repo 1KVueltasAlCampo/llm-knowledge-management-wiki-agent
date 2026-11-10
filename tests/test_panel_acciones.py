@@ -48,6 +48,7 @@ class FabricaFalsa:
         self.reinicios = 0
         self.brazos = []
         self.listo = False
+        self.fragmentos = None
 
     def __call__(self, modelo, ajustes, argumentos):
         self.brazos = [
@@ -61,6 +62,7 @@ class FabricaFalsa:
 
     def calentar(self, ajustes):
         self.listo = True
+        self.fragmentos = 5430
         return type("Indice", (), {"total_fragmentos": 5430})()
 
 
@@ -430,6 +432,14 @@ def test_calentar_con_el_indice_ya_cargado_dice_que_ya_estaba_listo(raiz):
     assert lineas(eventos) == ["El índice del RAG ya estaba cargado en memoria: 5430 fragmentos."]
 
 
+def test_el_ejecutor_informa_cuantos_fragmentos_tiene_el_indice_cargado(raiz):
+    fabrica = FabricaFalsa()
+    ej = ejecutor(raiz, fabrica)
+    assert ej.rag_fragmentos is None
+    correr(ej, "calentar", {}, confirmo=False)
+    assert ej.rag_fragmentos == 5430
+
+
 def test_calentar_sin_indice_que_cargar_lo_dice(raiz):
     ej = ejecutor(raiz, lambda *a: [])  # una fábrica que no sabe calentar
     _, eventos = correr(ej, "calentar", {}, confirmo=False)
@@ -497,7 +507,7 @@ def test_la_fabrica_reutiliza_el_indice_y_lo_pone_en_cero_en_cada_pregunta(monke
         lambda m, a, args, indice: armados.append(indice) or ["rag", "wiki"],
     )
     fabrica = FabricaDeBrazos()
-    args = argparse.Namespace(gold=Path("data/gold"), chroma=Path("data/chroma"), corrida="demo")
+    args = argparse.Namespace(gold=Path("data/gold"), indice=Path("data/qdrant"), corrida="demo")
     assert fabrica.listo is False
     assert fabrica(object(), AJUSTES, args) == ["rag", "wiki"]
     fabrica(object(), AJUSTES, args)
@@ -505,6 +515,6 @@ def test_la_fabrica_reutiliza_el_indice_y_lo_pone_en_cero_en_cada_pregunta(monke
     assert fabrica.listo
     fabrica.reiniciar()
     assert armados[0].reinicios == 3
-    otro = argparse.Namespace(gold=Path("otro/gold"), chroma=Path("data/chroma"), corrida="demo")
+    otro = argparse.Namespace(gold=Path("otro/gold"), indice=Path("data/qdrant"), corrida="demo")
     fabrica(object(), AJUSTES, otro)
     assert len(creados) == 2

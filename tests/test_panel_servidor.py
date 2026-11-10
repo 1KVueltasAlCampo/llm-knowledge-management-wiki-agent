@@ -361,7 +361,7 @@ def test_el_estado_resume_wiki_gasto_y_grabaciones(srv, tmp_path):
     (wiki / "estado.json").write_text(json.dumps({"ingeridos": ["a", "b", "c"]}), "utf-8")
     (wiki / "pages" / "p.md").write_text("x", "utf-8")
     e = pedir(srv, "GET", "/api/estado")[1]
-    assert e["ocupado"] is None and e["rag_listo"] is False
+    assert e["ocupado"] is None and e["rag_listo"] is False and e["rag_fragmentos"] is None
     assert e["wiki"]["ingeridos"] == 3 and e["wiki"]["paginas"] == 1
     assert e["gasto"] == {"sesion_usd": 0.0, "tope_usd": 0.05, "agotado": False}
     assert e["grabaciones"] == [] and isinstance(e["hora_pico"], bool) and e["modelo"]

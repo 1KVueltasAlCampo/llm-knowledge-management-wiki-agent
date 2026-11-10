@@ -21,7 +21,7 @@ from wikillm.common.modelo import ClienteModelo, ErrorDeModelo, TopeDeGastoError
 from wikillm.rag.brazo import BrazoRag
 from wikillm.rag.indice import (
     K_POR_DEFECTO,
-    RUTA_CHROMA_POR_DEFECTO,
+    RUTA_INDICE_POR_DEFECTO,
     RUTA_SPANS_POR_DEFECTO,
     ErrorDeDispositivo,
     GoldDistinto,
@@ -37,7 +37,7 @@ RUTA_MANIFEST_POR_DEFECTO = Path("data/manifest_corpus.jsonl")
 def _crear_indice_real(argumentos: argparse.Namespace, ajustes: Settings) -> IndiceRag:
     return IndiceRag(
         argumentos.gold,
-        argumentos.chroma,
+        argumentos.indice,
         embeddings=crear_embeddings(ajustes),
         medir=medidor_de_tokens(ajustes.embedding_model),
         modelo_embeddings=ajustes.embedding_model,
@@ -59,7 +59,14 @@ def _analizar(argv: Sequence[str] | None) -> argparse.Namespace:
     analizador = argparse.ArgumentParser(prog="python -m wikillm.rag", description=__doc__)
     comunes = argparse.ArgumentParser(add_help=False)
     comunes.add_argument("--gold", type=Path, default=Path("data/gold"))
-    comunes.add_argument("--chroma", type=Path, default=RUTA_CHROMA_POR_DEFECTO)
+    comunes.add_argument(
+        "--indice",
+        "--chroma",
+        dest="indice",
+        type=Path,
+        default=RUTA_INDICE_POR_DEFECTO,
+        help="carpeta del índice de Qdrant (--chroma se acepta por compatibilidad)",
+    )
     comunes.add_argument("--manifest", type=Path, default=RUTA_MANIFEST_POR_DEFECTO)
     comunes.add_argument("--spans", type=Path, default=RUTA_SPANS_POR_DEFECTO)
     comunes.add_argument("--paso", type=int, default=None, help="ingerir solo los primeros N")

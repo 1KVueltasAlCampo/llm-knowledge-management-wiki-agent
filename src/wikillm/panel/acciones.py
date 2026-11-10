@@ -384,6 +384,9 @@ class FabricaDeBrazos:
         self._indice: Any = None
         self._clave: tuple[str, ...] | None = None
         self._cerrojo = threading.Lock()
+        # Se cuenta al abrir el índice, en el hilo de trabajos: el servidor HTTP lo lee sin tocar
+        # Qdrant, cuyo cliente local no se comparte entre hilos.
+        self.fragmentos: int | None = None
 
     @property
     def listo(self) -> bool:
@@ -392,7 +395,7 @@ class FabricaDeBrazos:
     def indice(self, ajustes: Settings, argumentos: argparse.Namespace) -> Any:
         clave = (
             str(argumentos.gold),
-            str(getattr(argumentos, "chroma", "")),
+            str(getattr(argumentos, "indice", "")),
             ajustes.embedding_model,
             ajustes.embedding_device,
         )
@@ -400,11 +403,12 @@ class FabricaDeBrazos:
             if self._indice is None or self._clave != clave:
                 self._indice = crear_indice_rag(ajustes, argumentos)
                 self._clave = clave
+                self.fragmentos = self._indice.total_fragmentos
             return self._indice
 
     def calentar(self, ajustes: Settings) -> Any:
         argumentos = argparse.Namespace(
-            gold=Path("data/gold"), chroma=Path("data/chroma"), corrida="demo"
+            gold=Path("data/gold"), indice=Path("data/qdrant"), corrida="demo"
         )
         return self.indice(ajustes, argumentos)
 
@@ -456,6 +460,10 @@ class Ejecutor:
     @property
     def rag_listo(self) -> bool:
         return bool(getattr(self._brazos, "listo", False))
+
+    @property
+    def rag_fragmentos(self) -> int | None:
+        return getattr(self._brazos, "fragmentos", None)
 
     # --- validación -------------------------------------------------------------------------
     def preparar(

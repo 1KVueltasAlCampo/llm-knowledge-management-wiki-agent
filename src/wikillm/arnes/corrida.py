@@ -69,7 +69,7 @@ def comprobar_estado(brazos: Sequence[Brazo], esperados: Sequence[str], paso: in
             raise ErrorDeCorrida(
                 f"El brazo {brazo.nombre} tiene {len(ingeridos)} papers ingeridos y en el paso "
                 f"{paso} deben ser exactamente los primeros {paso} del orden. Usa otra "
-                "--corrida o borra el estado de esta (data/wiki/<corrida>, data/chroma/<corrida>)."
+                "--corrida o borra el estado de esta (data/wiki/<corrida>, data/qdrant/<corrida>)."
             )
 
 

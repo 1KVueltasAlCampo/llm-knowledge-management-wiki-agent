@@ -62,6 +62,7 @@ from wikillm.common.config import Settings, load_settings
 from wikillm.common.modelo import ClienteModelo, ErrorDeModelo, TopeDeGastoError
 from wikillm.common.responder import Brazo
 from wikillm.eval.banco import ESTADOS, leer_banco
+from wikillm.rag import BASE_VECTORIAL
 from wikillm.wiki.almacen import ErrorDeAlmacen
 from wikillm.wiki.ingesta import ErrorDeIngesta
 
@@ -81,10 +82,10 @@ def _crear_modelo(ajustes: Settings, ruta_registro: Path) -> ClienteModelo:
 
 def crear_indice_rag(ajustes: Settings, argumentos: argparse.Namespace) -> Any:
     """Abre el índice vectorial y carga el modelo de embeddings (tarda unos segundos)."""
-    # importaciones aquí: cargan Chroma y torch, que no hacen falta para estimar
+    # importaciones aquí: cargan Qdrant y torch, que no hacen falta para estimar
     from wikillm.rag.indice import IndiceRag, crear_embeddings, medidor_de_tokens
 
-    carpeta_indice = getattr(argumentos, "chroma", None) or Path("data/chroma") / argumentos.corrida
+    carpeta_indice = getattr(argumentos, "indice", None) or Path("data/qdrant") / argumentos.corrida
     return IndiceRag(
         argumentos.gold,
         carpeta_indice,
@@ -152,7 +153,14 @@ def _analizar(argv: Sequence[str] | None) -> argparse.Namespace:
     cmp_.add_argument(
         "--wiki", type=Path, default=Path("data/wiki/demo"), help="wiki ya construido"
     )
-    cmp_.add_argument("--chroma", type=Path, default=Path("data/chroma"), help="índice del RAG")
+    cmp_.add_argument(
+        "--indice",
+        "--chroma",
+        dest="indice",
+        type=Path,
+        default=Path("data/qdrant"),
+        help="índice del RAG (Qdrant; --chroma se acepta por compatibilidad)",
+    )
     cmp_.add_argument("--manifest", type=Path, default=RUTA_MANIFEST)
     cmp_.add_argument("--gold", type=Path, default=Path("data/gold"))
     cmp_.add_argument("--spans", type=Path, default=RUTA_SPANS)
@@ -201,7 +209,10 @@ def _metadatos(
         },
         "max_usd_por_run": ajustes.max_usd_per_run,
         "pasos": list(pasos),
-        "brazos": {"rag": {"k": argumentos.k}, "wiki": {"max_acciones": argumentos.max_acciones}},
+        "brazos": {
+            "rag": {"k": argumentos.k, "base_vectorial": BASE_VECTORIAL},
+            "wiki": {"max_acciones": argumentos.max_acciones},
+        },
         "banco": {
             "ruta": str(argumentos.banco),
             "sha256": huella_archivo(argumentos.banco),

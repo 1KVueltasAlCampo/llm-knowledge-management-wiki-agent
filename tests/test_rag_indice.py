@@ -89,7 +89,7 @@ def indice(gold, tmp_path, embeddings, corpus_jsonl=None, **cambios):
         "corpus_jsonl": corpus_jsonl,
         **cambios,
     }
-    return IndiceRag(gold, tmp_path / "chroma", **parametros)
+    return IndiceRag(gold, tmp_path / "indice", **parametros)
 
 
 def test_primera_ingesta_calcula_los_embeddings_y_no_gasta_modelo(gold, tmp_path):
@@ -103,7 +103,7 @@ def test_primera_ingesta_calcula_los_embeddings_y_no_gasta_modelo(gold, tmp_path
 def test_un_paper_ya_ingerido_con_el_mismo_gold_no_recalcula(gold, tmp_path):
     indice(gold, tmp_path, EmbeddingsFalsos()).ingerir("2401.00001")
     otros = EmbeddingsFalsos()
-    nuevo = indice(gold, tmp_path, otros)  # misma carpeta de Chroma: otra corrida
+    nuevo = indice(gold, tmp_path, otros)  # misma carpeta del índice: otra corrida
     nuevo.ingerir("2401.00001")
     assert otros.textos_calculados == 0
     assert nuevo.total_fragmentos == 2
@@ -157,6 +157,29 @@ def test_un_paper_no_ingerido_no_aparece_aunque_este_en_el_indice(gold, tmp_path
     papers = {r.fragmento.arxiv_id for r in nueva_corrida.recuperar("wiki markdown grafo", k=10)}
     assert papers == {"2401.00001"}
     assert nueva_corrida.total_fragmentos == 3  # el otro sigue en disco, pero no cuenta
+
+
+def test_el_indice_persiste_al_cerrarlo_y_volver_a_abrirlo(gold, tmp_path):
+    primero = indice(gold, tmp_path, EmbeddingsFalsos())
+    primero.ingerir("2401.00001")
+    primero.cerrar()
+    otros = EmbeddingsFalsos()
+    reabierto = indice(gold, tmp_path, otros)
+    reabierto.ingerir("2401.00001")
+    assert otros.textos_calculados == 0 and reabierto.total_fragmentos == 2
+    assert reabierto.recuperar("PageRank personalizado", k=1)[0].fragmento.seccion == "2 Método"
+
+
+def test_las_distancias_son_coseno_crecientes_entre_cero_y_dos(gold, tmp_path):
+    almacen = indice(gold, tmp_path, EmbeddingsFalsos())
+    almacen.ingerir("2401.00001")
+    almacen.ingerir("2502.00002")
+    distancias = [r.distancia for r in almacen.recuperar("algoritmo PageRank grafo", k=3)]
+    assert len(distancias) == 3
+    assert distancias == sorted(distancias)
+    assert all(0.0 <= d <= 2.0 for d in distancias)
+    exacto = almacen.recuperar("Los grafos de conocimiento mejoran la memoria de los modelos.", k=1)
+    assert exacto[0].distancia < 0.35  # el mismo texto (con título y sección) queda muy cerca
 
 
 def test_con_el_corpus_vacio_no_se_recupera_nada_y_no_falla(gold, tmp_path):

@@ -1,6 +1,6 @@
 """Trabajos del panel: uno a la vez, en un hilo, con eventos ordenados, grabación y reproducción.
 
-Un solo hilo ejecuta todos los trabajos: los clientes de Chroma y del modelo de embeddings se
+Un solo hilo ejecuta todos los trabajos: los clientes de Qdrant y del modelo de embeddings se
 crean y se usan en él, y dos operaciones no pueden pisarse el estado (el wiki cambia al ingerir).
 Cada evento lleva su número de orden (`n`) y su tiempo relativo (`ts`). Al terminar, los eventos
 se guardan; una reproducción los vuelve a emitir con esos tiempos y los marca como reproducidos.

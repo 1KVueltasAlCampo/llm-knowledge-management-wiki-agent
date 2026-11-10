@@ -518,6 +518,17 @@ class Ejecutor:
             emitir({"t": "linea", "texto": "No hay índice que cargar."})
             return 0
         ajustes = load_settings()
+        if self.rag_listo:
+            # Without this the button reports a 0.0 s "load", which reads like a failure.
+            indice = calentar(ajustes)
+            emitir(
+                {
+                    "t": "linea",
+                    "texto": "El índice del RAG ya estaba cargado en memoria: "
+                    f"{indice.total_fragmentos} fragmentos.",
+                }
+            )
+            return 0
         emitir(
             {
                 "t": "linea",

@@ -286,6 +286,14 @@ a{color:var(--acento)}
 .contenido-inline ul{padding-left:1.2rem}
 #nav{width:14rem}
 .comparacion+.acciones{margin-top:.9rem}
+#presentacion{position:fixed;right:1rem;bottom:1rem;z-index:55;width:min(30rem,calc(100vw - 2rem));background:var(--panel);border:2px solid var(--acento);border-radius:.8rem;box-shadow:var(--sombra);padding:.8rem 1rem}
+#presentacion .pres-cab{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.35rem}
+#presentacion p{margin:.2rem 0 .6rem;line-height:1.45}
+#presentacion .pres-barra{height:3px;background:var(--borde);border-radius:2px;overflow:hidden;margin-bottom:.6rem}
+#presentacion .pres-barra i{display:block;height:100%;background:var(--acento);transition:width .3s}
+.resaltado{outline:3px solid var(--acento);outline-offset:4px;border-radius:.6rem;transition:outline-color .3s}
+.recorrido .pres-boton{margin-left:auto;background:var(--acento);color:#fff;border-color:var(--acento);font-weight:600}
+.ancla-run:not(:empty) { margin-bottom: 1.2rem; }
 </style>
 </head>
 <body>
@@ -689,6 +697,7 @@ function recorrido() {
     h('span', {class: 'etq', texto: 'Recorrido'}),
     pasos.map(([titulo, ayuda, ir], i) => h('button', {class: i === siguiente ? 'siguiente' : (n > 5 && i < 3 ? 'hecho' : ''), title: ayuda, onclick: ir},
       h('span', {class: 'n', texto: String(i + 1)}), titulo)),
+    h('button', {class: 'pres-boton', disabled: PRES.activa, title: 'Recorre la demostración sola, con llamadas reales al modelo', onclick: presentacionAutomatica}, PRES.activa ? 'Presentación en curso…' : '▶ Presentación automática'),
     h('button', {class: 'cerrar', title: 'Ocultar el recorrido', 'aria-label': 'Ocultar el recorrido', onclick: () => { pref.set('recorrido-oculto', true); renderVista(); }}, '×'));
 }
 function cabecera(titulo, texto) {
@@ -892,6 +901,7 @@ function vResultados() {
   return [
     cabecera('Resultados y costo', 'Métricas del piloto guardado, calculadas sobre las respuestas de los dos sistemas, y lo que costaría correr el banco completo.'),
     h('div', {class: 'acciones'}, tarjetaAccion('estimar_corrida', {alcance: 'piloto'}, 'Estimar el piloto', {boton: 'Estimar'}), tarjetaAccion('estimar_corrida', {alcance: 'completa'}, 'Estimar la corrida completa', {boton: 'Estimar'}), tarjetaAccion('metricas', {}, 'Métricas en la consola', {boton: 'Calcular'})),
+    h('div', {class: 'ancla-run'}),
     vistaMetricas(),
   ];
 }
@@ -954,12 +964,142 @@ async function lanzar(accion, parametros) {
   } catch (e) { toast(e.message, 'error'); refrescarEstado(); }
 }
 
+/* ================= presentación automática (en vivo) =================
+   Recorre el guion de la demostración sola: cambia de vista, narra cada paso, resalta lo que se
+   mira y lanza las acciones reales (preguntas e ingesta), esperando a que cada una termine. */
+const PRES = {activa: false, pausa: false, saltar: false, detener: false, paso: 0, total: 0, titulo: '', texto: '', sel: null};
+function renderPresentacion() {
+  let caja = $('#presentacion');
+  if (!PRES.activa) {
+    if (caja) caja.remove();
+    document.querySelectorAll('.resaltado').forEach((x) => x.classList.remove('resaltado'));
+    return;
+  }
+  if (!caja) { caja = h('div', {id: 'presentacion', role: 'status', 'aria-live': 'polite'}); document.body.append(caja); }
+  const pct = PRES.total ? Math.round(((PRES.paso - 1) / PRES.total) * 100) : 0;
+  poner(caja,
+    h('div', {class: 'pres-barra'}, h('i', {style: 'width:' + pct + '%'})),
+    h('div', {class: 'pres-cab'}, chip('En vivo · paso ' + PRES.paso + ' de ' + PRES.total, 'acento'), h('b', {texto: PRES.titulo})),
+    h('p', {texto: PRES.texto}),
+    h('div', {class: 'botones'},
+      h('button', {class: 'boton chico', onclick: () => { PRES.pausa = !PRES.pausa; renderPresentacion(); }}, PRES.pausa ? 'Continuar' : 'Pausar'),
+      h('button', {class: 'boton chico', title: 'Pasa al siguiente paso (una llamada en curso termina igual)', onclick: () => { PRES.saltar = true; }}, 'Siguiente'),
+      h('button', {class: 'boton chico peligro', title: 'Termina la presentación (una llamada en curso termina igual)', onclick: () => { PRES.detener = true; }}, 'Detener')));
+}
+function resaltar() {
+  const el = PRES.sel ? PRES.sel() : null;
+  document.querySelectorAll('.resaltado').forEach((x) => { if (x !== el) x.classList.remove('resaltado'); });
+  if (el && !el.classList.contains('resaltado')) { el.classList.add('resaltado'); el.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+}
+function narrar(titulo, texto, sel) {
+  if (PRES.detener) throw new Error('detenida');
+  Object.assign(PRES, {paso: PRES.paso + 1, titulo, texto, sel: sel || null, saltar: false});
+  renderPresentacion();
+  resaltar();
+}
+// Waits ms of unpaused time; the view re-renders every few seconds, so the highlight is re-applied.
+function esperarPres(ms) {
+  return new Promise((listo) => {
+    let restante = ms;
+    const tic = () => {
+      if (PRES.detener || PRES.saltar || restante <= 0) { PRES.saltar = false; listo(); return; }
+      if (!PRES.pausa) restante -= 250;
+      resaltar();
+      setTimeout(tic, 250);
+    };
+    tic();
+  });
+}
+async function ejecutarPres(accion, parametros) {
+  if (PRES.detener) throw new Error('detenida');
+  const r = await post('/api/ejecutar', {accion, parametros, confirmo: true});
+  iniciarRun(accion, (S.acciones[accion] || {}).titulo, r.trabajo, false, parametros);
+  const run = S.run;
+  await new Promise((listo) => { const tic = () => { if (run.estado !== 'corriendo') { listo(); return; } resaltar(); setTimeout(tic, 300); }; tic(); });
+  if (run.estado !== 'ok') throw new Error('«' + run.titulo + '» terminó con error' + (run.errores.length ? ': ' + run.errores[0] : ''));
+  return run;
+}
+function frasePregunta(run) {
+  const d = run.resultado && run.resultado.datos;
+  const sis = d ? d.sistemas : [];
+  const r = sis.find((x) => x.sistema === 'rag'), w = sis.find((x) => x.sistema === 'wiki');
+  if (!r || !w) return 'Los dos sistemas respondieron; abajo están sus respuestas, citas y costos.';
+  if (r.abstuvo && w.abstuvo) return 'Los dos se abstuvieron: el corpus ingerido aún no tiene la respuesta y ninguno la inventó.';
+  if (!r.abstuvo && !w.abstuvo) return 'Los dos responden y citan el fragmento del paper que lo respalda (' + [...new Set([...r.citas, ...w.citas].map((c) => c.span_id))].slice(0, 2).join(', ') + ').';
+  return (r.abstuvo ? 'El RAG se abstuvo y el WikiLLM respondió.' : 'El WikiLLM se abstuvo y el RAG respondió.') + ' Abajo se ve cada respuesta con sus citas.';
+}
+async function presentacionAutomatica() {
+  if (PRES.activa) return;
+  if (ocupado()) { toast('Hay un trabajo en curso', 'error'); return; }
+  const e = S.estado, pregunta = preguntaDeEjemplo('BeliefShift');
+  if (!pregunta) { toast('No está la pregunta de ejemplo de BeliefShift', 'error'); return; }
+  if (!e.clave_presente) { toast('Falta la clave del proveedor en .env', 'error'); return; }
+  const reinicia = e.wiki.ingeridos !== 5;
+  const ok = await modal({titulo: 'Presentación automática en vivo', cuerpo: h('div', null,
+    h('p', null, 'Recorre la demostración sola y llama de verdad al modelo ', h('b', {texto: e.modelo}), ': la misma pregunta a los dos sistemas antes y después de ingerir un paper.'),
+    h('p', null, 'Costo estimado: ', h('b', {texto: '≈ 0,015 USD' + (e.hora_pico ? ' (hora pico: ≈ 0,03)' : '')}), ' · unos 3 minutos. Se puede pausar, saltar un paso o detener.'),
+    reinicia ? h('p', {class: 'detalle', texto: 'El wiki tiene ' + e.wiki.ingeridos + ' papers: primero se reinicia a la copia del paso 5 (la evidencia anterior se aparta, no se borra).'}) : null,
+    h('p', {class: 'detalle', texto: 'Gasto de la sesión: ' + usd(e.gasto.sesion_usd, 4) + ' de ' + usd(e.gasto.tope_usd, 2) + ' USD' + (e.hora_pico ? ' · hora pico: tarifa ×2' : '')})),
+    botones: [{texto: 'Cancelar', valor: false}, {texto: 'Empezar', valor: true, primario: true}]});
+  if (!ok) return;
+  Object.assign(PRES, {activa: true, pausa: false, saltar: false, detener: false, paso: 0, total: reinicia ? 10 : 9});
+  const grafo = () => { const g = $('.grafo-caja'); return g && g.closest('section'); };
+  try {
+    if (reinicia) {
+      cambiarVista('sistema');
+      narrar('Preparación', 'Dejamos el wiki en su punto de partida: una copia limpia con los 5 primeros papers ingeridos.');
+      await ejecutarPres('reiniciar_wiki', {});
+    }
+    cambiarVista('wiki');
+    narrar('Punto de partida: un wiki con 5 papers', 'El agente ya leyó los 5 primeros papers y escribió este wiki. Cada nodo es una página Markdown con citas a fragmentos reales del paper; cada línea, un enlace entre páginas. El RAG usa el mismo corpus, troceado en un índice vectorial.', grafo);
+    await esperarPres(10000);
+
+    irAPreguntar('BeliefShift');
+    narrar('Pregunta antes de ingerir', 'Preguntamos por BeliefShift, un paper que todavía no entró al corpus. Lo correcto es abstenerse. Mismo modelo para los dos: solo cambia la arquitectura.', () => $('#pregunta'));
+    await esperarPres(6000);
+    let run = await ejecutarPres('comparar', {pregunta});
+    narrar('Resultado antes de ingerir', frasePregunta(run), () => $('.lectura'));
+    await esperarPres(12000);
+
+    cambiarVista('ingerir');
+    const sig = S.estado.corpus.siguiente;
+    narrar('Ingerir el paper ' + (sig ? sig.paso : 6), 'El agente lee el paper' + (sig ? ' ' + sig.arxiv_id : '') + ': un plan y la escritura de páginas (dos llamadas). Después el código valida citas y enlaces y guarda una copia versionada del wiki.', () => $('.accion'));
+    await esperarPres(5000);
+    run = await ejecutarPres('ingerir', {paso: sig ? sig.paso : 6});
+    narrar('Paper ingerido', 'Arriba se ven las páginas creadas y actualizadas, las dos llamadas al modelo y su costo.', () => $('#principal-run'));
+    await esperarPres(9000);
+
+    cambiarVista('wiki');
+    narrar('El wiki creció', 'El grafo ahora incluye las páginas nuevas (resaltadas) y sus enlaces con lo que ya existía.', grafo);
+    await esperarPres(9000);
+
+    irAPreguntar('BeliefShift');
+    narrar('La misma pregunta, después', 'Repetimos exactamente la misma pregunta con el paper ya ingerido.', () => $('#pregunta'));
+    await esperarPres(4000);
+    run = await ejecutarPres('comparar', {pregunta});
+    narrar('Resultado después de ingerir', frasePregunta(run) + ' Debajo: tokens leídos, llamadas, dólares y tiempo de cada sistema.', () => $('.lectura'));
+    await esperarPres(14000);
+
+    cambiarVista('resultados');
+    narrar('Resultados del piloto', 'Con el banco de preguntas: el WikiLLM acierta más preguntas, a cambio de leer más contexto por pregunta. Cada llamada y su costo quedan registrados en results/.', () => $('.duelo'));
+    await esperarPres(14000);
+    toast('Presentación terminada', 'ok', 5000);
+  } catch (err) {
+    if (err.message !== 'detenida') toast('La presentación se detuvo: ' + err.message, 'error', 9000);
+  } finally {
+    PRES.activa = false; PRES.sel = null;
+    renderPresentacion();
+  }
+}
+
 /* ================= ejecución y flujo de eventos ================= */
 function iniciarRun(accion, titulo, id, repro, parametros) {
   cerrarFlujo();
   S.run = {id, accion, titulo, params: parametros || {}, repro, reproInfo: null, estado: 'corriendo', codigo: null, lineas: [], llamadas: [], resultado: null, errores: [], activo: null, fase: '', segundos: null, comando: null};
   S.dock = 'consola'; S.dockGrande = false; S.pegado = true;
   if (vistaDeAccion(accion) !== S.vista) cambiarVista(vistaDeAccion(accion)); else renderVista();
+  // The output renders below the view (under the whole metrics table in Results): bring it into sight.
+  requestAnimationFrame(() => { const c = $('#vista .ancla-run') || $('#principal-run'); if (c && c.firstChild) c.scrollIntoView({behavior: 'smooth', block: 'nearest'}); });
   const run = S.run;
   const es = new EventSource('/api/eventos/' + id);
   S.es = es;
@@ -1013,8 +1153,11 @@ function programarPintado() {
 
 /* ================= vista de la ejecución ================= */
 function renderRun() {
-  const cont = $('#principal-run');
+  // A view may reserve a slot right under its buttons (Results does: its table is long).
+  const ancla = $('#vista .ancla-run'), fondo = $('#principal-run');
+  const cont = ancla || fondo;
   if (!cont) return;
+  if (ancla && fondo) poner(fondo, null);
   const run = S.run;
   if (!run) { poner(cont, null); return; }
   if (vistaDeAccion(run.accion) !== S.vista) {

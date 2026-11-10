@@ -337,6 +337,13 @@ de premisa falsa para el informe.
 fallaba con los Gold de papers fuera del corpus (`2610.09348` y `2610.23313`). Ahora comprueba
 que exista el Gold de cada paper del manifest.
 
+Cambios en el panel (`src/wikillm/panel/`, de Juan David), hechos por Juan Diego: en Resultados la
+salida de «Calcular» y «Estimar» se dibujaba debajo de la tabla de veredictos y no se veía; ahora
+aparece bajo los botones. «Cargar el índice del RAG» con el índice ya en memoria decía «Cargando…
+(0.0 s)»; ahora dice que ya estaba cargado. Se agregó una presentación automática en vivo
+(«▶ Presentación automática» en el recorrido) que reinicia el wiki al paso 5 si hace falta, pregunta
+por BeliefShift, ingiere el paper 6 y repite la pregunta con llamadas reales. Probada de punta a
+punta: unos 3 minutos y 0,0255 USD en hora pico.
 ### 2026-11-09 · Mitad B verificada
 
 Se aplicó `revision_B_por_B.json` (revisión por consenso de Juan David, 16 aceptadas y 14

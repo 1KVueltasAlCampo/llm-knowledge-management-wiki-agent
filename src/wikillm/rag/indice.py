@@ -1,9 +1,13 @@
-"""Índice vectorial persistente (Chroma) con ingesta por paper.
+"""Índice vectorial persistente (Qdrant en modo local) con ingesta por paper.
 
 ``ingerir`` añade los fragmentos de un paper y guarda en cada uno la huella de su Gold: si el
 paper ya estaba con la misma huella no se recalcula nada, y si el Gold cambió se reemplazan sus
 fragmentos. La recuperación se limita a los papers ingeridos en esta corrida, así que un índice
 con los 50 papers ya calculados no se filtra a pasos anteriores.
+
+Qdrant local no usa servidor: guarda la colección en una carpeta y busca de forma exacta. Solo un
+cliente puede abrir esa carpeta a la vez, así que dentro de un proceso se comparte un cliente por
+carpeta (decisión 0005).
 """
 
 from __future__ import annotations
@@ -11,12 +15,13 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
-import chromadb
-from langchain_chroma import Chroma
 from langchain_core.embeddings import Embeddings
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient, models
 
 from wikillm.common.config import Settings
 from wikillm.common.responder import ResultadoIngesta
@@ -29,11 +34,11 @@ from wikillm.rag.fragmentos import (
     dividir_paper,
 )
 
-RUTA_CHROMA_POR_DEFECTO = Path("data/chroma")
+RUTA_INDICE_POR_DEFECTO = Path("data/qdrant")
 RUTA_CORPUS_POR_DEFECTO = Path("data/gold/corpus.jsonl")
 RUTA_SPANS_POR_DEFECTO = Path("data/gold/spans.jsonl")
 NOMBRE_COLECCION = "gold_v2"
-COLECCION_ANTERIOR = "gold"  # la de la v1 (sin spans): se borra para no ocupar disco
+CLAVE_METADATOS = "metadata"  # donde langchain-qdrant guarda los metadatos en el payload
 K_POR_DEFECTO = 5
 TAMANO_LOTE = 64
 
@@ -92,11 +97,38 @@ def _hashes_versionados(ruta: Path) -> dict[str, str]:
     return {fila["arxiv_id"]: fila["hash"] for fila in filas}
 
 
+_CLIENTES: dict[str, QdrantClient] = {}
+
+
+def _cliente(ruta: Path) -> QdrantClient:
+    """Un cliente por carpeta y proceso: Qdrant local bloquea la carpeta para un solo cliente."""
+    clave = str(ruta.resolve())
+    if clave not in _CLIENTES:
+        ruta.mkdir(parents=True, exist_ok=True)
+        _CLIENTES[clave] = QdrantClient(path=clave)
+    return _CLIENTES[clave]
+
+
+def _filtro_por_papers(arxiv_ids: list[str]) -> models.Filter:
+    return models.Filter(
+        must=[
+            models.FieldCondition(
+                key=f"{CLAVE_METADATOS}.arxiv_id", match=models.MatchAny(any=arxiv_ids)
+            )
+        ]
+    )
+
+
+def _id_de_punto(id_fragmento: str) -> str:
+    # Qdrant solo admite enteros o UUID como id; uuid5 es determinista.
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, id_fragmento))
+
+
 class IndiceRag:
     def __init__(
         self,
         carpeta_gold: Path | str,
-        ruta_chroma: Path | str = RUTA_CHROMA_POR_DEFECTO,
+        ruta_indice: Path | str = RUTA_INDICE_POR_DEFECTO,
         *,
         embeddings: Embeddings,
         medir: Medidor,
@@ -117,22 +149,32 @@ class IndiceRag:
             if corpus_jsonl is not None and Path(corpus_jsonl).exists()
             else None
         )
-        cliente = chromadb.PersistentClient(path=str(ruta_chroma))
-        try:
-            cliente.delete_collection(COLECCION_ANTERIOR)
-        except Exception:  # no existe: nada que borrar
-            pass
-        self._almacen = Chroma(
-            client=cliente,
+        self._ruta = Path(ruta_indice)
+        self._cliente = _cliente(self._ruta)
+        if not self._cliente.collection_exists(NOMBRE_COLECCION):
+            dimension = len(embeddings.embed_query("dimensión"))
+            self._cliente.create_collection(
+                NOMBRE_COLECCION,
+                vectors_config=models.VectorParams(size=dimension, distance=models.Distance.COSINE),
+            )
+        self._almacen = QdrantVectorStore(
+            client=self._cliente,
             collection_name=NOMBRE_COLECCION,
-            embedding_function=embeddings,
-            collection_metadata={"hnsw:space": "cosine"},
+            embedding=embeddings,
+            metadata_payload_key=CLAVE_METADATOS,
+            validate_collection_config=False,  # la colección ya se creó arriba con su dimensión
         )
         self.ingeridos: list[str] = []
 
     @property
     def total_fragmentos(self) -> int:
-        return self._almacen._collection.count()
+        return self._cliente.count(NOMBRE_COLECCION, exact=True).count
+
+    def cerrar(self) -> None:
+        """Libera la carpeta para que otro proceso pueda abrirla."""
+        cliente = _CLIENTES.pop(str(self._ruta.resolve()), None)
+        if cliente is not None:
+            cliente.close()
 
     def reiniciar(self) -> None:
         """Empieza una corrida nueva: los vectores quedan en disco pero nada está ingerido."""
@@ -162,12 +204,19 @@ class IndiceRag:
         encabezado, cuerpo = leer_gold(ruta)
         self._comprobar_hash(arxiv_id, encabezado)
         huella = self._huella(ruta)
-        coleccion = self._almacen._collection
-        previo = coleccion.get(where={"arxiv_id": arxiv_id}, limit=1, include=["metadatas"])
-        vigente = bool(previo["ids"]) and previo["metadatas"][0].get("huella") == huella
+        del_paper = _filtro_por_papers([arxiv_id])
+        previo, _ = self._cliente.scroll(
+            NOMBRE_COLECCION, scroll_filter=del_paper, limit=1, with_payload=True
+        )
+        vigente = (
+            bool(previo)
+            and (previo[0].payload or {}).get(CLAVE_METADATOS, {}).get("huella") == huella
+        )
         if not vigente:
-            if previo["ids"]:
-                coleccion.delete(where={"arxiv_id": arxiv_id})
+            if previo:
+                self._cliente.delete(
+                    NOMBRE_COLECCION, points_selector=models.FilterSelector(filter=del_paper)
+                )
             fragmentos = dividir_paper(
                 arxiv_id,
                 str(encabezado["titulo"]),
@@ -189,10 +238,11 @@ class IndiceRag:
                             "posicion": f.posicion,
                             "span_ids": ",".join(f.span_ids),
                             "huella": huella,
+                            "id_fragmento": f.id,
                         }
                         for f in lote
                     ],
-                    ids=[f.id for f in lote],
+                    ids=[_id_de_punto(f.id) for f in lote],
                 )
         if arxiv_id not in self.ingeridos:
             self.ingeridos.append(arxiv_id)
@@ -203,10 +253,11 @@ class IndiceRag:
         if not self.ingeridos:
             return []
         resultados = self._almacen.similarity_search_with_score(
-            pregunta, k=k, filter={"arxiv_id": {"$in": list(self.ingeridos)}}
+            pregunta, k=k, filter=_filtro_por_papers(list(self.ingeridos))
         )
         recuperados = []
-        for documento, distancia in resultados:
+        for documento, similitud in resultados:
+            distancia = 1.0 - similitud  # Qdrant da similitud coseno; se conserva la distancia
             datos = documento.metadata
             fragmento = Fragmento(
                 texto=documento.page_content,

@@ -111,7 +111,7 @@ def test_los_metadatos_tienen_lo_necesario_para_reproducir(tmp_path):
     e.correr("--pasos", "0,3", "--k", "7", "--max-acciones", "4")
     datos = leer_corrida(e.carpeta / "corrida.json")
     assert datos["pasos"] == [0, 3] and datos["brazos"] == {
-        "rag": {"k": 7},
+        "rag": {"k": 7, "base_vectorial": "qdrant"},
         "wiki": {"max_acciones": 4},
     }
     assert datos["modelo"] and len(datos["banco"]["sha256"]) == 64
@@ -184,3 +184,23 @@ def test_dos_corridas_con_otro_nombre_no_comparten_resultados(tmp_path):
     e.correr("--pasos", "0", corrida="c2")
     for nombre in ("c1", "c2"):
         assert len(leer_lineas(tmp_path / "results" / nombre / "respuestas.jsonl")) == 4
+
+
+def test_corrida_json_declara_la_base_vectorial_del_rag(tmp_path):
+    e = Entorno(tmp_path, BANCO_MIXTO)
+    e.correr("--pasos", "0")
+    rag = leer_corrida(e.carpeta / "corrida.json")["brazos"]["rag"]
+    assert rag == {"k": 5, "base_vectorial": "qdrant"}
+
+
+def test_no_se_reanuda_una_corrida_hecha_con_chroma(tmp_path, capsys):
+    e = Entorno(tmp_path, BANCO_MIXTO)
+    e.correr("--pasos", "0")
+    ruta = e.carpeta / "corrida.json"
+    datos = json.loads(ruta.read_text(encoding="utf-8"))
+    datos["brazos"]["rag"] = {"k": 5}  # como quedaron las corridas hechas con Chroma
+    ruta.write_text(json.dumps(datos), encoding="utf-8")
+    llamadas = e.fabricas
+    assert e.correr("--pasos", "0") == 1
+    assert "'brazos'" in capsys.readouterr().err
+    assert e.fabricas == llamadas  # aborta antes de crear los brazos: ninguna llamada

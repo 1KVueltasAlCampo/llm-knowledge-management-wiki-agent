@@ -1,8 +1,8 @@
 {
  "autor": "B",
  "revisor": "Juan David Cruz García",
- "fecha": "2026-11-07",
- "procedencia": "Selección de la mitad B aprobada por Juan David Cruz García el 7-nov-2026 (25 de T1–T4 y 5 de T5), tras contrastar cuatro revisiones independientes de las 76 candidatas T1–T4 y 9 T5 con el texto del Gold. Las correcciones las redactó Claude a partir del Gold. Falta la verificación humana de cada respuesta contra su paper, por eso las preguntas quedan en estado borrador. Nueve de las T3/T4 las redactó Claude (campo redactado_por).",
+ "fecha": "2026-11-09",
+ "procedencia": "Selección de la mitad B aprobada por Juan David Cruz García el 7-nov-2026 (25 de T1–T4 y 5 de T5), tras contrastar cuatro revisiones independientes de las 76 candidatas T1–T4 y 9 T5 con el texto del Gold. Las correcciones las redactó Claude a partir del Gold. Falta la verificación humana de cada respuesta contra su paper, por eso las preguntas quedan en estado borrador. Nueve de las T3/T4 las redactó Claude (campo redactado_por). Verificación humana completada el 9-nov-2026 en revision_B_por_B.json (16 aceptadas y 14 corregidas, por consenso); B031-T3-02 pasa a llamarse B031-T2-02.",
  "ajustes": [
   {
    "question_id": "B002-T3-02",
@@ -32,14 +32,12 @@
   {
    "question_id": "B001-T4-05",
    "accion": "agregar",
-   "pregunta": "What is the highest single-step passage Recall@5 on MuSiQue that the corpus reports for HippoRAG, leaving out combinations with iterative retrieval such as IRCoT?",
-   "motivo": "Sustituye a la T4 de RAPTOR en LongMemEval-S, que tenía tres tramos (el paper de Harness también reporta RAPTOR, en escala 0-1) y mezclaba subconjuntos y protocolos. Esta es inequívoca al acotar a un solo paso: el máximo pasa de 52,1 a 53,2 al entrar el paper de HippoRAG 2."
+   "motivo": "Sustituye a la T4 de RAPTOR en LongMemEval-S, que tenía tres tramos (el paper de Harness también reporta RAPTOR, en escala 0-1) y mezclaba subconjuntos y protocolos. Esta es inequívoca al acotar a un solo paso: el máximo pasa de 52,1 a 53,2 al entrar el paper de HippoRAG 2. La redacción final de la pregunta sale de revision_B_por_B.json (9-nov), que además excluye la fila de HippoRAG 2."
   },
   {
    "question_id": "B001-T4-06",
    "accion": "agregar",
-   "motivo": "Sin acotar, «el más alto» incluye «IRCoT + HippoRAG» (93,9 en 2Wiki), que no es HippoRAG de un solo paso; se acota a un solo paso. Con ese criterio el máximo pasa de 89,5 a 90,4 al entrar el paper de HippoRAG 2, y ningún otro paper del corpus reporta un valor mayor.",
-   "pregunta": "What is the highest single-step passage Recall@5 on 2WikiMultiHopQA that the corpus reports for HippoRAG, leaving out combinations with iterative retrieval such as IRCoT?"
+   "motivo": "Sin acotar, «el más alto» incluye «IRCoT + HippoRAG» (93,9 en 2Wiki), que no es HippoRAG de un solo paso; se acota a un solo paso. Con ese criterio el máximo pasa de 89,5 a 90,4 al entrar el paper de HippoRAG 2, y ningún otro paper del corpus reporta un valor mayor. La redacción final de la pregunta sale de revision_B_por_B.json (9-nov), que además excluye la fila de HippoRAG 2."
   },
   {
    "question_id": "B023-T2-01",
@@ -72,7 +70,7 @@
    "motivo": "Elegida tras contrastar cuatro revisiones independientes con el Gold; sin cambios."
   },
   {
-   "question_id": "B031-T3-02",
+   "question_id": "B031-T2-02",
    "accion": "agregar",
    "tipo": "T2",
    "pregunta": "Do the survey of foundation agent memory and the 'Harness the Memory' evaluation agree on whether a single memory substrate dominates?",

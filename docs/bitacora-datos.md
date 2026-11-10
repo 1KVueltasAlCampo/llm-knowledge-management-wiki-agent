@@ -336,3 +336,20 @@ de premisa falsa para el informe.
 `scripts/verificar_demo.py` comprobaba que `data/gold/` tuviera exactamente 50 archivos `.md`, y
 fallaba con los Gold de papers fuera del corpus (`2610.09348` y `2610.23313`). Ahora comprueba
 que exista el Gold de cada paper del manifest.
+
+### 2026-11-09 · Mitad B verificada
+
+Se aplicó `revision_B_por_B.json` (revisión por consenso de Juan David, 16 aceptadas y 14
+corregidas) con `python -m wikillm.eval aplicar-revision --autor B`: las 30 preguntas de B pasan a
+`verificado_b` y `banco.jsonl` queda con 60 preguntas verificadas por su autor (30 `verificado_a`
+y 30 `verificado_b`); la mitad A no cambia. Dos ajustes de transcripción, hechos por Juan Diego:
+
+- `ajustes_B.json` traía la pregunta del 7-nov para B001-T4-05 y B001-T4-06, y como los ajustes
+  se aplican después de la revisión, pisaba la redacción nueva que excluye la fila de HippoRAG 2.
+  Se quitó ese campo de los dos ajustes: la pregunta final es la de la revisión.
+- La revisión pide renombrar B031-T3-02 a B031-T2-02 (el ajuste ya la había pasado a T2). El
+  formato de la página no tiene campo para el id, así que se renombró en `borradores_B.jsonl`,
+  `ajustes_B.json` y `revision_B_por_B.json`.
+
+Se comprobó que las 14 correcciones de la revisión quedaron en `banco_B.jsonl`. Falta la
+verificación cruzada (cada autor revisa la mitad del otro) para el estado `acordado`.

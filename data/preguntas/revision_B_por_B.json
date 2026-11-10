@@ -121,7 +121,7 @@
   "notas": "HippoRAG no discute contradicciones; 'adds edges' fallaba con 'adding edges'."
  },
  {
-  "question_id": "B031-T3-02",
+  "question_id": "B031-T2-02",
   "tipo": "T2",
   "revisor": "B",
   "decision": "corregir",

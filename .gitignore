@@ -42,6 +42,7 @@ data/preguntas/anotacion/
 
 # Wikis generados por el brazo WikiLLM: texto derivado de arXiv, con su propio Git
 data/wiki/
+data/grafo/
 
 # Grabaciones del panel de demostración: incluyen fragmentos de papers, no se versionan
 results/demo/grabaciones/

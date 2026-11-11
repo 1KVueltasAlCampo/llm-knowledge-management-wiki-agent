@@ -10,7 +10,7 @@ leer al menos una página antes de responder.
 from __future__ import annotations
 
 import time
-from collections.abc import Callable, Collection
+from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -18,6 +18,7 @@ from wikillm.common.modelo import ClienteModelo, Respuesta
 from wikillm.common.responder import ResultadoBrazo
 from wikillm.common.respuesta import PATRON_SPAN_ID, REGLAS_DE_RESPUESTA, extraer_citas_leidas
 from wikillm.wiki.almacen import Wiki
+from wikillm.wiki.capas import AVISO_LEER_PRIMERO, CapasDeConsulta, leer_por_secciones, nombres_de
 from wikillm.wiki.herramientas import (
     MAXIMO_PAGINAS_POR_LECTURA,
     MAXIMO_RESULTADOS,
@@ -73,10 +74,22 @@ def resumen_de_lectura(lectura: Lectura) -> str:
     return "; ".join(partes)
 
 
-def analizar_accion(texto: str) -> tuple[str, Any]:
-    """(acción, argumento) de una salida del agente; ErrorDeFormato si no es una acción válida."""
+def analizar_accion(texto: str, extras: Mapping[str, str] | None = None) -> tuple[str, Any]:
+    """(acción, argumento) de una salida del agente; ErrorDeFormato si no es una acción válida.
+
+    ``extras`` (acción → clave del argumento) activa el modo con capas: se aceptan esas acciones
+    además de ``read`` y ``answer``, y ``search`` deja de estar disponible.
+    """
     datos = extraer_json(texto)
     accion = str(datos.get("action", "")).strip().lower()
+    if extras is not None:
+        if accion in extras:
+            argumento = str(datos.get(extras[accion], "")).strip()
+            if not argumento:
+                raise ErrorDeFormato(f'A "{accion}" action needs a non-empty "{extras[accion]}".')
+            return accion, argumento
+        if accion == "search":
+            raise ErrorDeFormato(f'"action" must be one of: answer, {", ".join(extras)}, read.')
     if accion == "search":
         consulta = str(datos.get("query", "")).strip()
         if not consulta:
@@ -107,9 +120,14 @@ class ConsultaWiki:
         paciencia: int = PACIENCIA_POR_DEFECTO,
         spans_validos: Collection[str] | None = None,
         reloj: Callable[[], float] = time.perf_counter,
+        capas: CapasDeConsulta | None = None,
     ) -> None:
         self._modelo = modelo
         self._wiki = wiki
+        # Sin capas, el protocolo y las herramientas son los del WikiLLM base, sin cambios.
+        self._capas = capas
+        self._extras = {h.nombre: h for h in capas.herramientas} if capas else {}
+        self._instrucciones = capas.instrucciones() if capas else INSTRUCCIONES_AGENTE
         self._max_acciones = max_acciones
         self._paciencia = paciencia
         self._spans_validos = spans_validos
@@ -123,7 +141,7 @@ class ConsultaWiki:
             return self._sin_paginas(pregunta, inicio)
 
         mensajes = [
-            {"role": "system", "content": INSTRUCCIONES_AGENTE},
+            {"role": "system", "content": self._instrucciones},
             {"role": "user", "content": f"Question: {pregunta}"},
         ]
         llamadas: list[Respuesta] = []
@@ -142,7 +160,9 @@ class ConsultaWiki:
             llamada = self._modelo.generar(mensajes, etiqueta="wiki", max_tokens=MAX_TOKENS_TURNO)
             llamadas.append(llamada)
             try:
-                accion, argumento = analizar_accion(llamada.texto)
+                accion, argumento = analizar_accion(
+                    llamada.texto, nombres_de(self._capas.herramientas) if self._capas else None
+                )
                 if final_pedido and accion != "answer":
                     raise ErrorDeFormato('No more tool actions are available: use "answer".')
             except ErrorDeFormato as error:
@@ -178,7 +198,16 @@ class ConsultaWiki:
                 return self._resultado(argumento, leido, llamadas, salidas, inicio)
 
             self.traza.acciones += 1
-            if accion == "search":
+            if accion in self._extras:
+                herramienta = self._extras[accion]
+                if herramienta.requiere_lectura and not self.traza.paginas_leidas:
+                    texto, resumen = AVISO_LEER_PRIMERO, "rejected: read first"
+                else:
+                    texto, resumen = herramienta.ejecutar(argumento)
+                self.traza.detalle.append(
+                    {"accion": accion, "argumento": argumento, "resultado": resumen}
+                )
+            elif accion == "search":
                 self.traza.busquedas += 1
                 resultados = wiki_search(self._wiki, argumento)
                 vacias = 0 if resultados else vacias + 1
@@ -192,7 +221,11 @@ class ConsultaWiki:
                 )
             else:
                 self.traza.lecturas += 1
-                lectura = wiki_read(self._wiki, argumento)
+                lectura = (
+                    leer_por_secciones(self._wiki, argumento)
+                    if self._capas
+                    else wiki_read(self._wiki, argumento)
+                )
                 self.traza.paginas_leidas += [
                     s for s in lectura.leidas if s not in self.traza.paginas_leidas
                 ]

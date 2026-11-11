@@ -12,9 +12,10 @@ from datetime import datetime
 from wikillm.common.costo import es_hora_pico
 
 LIMITE_SIN_CONFIRMAR_USD = 5.0
-USD_POR_PREGUNTA = {"rag": 0.0008, "wiki": 0.004}
+USD_POR_PREGUNTA = {"rag": 0.0008, "wiki": 0.004, "wiki_grafo": 0.004, "wiki_grafo_tgrep": 0.004}
 USD_POR_PREGUNTA_DESCONOCIDA = 0.004
-USD_INGESTA_POR_PAPER = {"rag": 0.0, "wiki": 0.03}
+# los brazos con capas comparten el wiki del brazo "wiki": no ingieren
+USD_INGESTA_POR_PAPER = {"rag": 0.0, "wiki": 0.03, "wiki_grafo": 0.0, "wiki_grafo_tgrep": 0.0}
 USD_INGESTA_DESCONOCIDA = 0.03
 
 

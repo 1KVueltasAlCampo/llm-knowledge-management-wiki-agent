@@ -624,6 +624,70 @@ def es_correcta(pregunta: dict[str, Any], respuesta: str, paso: int) -> bool:
     return bool(claves) and all(clave_presente(c, respuesta) for c in claves)
 
 
+def tgrep_opcional(
+    base: Herramienta, descripcion: str, maximo: int, estado: dict[str, bool], requiere: str | None
+) -> Herramienta:
+    """tgrep como herramienta opcional: no cuenta como lectura y tiene pocas líneas.
+
+    Si ``requiere`` es ``graph`` o ``read``, se rechaza hasta que el agente use esa otra."""
+
+    def ejecutar(patron: Any) -> tuple[str, str, bool]:
+        if requiere and not estado.get(requiere):
+            faltante = "graph" if requiere == "graph" else "read"
+            aviso = f"Use the {faltante} action first; grep is only for checking details."
+            return aviso, "locked", True
+        texto, resumen, vacio = base.ejecutar(patron)
+        lineas = texto.splitlines()[:maximo]
+        return "\n".join(lineas), resumen, vacio
+
+    return Herramienta("grep", "pattern", descripcion, ejecutar, es_lectura=False)
+
+
+def _marcar(herramienta: Herramienta, estado: dict[str, bool]) -> Herramienta:
+    """Anota en ``estado`` que la herramienta ya se usó (para desbloquear otras)."""
+    original = herramienta.ejecutar
+
+    def ejecutar(valor: Any) -> tuple[str, str, bool]:
+        resultado = original(valor)
+        if not resultado[2]:
+            estado[herramienta.nombre] = True
+        return resultado
+
+    return Herramienta(
+        herramienta.nombre,
+        herramienta.argumento,
+        herramienta.descripcion,
+        ejecutar,
+        herramienta.es_lectura,
+    )
+
+
+def _combinado_estrategico(args: argparse.Namespace, wiki: Wiki, modo: str) -> list[Herramienta]:
+    estado: dict[str, bool] = {}
+    grafo = _marcar(
+        herramienta_grafo(
+            args.grafo, args.graphify, args.presupuesto_grafo, args.profundidad_grafo
+        ),
+        estado,
+    )
+    lectura = _marcar(herramienta_lectura_por_secciones(wiki), estado)
+    base = herramienta_tgrep(
+        args.wiki.resolve(), args.tgrep, args.tgrep_indice, args.tgrep_columnas
+    )
+    uso = (
+        '{"action": "grep", "pattern": "regex"} OPTIONAL and rarely needed: prints a few matching '
+        "lines as pages/<slug>.md:<line>:<text>. Use it only to check an exact number, name or "
+        "term that the pages you got from graph or read did not show. It does not replace read"
+    )
+    if modo == "opcional":
+        grep = tgrep_opcional(base, uso, 5, estado, None)
+    elif modo == "tras_grafo":
+        grep = tgrep_opcional(base, uso, 3, estado, "graph")
+    else:  # tras_lectura
+        grep = tgrep_opcional(base, uso, 3, estado, "read")
+    return [grafo, grep, lectura]
+
+
 def crear_agente(
     variante: str, modelo: ClienteModelo, wiki: Wiki, args: argparse.Namespace, spans: set[str]
 ):  # type: ignore[no-untyped-def]
@@ -654,6 +718,18 @@ def crear_agente(
             ),
             herramienta_lectura(wiki),
         ],
+        "combinado": lambda: [
+            herramienta_grafo(
+                args.grafo, args.graphify, args.presupuesto_grafo, args.profundidad_grafo
+            ),
+            herramienta_tgrep(
+                args.wiki.resolve(), args.tgrep, args.tgrep_indice, args.tgrep_columnas
+            ),
+            herramienta_lectura_por_secciones(wiki),
+        ],
+        "opcional": lambda: _combinado_estrategico(args, wiki, "opcional"),
+        "tras_grafo": lambda: _combinado_estrategico(args, wiki, "tras_grafo"),
+        "tras_lectura": lambda: _combinado_estrategico(args, wiki, "tras_lectura"),
         "fragmentos": lambda: [
             herramienta_busqueda_con_fragmentos(wiki),
             herramienta_lectura(wiki),
@@ -760,6 +836,12 @@ def main() -> int:
     args = analizador.parse_args()
 
     variantes = [v for v in args.variantes.split(",") if v]
+    con_tgrep_y_grafo = ("combinado", "opcional", "tras_grafo", "tras_lectura")
+    if any(v in variantes for v in con_tgrep_y_grafo) and not (
+        args.grafo and args.graphify and args.tgrep and args.tgrep_indice
+    ):
+        print("combinado necesita --grafo --graphify --tgrep --tgrep-indice", file=sys.stderr)
+        return 1
     if "graphify" in variantes and not (args.grafo and args.graphify):
         print("La variante graphify necesita --grafo y --graphify", file=sys.stderr)
         return 1

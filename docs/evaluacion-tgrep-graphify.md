@@ -2,6 +2,10 @@
 
 Evaluación exploratoria del 9 y 10 de noviembre de 2026. La consulta del wiki es un agente que busca páginas, las lee y responde; cada turno reenvía todo lo anterior, así que el consumo de tokens crece con el número de turnos y con lo que devuelve cada herramienta. Se probaron dos herramientas que el tutor propuso para reducirlo: [tgrep](https://github.com/microsoft/tgrep) (Microsoft) y [graphify](https://github.com/Graphify-Labs/graphify). El tutor pidió usar graphify «en función de los markdowns» del wiki y no del código; esta evaluación lo aplica como capa de navegación sobre los `.md` del wiki.
 
+## Dónde está en el código
+
+Las pruebas de este informe se hicieron con `scripts/comparar_herramientas.py`. Las dos herramientas también están integradas en el producto como capa de consulta **opcional y apagada por defecto**: `src/wikillm/wiki/capas.py` (grafo con `graphify` y `tgrep` como herramienta opcional), `ConsultaWiki(capas=...)`, el brazo `BrazoWikiCapas` (`wiki_grafo` o `wiki_grafo_tgrep`, que consulta el mismo wiki sin reingerir) y las opciones `--graphify` y `--tgrep` de `arnes correr` (cambio OpenSpec `2026-11-11-wiki-capas-consulta`). Sin esas opciones el WikiLLM base no cambia.
+
 ## Resumen
 
 | | Resultado en esta prueba |
@@ -10,6 +14,7 @@ Evaluación exploratoria del 9 y 10 de noviembre de 2026. La consulta del wiki e
 | **graphify** (grafo de títulos y enlaces) | En 5 preguntas baja la entrada un 25 % (IC 95 %: −5,2 k a −1,4 k) con los mismos aciertos; el ahorro se concentra en las preguntas sin respuesta y en las fáciles cuesta más. En 3 preguntas que combinan dos papers no ahorra (+16 %) pero acierta 6/9 frente a 1/18 de la base. Cada consulta tarda 1,7 s y su modo semántico (con LLM) no terminó. |
 | **Leer por secciones** | Cada lectura devuelve un 60 % menos de texto, pero el total solo baja entre 6 % y 18 % (no distinguible del ruido) y, con un esquema en la búsqueda, una pregunta pasó de 10/10 a 0/5 aciertos. |
 | **Fragmentos en la búsqueda** (propia) | Devolver el párrafo más parecido de cada página y dejar responder sin abrirla baja la entrada un 10 % (IC −2,8 k a −0,4 k) con los mismos aciertos y un turno menos; en dólares no se distingue de la base. |
+| **graphify + tgrep juntos** (ronda 4) | Con tgrep siempre disponible el agente hace más pasos (5,2 llamadas frente a 4,4) y responde peor que con graphify solo. Con tgrep como herramienta opcional casi no lo usa (1 llamada en 18 corridas) y no mejora, pero los tokens de entrada suben de 1,5 a 3,7 veces en las dos preguntas probadas. No lo incluimos en el experimento principal. |
 
 La evidencia es preliminar: de 3 a 5 preguntas por prueba, un solo wiki (15 de los 50 papers) y un solo modelo. Sirve para decidir qué probar a escala, no para afirmar un ahorro.
 
@@ -115,6 +120,55 @@ B002-T3-02 (comparar una cifra entre dos papers), A013-T3-02 (dos papers con res
 
 Nota sobre la base: `actual` genera respuestas más largas que `generico` (622 frente a 419 tokens de salida en estas preguntas, y en la ronda 1 hasta 1.530 frente a 410 en A003), así que las comparaciones en dólares con `actual` no son limpias; el control de equivalencia solo se sostuvo en tokens de entrada en las preguntas deterministas.
 
+## Ronda 4: graphify y tgrep juntos (10 de noviembre)
+
+Tras la respuesta del tutor («como una combinación»: el WikiLLM sigue generando las páginas, Graphify
+arma el mapa de términos para decidir qué leer y tgrep haría la búsqueda exacta), se probó esa
+combinación sobre el mismo wiki de 15 papers. Variantes nuevas de `comparar_herramientas.py`:
+
+- `combinado`: herramienta `graph` + `grep` (tgrep real, líneas recortadas a 300) + lectura por secciones, con `grep` siempre disponible.
+- `opcional`: igual, pero `grep` no cuenta como lectura, devuelve 5 líneas y su descripción dice que solo sirve para comprobar un dato exacto.
+- `tras_grafo` y `tras_lectura`: como `opcional`, con 3 líneas, y `grep` se rechaza hasta que el agente haya usado `graph` o `read`.
+
+| Prueba | Variante | Corridas | Aciertos (frases clave) | Tokens de entrada | USD por corrida |
+|---|---|---:|---:|---:|---:|
+| 3 preguntas entre varios papers | graphify solo | 18 | 13 | 14.292 | 0,00062 |
+| | combinado | 12 | 4 | 17.339 | 0,00079 |
+| A013 y A016 × 3 | opcional | 6 | 3 | 18.577 | 0,00077 |
+| | tras_grafo | 6 | 3 | 20.134 | 0,00074 |
+| | tras_lectura | 6 | 3 | 14.884 | 0,00068 |
+
+Costo de la ronda: ≈0,03 USD.
+
+**Juicio a ciegas.** La métrica de frases clave resultó engañosa en A016 (la base respondía bien las
+6 veces y recibía 0/6). Por eso se leyeron las respuestas de A013 y A016 (56 corridas, 54 respuestas
+distintas) sin saber qué variante las produjo, contra la respuesta de referencia del banco:
+
+| Variante | Corridas | Correctas | Parciales |
+|---|---:|---:|---:|
+| base | 12 | 8 | 4 |
+| graphify solo | 12 | 12 | 0 |
+| combinado | 8 | 5 | 3 |
+| opcional, tras_grafo y tras_lectura | 18 | 18 | 0 |
+
+Lo juzgó un solo evaluador (un modelo distinto del que responde y del que redactó las preguntas),
+que veía la respuesta de referencia y leyó cada respuesta cortada a 1.100 caracteres. No sustituye al
+juez del experimento (decisión 0003); sirve solo para orientar esta decisión. En A013 la base elige
+mal el segundo paper (4 de 6 parciales); en A016 no hay diferencia real. Los parciales de `combinado`
+confunden LLM-Wiki con WiCER.
+
+**Qué falló en tgrep.** (1) Devuelve párrafos completos, 720–840 tokens por llamada frente a ≈485 de
+la búsqueda propia. (2) Su recorte muestra el inicio de la línea, no el entorno del dato: buscando
+«4.38», en una página el número quedó fuera de lo visible; el 16 % de las líneas del wiki pasa de
+300 caracteres y son las que traen las cifras. (3) Su índice acelera una búsqueda que ya era
+instantánea. (4) Como opcional, el agente no lo usa. (5) Siempre disponible, hace de 2 a 4 búsquedas
+por corrida y confunde papers (hipótesis: las páginas que coinciden con la palabra lo alejan de las de
+concepto; no se verificó). (6) Aun sin usarlo, añadir la herramienta cambió el recorrido (A016: 27.364
+frente a 7.390 tokens), lo que muestra que el recorrido con temperatura 0 es frágil.
+
+**Decisión provisional.** WikiLLM con graphify como capa de consulta, sin tgrep. Se propone al tutor
+como brazo adicional sobre el mismo wiki, sin reingesta.
+
 ## Lectura de los resultados
 
 1. **tgrep no ahorra por ser tgrep.** La velocidad de búsqueda no es el problema del WikiLLM: con decenas de páginas ya tarda milisegundos (17–33 ms frente a 57–63 ms). Por defecto devuelve párrafos completos y no ahorra. Lo que ahorra es recortar la salida, algo que se puede hacer en la propia búsqueda sin depender del binario.
@@ -128,7 +182,7 @@ Nota sobre la base: `actual` genera respuestas más largas que `generico` (622 f
 
 ## Limitaciones
 
-- De 3 a 5 preguntas por prueba, 15 papers; ninguna conclusión por tipo de pregunta es firme. La métrica de acierto es la presencia de frases clave; el juez no se ejecutó.
+- De 3 a 5 preguntas por prueba, 15 papers; ninguna conclusión por tipo de pregunta es firme. La métrica de acierto es la presencia de frases clave; el juez del experimento (Gemini) no se ejecutó. La ronda 4 añade un juicio a ciegas de un solo evaluador sobre dos preguntas, solo orientativo.
 - El costo de la consulta crece con el tamaño del wiki (el índice pasó de 1.194 a 3.504 tokens de 5 a 15 papers; a 50 rondaría los 11.000 si crece de forma lineal). La consulta al grafo está acotada por su presupuesto (≈500 tokens), así que su ventaja podría crecer con la escala, pero no se midió.
 - `graphify` se invocó como proceso externo (1,7 s por consulta, casi todo arranque y carga del grafo), lo que hace al agente el doble de lento. Un uso en proceso (servidor MCP) quitaría ese costo; no se probó.
 - El paso semántico se probó una sola vez, con un solo modelo y la configuración por defecto, y construir el conocimiento desde los Markdown de los papers (en vez de desde el wiki) no se probó: es otra arquitectura.
@@ -136,7 +190,7 @@ Nota sobre la base: `actual` genera respuestas más largas que `generico` (622 f
 
 ## Qué sigue
 
-1. **Preguntar al tutor** si «en función de los markdowns» significa usar el grafo como capa de navegación sobre el wiki (lo probado aquí) o construir el conocimiento desde los Markdown de los papers (otra arquitectura, no probada).
+1. **Respondido por el tutor (10-nov):** «en función de los markdowns» es una combinación sobre el WikiLLM, que sigue generando las páginas; Graphify solo ayuda a consultar. Falta su opinión sobre tgrep y sobre lanzar la corrida completa.
 2. **Decidir antes de congelar** si la búsqueda del wiki recorta la salida o devuelve fragmentos (cambio propio, sin dependencias y sin reingerir): una prueba de ~12 preguntas en el wiki de 15 papers cuesta ≈0,05 USD.
 3. **Repetir a escala** cuando exista el wiki de 50 papers (el estado final de la corrida completa sirve): unas 20 preguntas, incluidas las que combinan varios papers, para comprobar si la ventaja de graphify en preguntas entre documentos se sostiene.
 4. **No adoptar lectura por secciones sola:** introduce fallos de selección.
@@ -156,6 +210,7 @@ uv run python scripts/comparar_herramientas.py --wiki data/wiki/prueba-herramien
 uv run python scripts/comparar_herramientas.py --grafo <graph.json> \
     --variantes actual,generico,fragmentos,gist,vecinos --repeticiones 5 \
     --salida results/herramientas/paso15-ronda2
+# ronda 4: --variantes combinado,opcional,tras_grafo,tras_lectura (con --grafo --graphify --tgrep --tgrep-indice)
 # tgrep real (índice creado antes con: tgrep index . --index-path <carpeta> --no-require-git)
 uv run python scripts/comparar_herramientas.py --variantes tgrep --tgrep <tgrep.exe> \
     --tgrep-indice <carpeta> --preguntas A002-T1-02,B006-T1-01,BT5-T5-07 --repeticiones 3 \

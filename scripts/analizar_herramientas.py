@@ -17,7 +17,20 @@ from pathlib import Path
 from typing import Any
 
 BASE = "actual+generico"
-ORDEN = (BASE, "grep", "secciones", "esquema", "graphify", "fragmentos", "gist", "vecinos")
+ORDEN = (
+    BASE,
+    "grep",
+    "secciones",
+    "esquema",
+    "graphify",
+    "fragmentos",
+    "gist",
+    "vecinos",
+    "combinado",
+    "opcional",
+    "tras_grafo",
+    "tras_lectura",
+)
 
 
 def cargar(carpetas: list[Path]) -> list[dict[str, Any]]:

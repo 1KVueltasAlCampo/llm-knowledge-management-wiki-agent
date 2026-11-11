@@ -25,7 +25,7 @@
 
 - [x] 5.1 Redactor anclado al Gold, plan con estimación y hojas de anotación. Verificación: `tests/test_eval_redaccion.py`.
 - [x] 5.2 Borradores de la mitad A. Verificación: 102 borradores T1–T4 y 12 T5, `validar-banco` sin problemas de formato (18 avisos de claves corregidos en la revisión).
-- [ ] 5.3 Verificación humana y acuerdo. Hecho: mitad A verificada por Juan Diego (`banco_A.jsonl`, 30 preguntas). Falta: la verificación de Juan David sobre las mismas preguntas, `acuerdo` y la mitad B.
+- [x] 5.3 Verificación humana y acuerdo. Las 60 preguntas quedan `acordado` tras la revisión cruzada (`validar-banco`: 60 preguntas, 0 problemas). Acuerdo inicial: A 69,2 % (kappa 0,40), B 60,0 % (kappa 0,15); resultados en `results/banco/acuerdo_A.json` y `acuerdo_B.json`. Detalle en `docs/bitacora-datos.md` (9-nov).
 
 ## 6. Cierre
 

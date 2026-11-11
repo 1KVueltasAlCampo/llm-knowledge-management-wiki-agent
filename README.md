@@ -16,9 +16,9 @@ La literatura disponible no converge: los estudios que comparan ambos enfoques u
 
 La formulación es abierta: cualquier resultado, incluido uno desfavorable al WikiLLM, es válido y se reporta. Las conclusiones se expresan como un **conjunto de métricas ordenadas por importancia**, no como una cifra única.
 
-## Estado (7 de noviembre de 2026)
+## Estado (10 de noviembre de 2026)
 
-Fase de preparación del experimento: los dos sistemas y el arnés de comparación están construidos y probados; resta cerrar el banco de preguntas y ejecutar la corrida completa.
+Fase de preparación del experimento: los dos sistemas y el arnés de comparación están construidos y probados; resta ejecutar la corrida completa.
 
 | Componente | Estado |
 |---|---|
@@ -27,7 +27,7 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
 | WikiLLM (ingesta controlada y consulta por agente) | Listo. |
 | Arnés de comparación (reanudable, con control de costo) y comparación puntual de una pregunta | Listo; ejecutado en un piloto que no se usa en el informe. |
 | Métricas (correctitud, fundamentación, cobertura, abstención, respuestas obsoletas, acuerdo) | Listas y probadas con resultados sintéticos. |
-| Banco de 60 preguntas | 30 de la mitad A verificadas por un autor; 30 de la mitad B seleccionadas y en espera de verificación. Falta el acuerdo entre autores. |
+| Banco de 60 preguntas | Cerrado: las 60 están `acordadas`, revisadas por los dos autores (acuerdo inicial: A 69,2 % con kappa 0,40; B 60,0 % con kappa 0,15, antes de aplicar las correcciones cruzadas; ver [bitácora](docs/bitacora-datos.md)). |
 | Corrida completa, análisis, informe y demostración | Pendientes. |
 
 ## Diseño experimental
@@ -114,7 +114,7 @@ No son resultados del experimento; sirven para dimensionar su costo. Detalle en 
 | Costo por pregunta con 5 papers ingeridos | RAG ≈ 0,0003–0,0004 USD; wiki ≈ 0,0008 USD |
 | Piloto del arnés (17 preguntas, pasos 0 y 5, 68 respuestas) | 0,056 USD |
 
-La corrida completa se estima entre 1 y 2,5 USD.
+La corrida completa se estima entre 1 y 2,5 USD; la cota alta que calcula el arnés (`--estimar`) es de 4,67 USD (1,50 de ingesta y 3,17 de preguntas).
 
 ## Alcance y límites
 
@@ -147,7 +147,7 @@ Desarrollo guiado por especificaciones con [OpenSpec](https://github.com/Fission
 | Documento | Contenido |
 |---|---|
 | [Demostración](docs/demo.md) | Recorrido de punta a punta con la evidencia que produce. |
-| [tgrep y graphify](docs/evaluacion-tgrep-graphify.md) | Evaluación exploratoria de dos herramientas para reducir los tokens de la consulta del wiki. |
+| [tgrep y graphify](docs/evaluacion-tgrep-graphify.md) | Evaluación de dos herramientas para reducir los tokens de la consulta del wiki. Están integradas como capa opcional (`src/wikillm/wiki/capas.py`, brazo `wiki_grafo`), apagada por defecto. |
 | [Estado del arte](docs/estado-del-arte.md) | Revisión de literatura, implementaciones existentes, vacíos y encuadre. |
 | [Selección del corpus](docs/corpus.md) | Criterios, fuentes de candidatos y resultado de la selección de los 50 papers. |
 | [Bitácora](docs/bitacora-datos.md) | Qué se hizo, qué se decidió y qué falta, con las mediciones de cada etapa. |
@@ -193,6 +193,7 @@ uv run python -m wikillm.wiki ingerir --paso 5 --estimar   # costo esperado de i
 uv run python -m wikillm.arnes comparar "<pregunta>" --wiki data/wiki/demo   # una pregunta a ambos sistemas
 uv run python -m wikillm.arnes correr --corrida <nombre> --estimar   # costo de la corrida
 uv run python -m wikillm.arnes correr --corrida <nombre>             # ejecuta ambos sistemas por pasos
+uv run python -m wikillm.arnes correr --corrida <nombre> --graphify <graphify> [--tgrep <tgrep>]   # añade el brazo wiki_grafo (mismo wiki, consulta con grafo)
 uv run python -m wikillm.eval metricas --respuestas results/<nombre>/respuestas.jsonl
 uv run ruff check . && uv run ruff format --check . && uv run pytest
 ```
@@ -201,7 +202,7 @@ Los textos de arXiv no se versionan (regla 8 de la [constitución](CONSTITUTION.
 
 ## Licencia
 
-Se propone publicar bajo licencia **MIT**. Pendiente de añadir el archivo `LICENSE` al repositorio.
+Licencia **MIT** (ver [LICENSE](LICENSE)). El texto de los papers de arXiv no se redistribuye (regla 8) y conserva la licencia de sus autores.
 
 ## Equipo
 

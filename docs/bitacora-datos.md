@@ -425,3 +425,33 @@ La demostración se probó en vivo sobre Qdrant: antes de ingerir el paper 6, lo
 abstienen ante la pregunta de BeliefShift; después, los dos responden citando `2603.23848#s18.p3`.
 Durante esa prueba se encontró que la presentación automática se detenía si ya había una ingesta en
 curso, y ahora la sigue.
+
+## 2026-11-11 (Juan David): pista quitada de dos T4 y candidatas para ampliar el corpus
+
+**Pista quitada.** A039-T4-03 y A016-T4-03 terminaban con «If more than one paper in the corpus
+reports it, give the most recent report.». Se quitó la frase del banco (`banco.jsonl`, `banco_A.jsonl`
+y `ajustes_A.json`) porque decirle al sistema qué regla seguir ante varios reportes hace a la propia
+pregunta parte de la respuesta: es el RAG o el wiki quien debe decidir. `validar-banco` sigue en 60
+preguntas, 0 problemas y 60 `acordado`; no se cambió el estado de ninguna. Cambia la huella del banco,
+así que una corrida empezada antes con el banco anterior no se puede reanudar.
+
+**Lo que se encontró al revisarlas (pendiente de decidir con Juan Diego).** La pista contradecía la
+respuesta de referencia. El paper posterior de A039 (2609.18182, tabla 18) reporta HippoRAG 2 con
+Recall@5 de **52,94** en MuSiQue, y la referencia es 74,7 (paper original de HippoRAG 2). El de A016
+(2605.25480) reporta HippoRAG 2 con F1 de **0,831** en 2Wiki, y la referencia es 71,0. Son
+evaluaciones con otra configuración, no una actualización que deje obsoleto el dato original.
+
+Sin la pista, las dos preguntas admiten dos respuestas defendibles y las claves (`74.7`, `71.0`) dan
+por mala la del paper posterior. Opciones: (a) acotar la pregunta a una configuración sin nombrar el
+paper; (b) pasarlas a T3 («¿coinciden los papers del corpus sobre…?») con el desacuerdo como
+respuesta; (c) aceptar cualquiera de las dos cifras si el sistema cita su fuente. No se eligió
+ninguna: hay que acordarlo antes de la corrida.
+
+**Parecidas, sin tocar.** B001-T4-05 y B001-T4-06 piden «the highest … that the corpus reports» (regla
+del máximo, necesaria para que la respuesta sea única) y A018-T2-01 dice «the later paper», que ordena
+los dos papers. Se dejan hasta decidir si cuentan como pista.
+
+**Candidatas de ampliación.** `data/ampliacion/candidatas_citadas.csv`: 611 identificadores de arXiv
+citados por los 50 papers y que no están en el corpus (de la bibliografía del HTML original), con los
+papers que los citan y un nivel. 31 son de dic-2023 a 2025 y las citan 3 o más papers del corpus;
+22 son anteriores a dic-2023 y no tienen HTML nativo en arXiv. No se comprobó la existencia del HTML.

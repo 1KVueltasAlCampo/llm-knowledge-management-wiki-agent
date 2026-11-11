@@ -143,7 +143,7 @@
   {
    "question_id": "A039-T4-03",
    "accion": "agregar",
-   "pregunta": "What passage Recall@5 on MuSiQue has been reported for HippoRAG 2? If more than one paper in the corpus reports it, give the most recent report.",
+   "pregunta": "What passage Recall@5 on MuSiQue has been reported for HippoRAG 2?",
    "respuesta_antes": "74.7 (HippoRAG 2 paper, Table 3).",
    "claves_antes": [
     "74.7"
@@ -157,7 +157,7 @@
   {
    "question_id": "A016-T4-03",
    "accion": "agregar",
-   "pregunta": "What F1 on 2WikiMultiHopQA has been reported for HippoRAG 2? If more than one paper in the corpus reports it, give the most recent report.",
+   "pregunta": "What F1 on 2WikiMultiHopQA has been reported for HippoRAG 2?",
    "respuesta_antes": "71.0 F1 (HippoRAG 2 paper, Table 2, Llama-3.3-70B reader).",
    "claves_antes": [
     "71.0"

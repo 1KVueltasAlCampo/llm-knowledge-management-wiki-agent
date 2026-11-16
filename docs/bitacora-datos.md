@@ -542,3 +542,22 @@ T4 solo tiene 4 preguntas; el juez Gemini no se calibró contra etiquetas humana
 calificación (el mismo contenido que las 139 que resolvió); y el wiki no es determinista, así que una
 repetición podría dar otras cifras. El tope de salida del wiki se subió a 32.000 a mitad de la corrida
 (decisión 0007).
+
+## 2026-11-16 (Juan David): tablas escaladas y Gold de 100 papers reconstruido
+
+**Hallazgo.** LaTeXML dibuja una tabla escalada con `\resizebox` como `<span class="ltx_tabular">` y el
+conversor solo leía `<table class="ltx_tabular">`: esas tablas no llegaban al Gold. Al reconvertir el
+Bronze, cambian cuatro papers y los otros 96 salen idénticos byte a byte: Hindsight (`2512.12818`, pasa de
+0 a 4 tablas), BEAM (`2510.27246`, +7), GAM (`2511.18423`, +2) y una tabla de ablación de `2608.12888`.
+
+**Qué se hizo.** `src/wikillm/ingest/markdown.py` reconoce filas y celdas en `<span>` (cambio
+`2026-11-16-tablas-escaladas`, con prueba). El Gold de 100 papers se reconstruyó en `data/corpus100/`
+con la ingesta normal, respetando los 15 s entre peticiones (una caída de conexión afectó a 15
+papers y se reintentó). `spans.jsonl` de los otros 96 papers coincide con el que había.
+Solo cambian los fragmentos de esos cuatro (+14 fragmentos) y los `tokens` de su fila del manifest.
+Las 138 evidencias del banco de 100 resuelven a un fragmento con la misma huella. El Gold de 50 y la
+corrida `oficial-1` no se tocaron: `oficial-1` se hizo con el conversor anterior.
+
+**Banco.** `data/preguntas/banco_100.jsonl` tiene ahora 100 preguntas: las 60 acordadas más 20 de Juan
+Diego y 20 de Juan David (`data/ampliacion/preguntas_borde_40.json`). Estimación del arnés para la
+corrida `ampliado-1` (11 pasos, 2 brazos): 8,28 USD como cota alta (3,00 de ingesta y 5,28 de preguntas).

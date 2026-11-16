@@ -1,110 +1,110 @@
 ﻿id,lista,tipo,pregunta,papers_donde_mirar,respuesta_de_la_wiki,fragmentos_para_ctrl_f,nota_de_claude,la_escoge_su_autor,el_autor_confirma_la_respuesta,el_otro_esta_de_acuerdo,notas
 JD-01,Juan David,Antiguo frente a nuevo,What accuracy has been reported for Zep on the DMR benchmark?,2501.13956; 2310.08560,"Zep reaches 94.8% on DMR with gpt-4-turbo and 98.2% with gpt-4o-mini, against 93.4% for MemGPT (Zep paper 2501.13956; MemGPT figure from 2310.08560).","[2501.13956] «Zep demonstrates superior performance (94.8% vs 93.4%)»
 [2501.13956] «98.2%»
-[2310.08560] «93.4%»","Antes de ingerir a Zep (2501.13956) lo correcto es abstenerse; con MemGPT solo se puede decir que MemGPT tiene 93,4 %.",,,,
+[2310.08560] «93.4%»","Antes de ingerir a Zep (2501.13956) lo correcto es abstenerse; con MemGPT solo se puede decir que MemGPT tiene 93,4 %.",Sí,Sí,,"Comprobado en 2501.13956 §Abstract; 2501.13956 §4.2 Deep Memory Retrieval (DMR); 2310.08560 §3.1 MemGPT for conversational agents. Antes de ingerir a Zep (2501.13956) lo correcto es abstenerse; con MemGPT solo se puede decir que MemGPT tiene 93,4 %."
 JD-02,Juan David,Antiguo frente a nuevo,What overall J score has been reported for Mem0 on LoCoMo with gpt-4o-mini?,2504.19413; 2507.03724; 2610.30755,"The Mem0 paper reports an overall J of 66.88% for Mem0 and 68.44% for its graph variant Mem0g (2504.19413). A later paper, MemOS (2507.03724), measures Mem0 at 64.57 under its own setup, and 2610.30755 argues that weighting the published category scores by question counts gives 62.14 instead of 66.88.","[2504.19413] «66.88»
 [2504.19413] «68.44»
 [2507.03724] «64.57»
-[2610.30755] «62.14»","La clave principal es 66,88 (paper original); las otras cifras son contexto de papers posteriores.",,,,
+[2610.30755] «62.14»","La clave principal es 66,88 (paper original); las otras cifras son contexto de papers posteriores.",Sí,Sí,,"Comprobado en 2504.19413 §4.2 Cross-Category Analysis; 2507.03724 §6.1 End-to-End Evaluation on Long Context Memory; 2610.30755 §Published overall scores.. La clave principal es 66,88 (paper original); las otras cifras son contexto de papers posteriores."
 JD-03,Juan David,Antiguo frente a nuevo,How many sessions can a LoCoMo conversation have?,2402.17753; 2511.01448; 2512.12818,"Up to 35 sessions, with about 300 turns and 9K tokens per conversation, and 19.3 sessions on average (LoCoMo paper 2402.17753). Later papers describe the data differently: 2511.01448 gives an average of 27.2 sessions.","[2402.17753] «over up to 35 sessions»
 [2402.17753] «19.3»
-[2511.01448] «average of 27.2 sessions»","El resumen del paper dice «hasta 35 sesiones»; la Tabla 5 dice 19,3 de media.",,,,
+[2511.01448] «average of 27.2 sessions»","El resumen del paper dice «hasta 35 sesiones»; la Tabla 5 dice 19,3 de media.",No,Sí,,"Comprobado en 2402.17753 §Abstract; 2402.17753 §1 Introduction; 2511.01448 §A.1 Dataset Details. El resumen del paper dice «hasta 35 sesiones»; la Tabla 5 dice 19,3 de media."
 JD-04,Juan David,Antiguo frente a nuevo,"With GPT-4o-mini, what accuracy does LightMem reach on LongMemEval-S and how does it compare with A-MEM?",2510.18866,"LightMem reaches between 64.29% and 68.64% depending on its settings (best: 68.64% with r=0.7, th=512), against 62.60% for A-MEM and 56.80% for passing the full text. The paper states a gain of 2.09%–6.40% over the strongest baseline with GPT backbones.","[2510.18866] «68.64»
 [2510.18866] «64.29»
 [2510.18866] «62.60»
-[2510.18866] «2.09%–6.40%»","Tabla 2 de LightMem; hay tres bloques según el modelo base (GPT-4o-mini, Qwen3, GLM-4.6).",,,,
+[2510.18866] «2.09%–6.40%»","Tabla 2 de LightMem; hay tres bloques según el modelo base (GPT-4o-mini, Qwen3, GLM-4.6).",No,Sí,,"Comprobado en 2510.18866 §4 Complexity analysis about LightMem; 2510.18866 §1 Introduction. Tabla 2 de LightMem; hay tres bloques según el modelo base (GPT-4o-mini, Qwen3, GLM-4.6)."
 JD-05,Juan David,Antiguo frente a nuevo,"With GPT-4o-mini, how well does A-MEM do on the multi-hop questions of LoCoMo?",2502.12110; 2504.19413,"A-MEM scores 27.02 F1 and 20.09 BLEU-1 on multi-hop questions (Table 1 of 2502.12110), against 26.65 F1 for MemGPT and 25.02 for the LoCoMo baseline.","[2502.12110] «27.02»
 [2502.12110] «20.09»
-[2502.12110] «26.65»","OJO: el paper de Mem0 pone esas mismas cifras base (25,02; 19,75) bajo «Single Hop», no «Multi Hop»: los dos papers etiquetan las categorías al revés. Ficha a completar.",,,,
+[2502.12110] «26.65»","OJO: el paper de Mem0 pone esas mismas cifras base (25,02; 19,75) bajo «Single Hop», no «Multi Hop»: los dos papers etiquetan las categorías al revés. Ficha a completar.",No,Sí,,"Comprobado en 2502.12110 §4.2 Implementation Details. OJO: el paper de Mem0 pone esas mismas cifras base (25,02; 19,75) bajo «Single Hop», no «Multi Hop»: los dos papers etiquetan las categorías al revés. Ficha a completar."
 JD-06,Juan David,Antiguo frente a nuevo,What single-hop LLM-judge score does MemOS report for itself on LoCoMo?,2507.03724; 2505.22101,81.09 for MemOS-1031 with GPT-4o-mini (Table 3 of the long MemOS paper 2507.03724). The short first MemOS paper (2505.22101) reports no LoCoMo result.,"[2507.03724] «81.09»
-[2507.03724] «MemOS-1031»","En la misma tabla, Mem0 tiene 73,33 y Zep 66,23 en single-hop.",,,,
-JD-07,Juan David,Vocabulario distinto,"Which paper makes stored conversation memories fade over time, in a way inspired by how people forget?",2305.10250,"MemoryBank (2305.10250): its memory updater is inspired by the Ebbinghaus Forgetting Curve, so memories are forgotten or reinforced according to elapsed time and importance.",[2305.10250] «inspired by the Ebbinghaus Forgetting Curve theory»,Otros papers también citan la curva del olvido; el que la implementa es MemoryBank.,,,,
-JD-08,Juan David,Vocabulario distinto,"Which paper links an agent's notes to each other, following a note-taking method from a German sociologist?",2502.12110,"A-MEM (2502.12110): it follows the Zettelkasten method, creating interconnected notes through dynamic indexing and linking.",[2502.12110] «Following the basic principles of the Zettelkasten method»,Otros papers citan Zettelkasten; el original es A-MEM.,,,,
+[2507.03724] «MemOS-1031»","En la misma tabla, Mem0 tiene 73,33 y Zep 66,23 en single-hop.",Sí,Sí,,"Comprobado en 2507.03724 §6.1 End-to-End Evaluation on Long Context Memory; 2507.03724 §1 Introduction. En la misma tabla, Mem0 tiene 73,33 y Zep 66,23 en single-hop."
+JD-07,Juan David,Vocabulario distinto,"Which paper makes stored conversation memories fade over time, in a way inspired by how people forget?",2305.10250,"MemoryBank (2305.10250): its memory updater is inspired by the Ebbinghaus Forgetting Curve, so memories are forgotten or reinforced according to elapsed time and importance.",[2305.10250] «inspired by the Ebbinghaus Forgetting Curve theory»,Otros papers también citan la curva del olvido; el que la implementa es MemoryBank.,No,Sí,,Comprobado en 2305.10250 §Abstract. Otros papers también citan la curva del olvido; el que la implementa es MemoryBank.
+JD-08,Juan David,Vocabulario distinto,"Which paper links an agent's notes to each other, following a note-taking method from a German sociologist?",2502.12110,"A-MEM (2502.12110): it follows the Zettelkasten method, creating interconnected notes through dynamic indexing and linking.",[2502.12110] «Following the basic principles of the Zettelkasten method»,Otros papers citan Zettelkasten; el original es A-MEM.,Sí,Sí,,Comprobado en 2502.12110 §Abstract. Otros papers citan Zettelkasten; el original es A-MEM.
 JD-09,Juan David,Vocabulario distinto,Which paper copies the stages of human sleep and short-term versus long-term storage to cut the number of tokens a memory system uses?,2510.18866,"LightMem (2510.18866): it organizes memory in three stages inspired by the Atkinson–Shiffrin model and uses a sleep-time update to maintain long-term memory, reducing token use.","[2510.18866] «Inspired by the Atkinson–Shiffrin model of human memory»
-[2510.18866] «sleep-time update mechanism»",,,,,
-JD-10,Juan David,Vocabulario distinto,"Which benchmark checks whether a memory system invents false facts when it stores, updates or answers?",2511.03506,"HaluMem (2511.03506): it evaluates memory hallucinations at three operations: memory extraction, memory updating and question answering.","[2511.03506] «whether hallucinations occur in memory extraction, memory updating, or question answering»",,,,,
+[2510.18866] «sleep-time update mechanism»",,Sí,Sí,,Comprobado en 2510.18866 §Abstract; 2510.18866 §1 Introduction
+JD-10,Juan David,Vocabulario distinto,"Which benchmark checks whether a memory system invents false facts when it stores, updates or answers?",2511.03506,"HaluMem (2511.03506): it evaluates memory hallucinations at three operations: memory extraction, memory updating and question answering.","[2511.03506] «whether hallucinations occur in memory extraction, memory updating, or question answering»",,Sí,Sí,,Comprobado en 2511.03506 §1 Introduction
 JD-11,Juan David,Vocabulario distinto,Which paper stores facts in a graph where each fact carries the time during which it was true?,2501.13956,"Zep (2501.13956): a temporal knowledge graph with a bi-temporal model that tracks when facts were created, expired, valid and invalid.","[2501.13956] «Zep: A Temporal Knowledge Graph Architecture for Agent Memory»
-[2501.13956] «bi-temporal model»",,,,,
+[2501.13956] «bi-temporal model»",,No,Sí,,Comprobado en 2501.13956 §Resumen; 2501.13956 §2.1 Episodes
 JD-12,Juan David,Vocabulario distinto,"Which paper simulates characters in a small virtual town who remember, think about their memories and plan their days?",2304.03442,"Generative Agents (2304.03442): 25 agents live in the sandbox town of Smallville with memory, reflection and planning.","[2304.03442] «A community of 25 unique agents inhabits Smallville»
-[2304.03442] «Smallville»",Muy famoso: puede responderse a libro cerrado.,,,,
+[2304.03442] «Smallville»",Muy famoso: puede responderse a libro cerrado.,No,Sí,,Comprobado en 2304.03442 §3.1. Agent Avatar and Communication; 2304.03442 §2.3. Large Language Models and Human Behavior. Muy famoso: puede responderse a libro cerrado.
 JD-13,Juan David,Abstención,What accuracy does Zep reach on MemBench?,2501.13956; 2506.21605,The ingested corpus does not contain this information.,"[2501.13956] «Zep: A Temporal Knowledge Graph Architecture for Agent Memory»
-[2506.21605] «MemBench»","Zep y MemBench existen en el corpus, pero ningún paper los reporta juntos. Los fragmentos muestran que cada uno existe por separado.",,,,
+[2506.21605] «MemBench»","Zep y MemBench existen en el corpus, pero ningún paper los reporta juntos. Los fragmentos muestran que cada uno existe por separado.",Sí,Sí,,"Comprobado en 2501.13956 §Resumen; 2506.21605 §Resumen. Zep y MemBench existen en el corpus, pero ningún paper los reporta juntos. Los fragmentos muestran que cada uno existe por separado."
 JD-14,Juan David,Abstención,What score does LightMem get on HaluMem?,2510.18866; 2511.03506,The ingested corpus does not contain this information.,"[2510.18866] «LightMem»
-[2511.03506] «HaluMem: Evaluating Hallucinations»",Ningún paper reporta LightMem en HaluMem.,,,,
+[2511.03506] «HaluMem: Evaluating Hallucinations»",Ningún paper reporta LightMem en HaluMem.,No,Sí,,Comprobado en 2510.18866 §Resumen; 2511.03506 §Resumen. Ningún paper reporta LightMem en HaluMem.
 JD-15,Juan David,Abstención,What F1 score does Mem0 reach on MuSiQue?,2504.19413; 2503.04338,The ingested corpus does not contain this information.,"[2504.19413] «Mem0»
-[2503.04338] «MuSiQue»","Mem0 y MuSiQue aparecen en el corpus, pero nunca en el mismo bloque de texto.",,,,
+[2503.04338] «MuSiQue»","Mem0 y MuSiQue aparecen en el corpus, pero nunca en el mismo bloque de texto.",Sí,Sí,,"Comprobado en 2504.19413 §Resumen; 2503.04338 §7.1. Setup. Mem0 y MuSiQue aparecen en el corpus, pero nunca en el mismo bloque de texto."
 JD-16,Juan David,Abstención,What accuracy does LiCoMemory reach on BEAM?,2511.01448; 2510.27246,The ingested corpus does not contain this information.,"[2511.01448] «LiCoMemory»
-[2510.27246] «BEAM»",Ningún paper reporta LiCoMemory en BEAM.,,,,
+[2510.27246] «BEAM»",Ningún paper reporta LiCoMemory en BEAM.,No,Sí,,Comprobado en 2511.01448 §Resumen; 2510.27246 §Abstract. Ningún paper reporta LiCoMemory en BEAM.
 JD-17,Juan David,Abstención,How does MemOS perform on REALTALK?,2507.03724; 2502.13270,The ingested corpus does not contain this information.,"[2507.03724] «MemOS»
-[2502.13270] «RealTalk»",Ningún paper contiene a la vez MemOS y REALTALK.,,,,
+[2502.13270] «RealTalk»",Ningún paper contiene a la vez MemOS y REALTALK.,Sí,Sí,,Comprobado en 2507.03724 §Resumen; 2502.13270 §Resumen. Ningún paper contiene a la vez MemOS y REALTALK.
 JD-18,Juan David,Abstención,What score does MemGPT get on BEAM?,2310.08560; 2510.27246,The ingested corpus does not contain this information.,"[2310.08560] «MemGPT»
-[2510.27246] «BEAM»",Ningún paper reporta MemGPT en BEAM.,,,,
+[2510.27246] «BEAM»",Ningún paper reporta MemGPT en BEAM.,No,Sí,,Comprobado en 2310.08560 §Resumen; 2510.27246 §Abstract. Ningún paper reporta MemGPT en BEAM.
 JD-19,Juan David,Contradicción,How many conversations does LoCoMo contain?,2402.17753; 2511.01448; 2512.12818; 2603.02473,"The papers disagree. The LoCoMo paper (Table 5 of 2402.17753) lists 50 conversations, and 2512.12818 repeats that figure. 2511.01448 and 2603.02473 evaluate on 10 conversations. The collection does not say why the numbers differ.","[2402.17753] «Total. # conversations»
 [2512.12818] «50 human-human conversations»
 [2511.01448] «10 long-form dialogues»
-[2603.02473] «10 multi-session conversations»",Ficha: versión del conjunto de datos (completa frente a la publicada).,,,,
+[2603.02473] «10 multi-session conversations»",Ficha: versión del conjunto de datos (completa frente a la publicada).,Sí,Sí,,Comprobado en 2402.17753 §B.1 Dataset Statistics; 2512.12818 §7.1.2 LoCoMo; 2511.01448 §A.1 Dataset Details; 2603.02473 §2.1 Write Strategies. Ficha: versión del conjunto de datos (completa frente a la publicada).
 JD-20,Juan David,Contradicción,What single-hop score has Mem0 been reported with on LoCoMo?,2504.19413; 2507.03724; 2610.30755,"The Mem0 paper reports a single-hop J of 67.13 (2504.19413), which 2610.30755 repeats as the published figure. The MemOS paper (2507.03724) reports 73.33 for Mem0 under its own evaluation with GPT-4o-mini. The setups differ, so the figures are not directly comparable.","[2504.19413] «67.13»
 [2507.03724] «73.33»
-[2610.30755] «67.13»",Diferencia de protocolo probable: la clave debe dar las dos cifras.,,,,
+[2610.30755] «67.13»",Diferencia de protocolo probable: la clave debe dar las dos cifras.,No,Sí,,Comprobado en 2504.19413 §Memory Providers; 2507.03724 §6.1 End-to-End Evaluation on Long Context Memory; 2610.30755 §2.2. Retrieval-augmented generation. Diferencia de protocolo probable: la clave debe dar las dos cifras.
 JD-21,Juan David,Contradicción,How many tokens does a LoCoMo dialogue have?,2402.17753; 2511.01448; 2502.12110,"About 9K tokens per conversation in the LoCoMo paper (9,209.2 on average, Table 5). 2511.01448 states roughly 16k tokens per dialogue, and the A-MEM paper lists the LoCoMo baseline with a token length of 16,910.","[2402.17753] «9,209.2»
 [2511.01448] «roughly 16k tokens per dialogue»
-[2502.12110] «16,910»","Ficha: A-MEM mide el contexto que se pasa al modelo, no el tamaño del diálogo.",,,,
+[2502.12110] «16,910»","Ficha: A-MEM mide el contexto que se pasa al modelo, no el tamaño del diálogo.",No,Sí,,"Comprobado en 2402.17753 §1 Introduction; 2511.01448 §A.1 Dataset Details; 2502.12110 §4.2 Implementation Details. Ficha: A-MEM mide el contexto que se pasa al modelo, no el tamaño del diálogo."
 JD-22,Juan David,Contradicción,What accuracy does Mem0 get on LongMemEval?,2510.18866; 2507.03724; 2511.01448,"It depends on the paper and the backbone: 53.61% with GPT-4o-mini in LightMem (2510.18866), 66.4 in the MemOS paper (2507.03724), and 56.80% with Llama-3.1-70B or 62.60% with GPT-4o-mini in LiCoMemory (2511.01448).","[2510.18866] «53.61»
 [2507.03724] «66.4»
 [2511.01448] «56.80»
-[2511.01448] «62.60»",Diferencia de protocolo: modelo base y juez distintos. La clave debe dar las cifras con su contexto.,,,,
+[2511.01448] «62.60»",Diferencia de protocolo: modelo base y juez distintos. La clave debe dar las cifras con su contexto.,Sí,Sí,,Comprobado en 2510.18866 §4 Complexity analysis about LightMem; 2507.03724 §6.1 End-to-End Evaluation on Long Context Memory; 2511.01448 §4 Experiments. Diferencia de protocolo: modelo base y juez distintos. La clave debe dar las cifras con su contexto.
 JD-23,Juan David,Agregación,Which papers in the collection mention MEMTRACK?,2510.01353; 2602.06052; 2609.24971,"Three papers: 2510.01353 (the MEMTRACK paper itself), 2602.06052 and 2609.24971.","[2510.01353] «Memtrack : Evaluating Long-Term Memory and State Tracking»
 [2602.06052] «MemTrack (Deshpande et al., 2025)»
-[2609.24971] «MEMTRACK [5]»",Conjunto cerrado: confirmar con búsqueda de texto.,,,,
+[2609.24971] «MEMTRACK [5]»",Conjunto cerrado: confirmar con búsqueda de texto.,Sí,Sí,,Comprobado en 2510.01353 §Resumen; 2602.06052 §7.1 Metrics; 2609.24971 §2 Related Work. Conjunto cerrado: confirmar con búsqueda de texto.
 JD-24,Juan David,Agregación,Which papers in the collection mention HaluMem?,2511.03506; 2602.06052; 2605.20926; 2606.06240; 2609.05441,"Five papers: 2511.03506 (the HaluMem paper), 2602.06052, 2605.20926, 2606.06240 and 2609.05441.","[2511.03506] «HaluMem: Evaluating Hallucinations in Memory Systems of Agents»
 [2602.06052] «HaluMem (Chen et al., 2025a)»
 [2605.20926] «HaluMem (Chen et al., 2025)»
 [2606.06240] «HaluMem (Chen et al., 2025)»
-[2609.05441] «HaluMem (HaluMem, 2025)»",Conjunto cerrado.,,,,
+[2609.05441] «HaluMem (HaluMem, 2025)»",Conjunto cerrado.,No,Sí,,Comprobado en 2511.03506 §Resumen; 2602.06052 §7.1 Metrics; 2605.20926 §2.2. Evaluation of Memory Systems; 2606.06240 §Agent-memory systems ship the four strategies without typing the contract.; 2609.05441 §Blind spot 2: Memory is assumed to help; harm is unmeasured.. Conjunto cerrado.
 JD-25,Juan David,Agregación,Which papers in the collection mention REALTALK?,2502.13270; 2507.05257; 2603.02473; 2607.26637; 2609.24971,"Five papers: 2502.13270 (the REALTALK paper), 2507.05257, 2603.02473, 2607.26637 and 2609.24971.","[2502.13270] «RealTalk : A 21-Day Real-World Dataset»
 [2507.05257] «RealTalk (Lee et al., 2025)»
 [2603.02473] «RealTalk (Lee et al., 2025)»
 [2607.26637] «PersonaMem, REALTALK»
-[2609.24971] «RealTalk [10]»",Conjunto cerrado.,,,,
+[2609.24971] «RealTalk [10]»",Conjunto cerrado.,Sí,Sí,,Comprobado en 2502.13270 §Resumen; 2507.05257 §Benchmarks for Memory Agents; 2603.02473 §Appendix A Related Work; 2607.26637 §1 Introduction; 2609.24971 §2 Related Work. Conjunto cerrado.
 JD-26,Juan David,Agregación,Which papers in the collection mention ConvoMem?,2511.10523; 2602.06052; 2606.06240,"Three papers: 2511.10523 (the ConvoMem paper), 2602.06052 and 2606.06240.","[2511.10523] «ConvoMem Benchmark: Why Your First 150 Conversations»
 [2602.06052] «ConvoMem (Pakhomov et al., 2025)»
-[2606.06240] «LongMemEval/LoCoMo/ConvoMem»",Conjunto cerrado.,,,,
+[2606.06240] «LongMemEval/LoCoMo/ConvoMem»",Conjunto cerrado.,No,Sí,,Comprobado en 2511.10523 §Resumen; 2602.06052 §7.1 Metrics; 2606.06240 §G.8. Deferred Wire Imports and Benchmark Integrations. Conjunto cerrado.
 JD-27,Juan David,Segunda mano,"What accuracy does Zep get on LongMemEval according to the Zep paper, and what do later papers report for it?",2501.13956; 2507.03724; 2511.01448,"The Zep paper reports 63.8% with gpt-4o-mini and 71.2% with gpt-4o on LongMemEval (2501.13956). The MemOS paper lists the same 63.8 for Zep (2507.03724), while LiCoMemory re-measures Zep at 60.20% with Llama-3.1-70B and 58.60% with GPT-4o-mini (2511.01448).","[2501.13956] «63.8%»
 [2501.13956] «71.2%»
 [2507.03724] «63.8»
 [2511.01448] «60.20»
-[2511.01448] «58.60»",,,,,
+[2511.01448] «58.60»",,Sí,Sí,,Comprobado en 2501.13956 §4.3.2 LongMemEval results; 2507.03724 §6.1 End-to-End Evaluation on Long Context Memory; 2511.01448 §4 Experiments
 JD-28,Juan David,Segunda mano,"What overall J does the Mem0 paper give for its graph variant, and what do later papers report for it?",2504.19413; 2610.30755; 2511.01448,"The Mem0 paper reports 68.44% overall J for the graph variant Mem0g (2504.19413). 2610.30755 repeats 68.44 as the published score, and LiCoMemory measures Mem0g at 55.48% accuracy on LoCoMo with Llama-3.1-70B (2511.01448).","[2504.19413] «68.44»
 [2610.30755] «68.44»
-[2511.01448] «55.48»",Métricas distintas (J frente a exactitud): no son comparables.,,,,
+[2511.01448] «55.48»",Métricas distintas (J frente a exactitud): no son comparables.,No,Sí,,Comprobado en 2504.19413 §4.2 Cross-Category Analysis; 2610.30755 §Published overall scores.; 2511.01448 §4 Experiments. Métricas distintas (J frente a exactitud): no son comparables.
 JD-29,Juan David,Segunda mano,"What accuracy is reported for A-MEM on LongMemEval, and which paper reports it?",2510.18866; 2511.01448; 2502.12110,"The A-MEM paper does not evaluate LongMemEval. Other papers report it: LightMem gives 62.60% (GPT-4o-mini), 65.20% (Qwen3-30B) and 70.60% (GLM-4.6) (2510.18866), and LiCoMemory gives 57.40% with Llama-3.1-70B (2511.01448).","[2510.18866] «62.60»
 [2510.18866] «65.20»
 [2510.18866] «70.60»
-[2511.01448] «57.40»",Cita de segunda mano pura: A-MEM no tiene esta cifra en su propio paper.,,,,
+[2511.01448] «57.40»",Cita de segunda mano pura: A-MEM no tiene esta cifra en su propio paper.,Sí,Sí,,Comprobado en 2510.18866 §4 Complexity analysis about LightMem; 2511.01448 §4 Experiments. Cita de segunda mano pura: A-MEM no tiene esta cifra en su propio paper.
 JD-30,Juan David,Segunda mano,"What does the MemGPT paper report on DMR, and what does the Zep paper report for MemGPT?",2310.08560; 2501.13956,The MemGPT paper reports 93.4% accuracy on DMR (2310.08560). The Zep paper reproduces that 93.4% for MemGPT in its Table 1 (marked with a dagger) and reports 94.8% for Zep with gpt-4-turbo (2501.13956).,"[2310.08560] «93.4%»
 [2501.13956] «MemGPT†»
-[2501.13956] «94.8%»",,,,,
+[2501.13956] «94.8%»",,No,Sí,,Comprobado en 2310.08560 §3.1 MemGPT for conversational agents; 2501.13956 §4.2 Deep Memory Retrieval (DMR); 2501.13956 §Abstract
 JD-31,Juan David,Marco temporal,How many questions does the LoCoMo benchmark contain?,2402.17753; 2511.01448; 2603.02473,"7,512 questions across 50 conversations in the LoCoMo paper (Table 5 of 2402.17753). Later papers that use 10 conversations report 1,986 questions (2511.01448) or 1,540 non-adversarial questions (2603.02473).","[2402.17753] «7,512»
 [2511.01448] «1,986 questions»
-[2603.02473] «1,540 non-adversarial questions»","La clave cambia según qué papers se hayan ingerido: antes de los posteriores, solo 7.512.",,,,
+[2603.02473] «1,540 non-adversarial questions»","La clave cambia según qué papers se hayan ingerido: antes de los posteriores, solo 7.512.",Sí,Sí,,"Comprobado en 2402.17753 §B.1 Dataset Statistics; 2511.01448 §4.1 Experimental Setup; 2603.02473 §1 Introduction. La clave cambia según qué papers se hayan ingerido: antes de los posteriores, solo 7.512."
 JD-32,Juan David,Marco temporal,Which memory system has the highest reported accuracy on the DMR benchmark?,2501.13956; 2310.08560,"Zep: 98.2% with gpt-4o-mini and 94.8% with gpt-4-turbo (2501.13956). Before Zep, the best system in the MemGPT paper was MemGPT at 93.4%.","[2501.13956] «98.2%»
 [2501.13956] «94.8%»
-[2310.08560] «93.4%»","Con solo MemGPT ingerido, la respuesta es MemGPT (93,4 %); con Zep, Zep. DMR solo aparece en 3 papers.",,,,
+[2310.08560] «93.4%»","Con solo MemGPT ingerido, la respuesta es MemGPT (93,4 %); con Zep, Zep. DMR solo aparece en 3 papers.",No,Sí,,"Comprobado en 2501.13956 §4.2 Deep Memory Retrieval (DMR); 2501.13956 §Abstract; 2310.08560 §3.1 MemGPT for conversational agents. Con solo MemGPT ingerido, la respuesta es MemGPT (93,4 %); con Zep, Zep. DMR solo aparece en 3 papers."
 JD-33,Juan David,Detalle de tabla,"How many memory tokens do Mem0, its graph variant and Zep use per conversation in the Mem0 paper?",2504.19413,"Mem0 uses 1764 memory tokens, Mem0g 3616 and Zep 3911 (latency table of 2504.19413).","[2504.19413] «1764»
 [2504.19413] «3616»
-[2504.19413] «3911»",Tabla 2 del paper de Mem0.,,,,
+[2504.19413] «3911»",Tabla 2 del paper de Mem0.,Sí,Sí,,Comprobado en 2504.19413 §4.2 Cross-Category Analysis. Tabla 2 del paper de Mem0.
 JD-34,Juan David,Detalle de tabla,"In the Zep paper's LongMemEval table, what latency and context size does Zep have with gpt-4o-mini?",2501.13956,"Zep has a median latency of 3.20 s and an average context of 1.6k tokens, against 31.3 s and 115k tokens for the full-context baseline; its accuracy is 63.8% against 55.4%.","[2501.13956] «3.20 s»
 [2501.13956] «1.6k»
 [2501.13956] «31.3 s»
-[2501.13956] «115k»",Tabla 2 del paper de Zep.,,,,
+[2501.13956] «115k»",Tabla 2 del paper de Zep.,No,Sí,,Comprobado en 2501.13956 §4.3.2 LongMemEval results. Tabla 2 del paper de Zep.
 JD-35,Juan David,Detalle de tabla,"In the A-MEM paper, what memory usage and retrieval time does A-MEM have with 10,000 memories?",2502.12110,14.65 MB of memory and a retrieval time of 0.38 ± 0.25 µs (Table 4 of 2502.12110).,"[2502.12110] «14.65»
-[2502.12110] «0.38»",,,,,
+[2502.12110] «0.38»",,Sí,Sí,,Comprobado en 2502.12110 §4.5 Hyperparameter Analysis; 2502.12110 §4.2 Implementation Details
 JD-36,Juan David,Detalle de tabla,"In the MemBench paper, what accuracy does the retrieval memory mechanism reach on the factual-memory participation scenario at 100k tokens?",2506.21605,"0.833, against 0.489 for FullMemory and 0.422 for RecentMemory (Table 3 of 2506.21605).","[2506.21605] «0.833»
-[2506.21605] «0.489»",En la tabla el método se llama «RetrievalMemmory» (errata del paper).,,,,
-JD-37,Juan David,Identificador exacto,Which paper uses the dataset called InfiniteChoice?,2505.24226,E2GraphRAG (2505.24226): it takes the English multiple-choice subset of InfiniteBench and calls it InfiniteChoice.,[2505.24226] «referred to as InfiniteChoice and InfiniteQA»,,,,,
-JD-38,Juan David,Identificador exacto,Which paper introduces the dataset called HaluMem-Long?,2511.03506,HaluMem (2511.03506): it builds HaluMem-Medium and HaluMem-Long.,[2511.03506] «HaluMem-Medium and HaluMem-Long»,,,,,
-JD-39,Juan David,Dato antiguo vigente,Which five abilities does LongMemEval test?,2410.10813,"Information extraction, multi-session reasoning, temporal reasoning, knowledge updates and abstention.","[2410.10813] «information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention»","Lo repiten los papers posteriores, así que no debería cambiar.",,,,
-JD-40,Juan David,Dato antiguo vigente,Which three scores does Generative Agents use to choose which memories to bring back?,2304.03442,"Recency, importance and relevance, combined as a weighted score.","[2304.03442] «relevance, recency, and importance»",Muy famoso: puede responderse a libro cerrado.,,,,
+[2506.21605] «0.489»",En la tabla el método se llama «RetrievalMemmory» (errata del paper).,No,Sí,,Comprobado en 2506.21605 §4 Benchmark. En la tabla el método se llama «RetrievalMemmory» (errata del paper).
+JD-37,Juan David,Identificador exacto,Which paper uses the dataset called InfiniteChoice?,2505.24226,E2GraphRAG (2505.24226): it takes the English multiple-choice subset of InfiniteBench and calls it InfiniteChoice.,[2505.24226] «referred to as InfiniteChoice and InfiniteQA»,,Sí,Sí,,Comprobado en 2505.24226 §Datasets
+JD-38,Juan David,Identificador exacto,Which paper introduces the dataset called HaluMem-Long?,2511.03506,HaluMem (2511.03506): it builds HaluMem-Medium and HaluMem-Long.,[2511.03506] «HaluMem-Medium and HaluMem-Long»,,No,Sí,,Comprobado en 2511.03506 §Abstract
+JD-39,Juan David,Dato antiguo vigente,Which five abilities does LongMemEval test?,2410.10813,"Information extraction, multi-session reasoning, temporal reasoning, knowledge updates and abstention.","[2410.10813] «information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention»","Lo repiten los papers posteriores, así que no debería cambiar.",Sí,Sí,,"Comprobado en 2410.10813 §Abstract. Lo repiten los papers posteriores, así que no debería cambiar."
+JD-40,Juan David,Dato antiguo vigente,Which three scores does Generative Agents use to choose which memories to bring back?,2304.03442,"Recency, importance and relevance, combined as a weighted score.","[2304.03442] «relevance, recency, and importance»",Muy famoso: puede responderse a libro cerrado.,No,Sí,,Comprobado en 2304.03442 §1. Introduction. Muy famoso: puede responderse a libro cerrado.
 JDi-01,Juan Diego,Antiguo frente a nuevo,What accuracy does RAPTOR reach on QuALITY when paired with GPT-4?,2401.18059,"82.6%, a new state of the art that surpasses the previous best of 62.3% (2401.18059).","[2401.18059] «82.6%»
 [2401.18059] «62.3%»","Con otros modelos base la cifra es otra (p. ej. 62,4 %): no mezclar.",Sí,Sí,,"Tabla 7: 82.6 % (RAPTOR+GPT-4, test) frente a 62.3 % anterior. Con GPT-3 en dev da 62.4 %: otra cifra, no mezclar."
 JDi-02,Juan Diego,Antiguo frente a nuevo,What accuracy has been reported for Hindsight on LongMemEval?,2512.12818,"91.4% with Gemini-3 Pro; 89.0% with OSS-120B and 83.6% with OSS-20B, on the S setting with 500 questions (2512.12818).","[2512.12818] «91.4%»

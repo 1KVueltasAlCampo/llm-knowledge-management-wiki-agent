@@ -1,0 +1,984 @@
+[
+ {
+  "id": "JDi-01",
+  "texto": "What accuracy does RAPTOR reach on QuALITY when paired with GPT-4?",
+  "tipo": "T1",
+  "respuesta_oraculo": "82.6% (RAPTOR with GPT-4 on QuALITY, test set), a new state of the art over the previous best of 62.3%.",
+  "respuesta_clave": [
+   "82.6"
+  ],
+  "fuentes_requeridas": [
+   "2401.18059"
+  ],
+  "citas": [
+   {
+    "paper": "2401.18059",
+    "cita": "RAPTOR paired with GPT-4 sets a new state-of-the-art with an accuracy of 82.6%"
+   }
+  ],
+  "autor": "A",
+  "notas": "Tabla 7: 82.6 % (RAPTOR+GPT-4, test) frente a 62.3 % anterior. Con GPT-3 en dev da 62.4 %: otra cifra, no mezclar."
+ },
+ {
+  "id": "JDi-02",
+  "texto": "What accuracy has been reported for Hindsight on LongMemEval?",
+  "tipo": "T1",
+  "respuesta_oraculo": "91.4% with Gemini-3 Pro, 89.0% with OSS-120B and 83.6% with OSS-20B on LongMemEval (S setting, 500 questions).",
+  "respuesta_clave": [
+   "91.4",
+   "89.0",
+   "83.6"
+  ],
+  "fuentes_requeridas": [
+   "2512.12818"
+  ],
+  "citas": [
+   {
+    "paper": "2512.12818",
+    "cita": "Hindsight with OSS-120B achieves 89.0% overall accuracy, and with Gemini-3 Pro achieves 91.4%"
+   },
+   {
+    "paper": "2512.12818",
+    "cita": "lifts overall accuracy from 39.0% to 83.6% over a full-context baseline on LongMemEval"
+   }
+  ],
+  "autor": "A",
+  "notas": "Tabla 3 de Hindsight: 91.4/89.0/83.6. El 91.4 usa Gemini-3 Pro solo como generador de la respuesta final; la memoria corre con OSS-120B."
+ },
+ {
+  "id": "JDi-05",
+  "texto": "What win rate does LightRAG have against the naive retrieval baseline overall on the Agriculture dataset?",
+  "tipo": "T1",
+  "respuesta_oraculo": "67.6% for LightRAG against 32.4% for NaiveRAG (Agriculture, Overall row of Table 1).",
+  "respuesta_clave": [
+   "67.6",
+   "32.4"
+  ],
+  "fuentes_requeridas": [
+   "2410.05779"
+  ],
+  "citas": [
+   {
+    "paper": "2410.05779",
+    "cita": "Overall | 32.4% | 67.6% |"
+   }
+  ],
+  "autor": "A",
+  "notas": "Tabla 1, fila Overall de Agriculture: 67.6 % vs 32.4 %."
+ },
+ {
+  "id": "JDi-07",
+  "texto": "Which paper builds a tree by repeatedly grouping pieces of text and summarising each group, so questions can be answered at different levels of detail?",
+  "tipo": "T1",
+  "respuesta_oraculo": "RAPTOR (Recursive Abstractive Processing for Tree-Organized Retrieval).",
+  "respuesta_clave": [
+   "RAPTOR"
+  ],
+  "fuentes_requeridas": [
+   "2401.18059"
+  ],
+  "citas": [
+   {
+    "paper": "2401.18059",
+    "cita": "recursively embedding, clustering, and summarizing chunks of text"
+   }
+  ],
+  "autor": "A",
+  "notas": "Resumen: «recursively embedding, clustering, and summarizing chunks of text»."
+ },
+ {
+  "id": "JDi-08",
+  "texto": "Which paper answers broad questions about a whole collection of texts by first summarising groups of closely connected entities?",
+  "tipo": "T1",
+  "respuesta_oraculo": "GraphRAG (From Local to Global: A Graph RAG Approach to Query-Focused Summarization).",
+  "respuesta_clave": [
+   "GraphRAG"
+  ],
+  "fuentes_requeridas": [
+   "2404.16130"
+  ],
+  "citas": [
+   {
+    "paper": "2404.16130",
+    "cita": "pregenerate community summaries for all groups of closely related entities"
+   }
+  ],
+  "autor": "A",
+  "notas": "El paper habla de pregenerar resúmenes de comunidad (Leiden) sobre grupos de entidades relacionadas; confirmado el sentido. Verificar la frase exacta del fragmento con Ctrl+F."
+ },
+ {
+  "id": "JDi-10",
+  "texto": "Which paper skips retrieval altogether by loading the whole knowledge base into the model's precomputed state?",
+  "tipo": "T1",
+  "respuesta_oraculo": "Cache-Augmented Generation (CAG), from the paper Don't Do RAG.",
+  "respuesta_clave": [
+   "Cache-Augmented Generation"
+  ],
+  "fuentes_requeridas": [
+   "2412.15605"
+  ],
+  "citas": [
+   {
+    "paper": "2412.15605",
+    "cita": "preloading all relevant resources"
+   }
+  ],
+  "autor": "A",
+  "notas": "Resumen: «preloading all relevant resources»; «bypasses real-time retrieval»; caché KV."
+ },
+ {
+  "id": "JDi-13",
+  "texto": "What score does Hindsight get on MemoryAgentBench?",
+  "tipo": "T5",
+  "respuesta_oraculo": "The ingested corpus does not contain this information.",
+  "respuesta_clave": [],
+  "fuentes_requeridas": [],
+  "citas": [],
+  "autor": "A",
+  "notas": "Abstención correcta: Hindsight solo evalúa LongMemEval y LoCoMo; MemoryAgentBench no menciona Hindsight (revisado en la primera parte del texto)."
+ },
+ {
+  "id": "JDi-14",
+  "texto": "What accuracy does Hindsight reach on PersonaMem?",
+  "tipo": "T5",
+  "respuesta_oraculo": "The ingested corpus does not contain this information.",
+  "respuesta_clave": [],
+  "fuentes_requeridas": [],
+  "citas": [],
+  "autor": "A",
+  "notas": "Abstención correcta: Hindsight no reporta PersonaMem y PersonaMem no menciona Hindsight."
+ },
+ {
+  "id": "JDi-17",
+  "texto": "What accuracy does RAPTOR reach on MemBench?",
+  "tipo": "T5",
+  "respuesta_oraculo": "The ingested corpus does not contain this information.",
+  "respuesta_clave": [],
+  "fuentes_requeridas": [],
+  "citas": [],
+  "autor": "A",
+  "notas": "Abstención correcta: MemBench no menciona RAPTOR, GraphRAG ni LightRAG."
+ },
+ {
+  "id": "JDi-19",
+  "texto": "How many turns does a LoCoMo conversation have?",
+  "tipo": "T3",
+  "respuesta_oraculo": "The LoCoMo paper says about 300 turns per conversation; another paper describes the same conversations as about 600 turns each, and a third as 27.2 sessions of about 21 turns each.",
+  "respuesta_clave": [
+   "300",
+   "600",
+   "21"
+  ],
+  "fuentes_requeridas": [
+   "2402.17753",
+   "2603.02473",
+   "2511.01448"
+  ],
+  "citas": [
+   {
+    "paper": "2402.17753",
+    "cita": "each encompassing 300 turns"
+   },
+   {
+    "paper": "2603.02473",
+    "cita": "600 turns each"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "each with about 21 turns"
+   }
+  ],
+  "autor": "A",
+  "notas": "Verificado: LoCoMo dice 300 turnos (Tabla 1: 304.9); Tabla 5: 19.3 sesiones y 15.8 turnos por sesión; 2603.02473 dice «approximately 600 turns each»; 2511.01448 «27.2 sessions, each with about 21 turns»."
+ },
+ {
+  "id": "JDi-20",
+  "texto": "What accuracy does Zep get on LoCoMo?",
+  "tipo": "T3",
+  "respuesta_oraculo": "It depends on the paper: an overall J of 65.99 in the Mem0 paper, 59.22 in the MemOS paper, and 40.30 (Llama-3.1-70B) or 44.76 (GPT-4o-mini) accuracy in LiCoMemory.",
+  "respuesta_clave": [
+   "65.99",
+   "59.22",
+   "40.30",
+   "44.76"
+  ],
+  "fuentes_requeridas": [
+   "2504.19413",
+   "2507.03724",
+   "2511.01448"
+  ],
+  "citas": [
+   {
+    "paper": "2504.19413",
+    "cita": "65.99"
+   },
+   {
+    "paper": "2507.03724",
+    "cita": "59.22"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "40.30"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "44.76"
+   }
+  ],
+  "autor": "A",
+  "notas": "Mem0 paper, Tabla 2: Zep 65.99 (Mem0 66.88, Mem0g 68.44). MemOS: Zep 59.22. LiCoMemory: 40.30 (Llama-3.1-70B) y 44.76 (GPT-4o-mini)."
+ },
+ {
+  "id": "JDi-21",
+  "texto": "Do the papers agree on whether Zep or Mem0 scores higher on LongMemEval?",
+  "tipo": "T3",
+  "respuesta_oraculo": "No. In the MemOS paper Mem0 is higher (66.4 against 63.8 for Zep), and in LiCoMemory with GPT-4o-mini too (62.60 against 58.60), but in LiCoMemory with Llama-3.1-70B Zep is higher (60.20 against 56.80).",
+  "respuesta_clave": [
+   "66.4",
+   "63.8",
+   "62.60",
+   "58.60",
+   "60.20",
+   "56.80"
+  ],
+  "fuentes_requeridas": [
+   "2507.03724",
+   "2511.01448"
+  ],
+  "citas": [
+   {
+    "paper": "2507.03724",
+    "cita": "66.4"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "62.60"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "58.60"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "60.20"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "56.80"
+   }
+  ],
+  "autor": "A",
+  "notas": "MemOS Tabla 4: Mem0 66.4 vs Zep 63.8. LiCoMemory: GPT-4o-mini Mem0 62.60 vs Zep 58.60; Llama-3.1-70B Zep 60.20 vs Mem0 56.80. Todo confirmado."
+ },
+ {
+  "id": "JDi-24",
+  "texto": "Which papers in the collection mention UltraDomain?",
+  "tipo": "T2",
+  "respuesta_oraculo": "Three papers: MemoRAG (which introduces UltraDomain), LightRAG (which uses four of its datasets) and E2GraphRAG (which says it does not adopt it).",
+  "respuesta_clave": [
+   "MemoRAG",
+   "LightRAG",
+   "E2GraphRAG"
+  ],
+  "fuentes_requeridas": [
+   "2409.05591",
+   "2410.05779",
+   "2505.24226"
+  ],
+  "citas": [
+   {
+    "paper": "2409.05591",
+    "cita": "introducing the UltraDomain benchmark"
+   },
+   {
+    "paper": "2410.05779",
+    "cita": "four datasets from the UltraDomain benchmark"
+   },
+   {
+    "paper": "2505.24226",
+    "cita": "We do not adopt the UltraDomain"
+   }
+  ],
+  "autor": "A",
+  "notas": "Confirmado en los tres: MemoRAG «introducing the UltraDomain benchmark»; LightRAG «four datasets from the UltraDomain benchmark»; E2GraphRAG «We do not adopt the UltraDomain». Que no haya más papers que lo mencionen no lo pude comprobar."
+ },
+ {
+  "id": "JDi-25",
+  "texto": "What overall LoCoMo score does the Mem0 paper publish for Mem0, and how does a later paper treat it?",
+  "tipo": "T3",
+  "respuesta_oraculo": "The Mem0 paper publishes 66.88 overall J; a later paper weights the published category scores by question counts and gets 62.14 instead.",
+  "respuesta_clave": [
+   "66.88",
+   "62.14"
+  ],
+  "fuentes_requeridas": [
+   "2504.19413",
+   "2610.30755"
+  ],
+  "citas": [
+   {
+    "paper": "2504.19413",
+    "cita": "66.88"
+   },
+   {
+    "paper": "2610.30755",
+    "cita": "62.14"
+   }
+  ],
+  "autor": "A",
+  "notas": "Mem0: 66.88 (Tabla 2). 2610.30755 (Tabla 3): 67.13/51.15/55.51/72.93 y «Weighting these by 841 / 282 / 321 / 96 questions gives 62.14»; comprobé el cálculo: (67.13·841+51.15·282+55.51·321+72.93·96)/1540 = 62.14."
+ },
+ {
+  "id": "JDi-26",
+  "texto": "What accuracy do GraphRAG (local) and LightRAG reach on NovelQA with Qwen2.5-7B-Instruct according to the E2GraphRAG paper?",
+  "tipo": "T1",
+  "respuesta_oraculo": "43.34 for GraphRAG (local) and 38.57 for LightRAG, against 37.27 for RAPTOR and 45.60 for E2GraphRAG (Table 1, Qwen2.5-7B-Instruct).",
+  "respuesta_clave": [
+   "43.34",
+   "38.57"
+  ],
+  "fuentes_requeridas": [
+   "2505.24226"
+  ],
+  "citas": [
+   {
+    "paper": "2505.24226",
+    "cita": "43.34"
+   },
+   {
+    "paper": "2505.24226",
+    "cita": "38.57"
+   },
+   {
+    "paper": "2505.24226",
+    "cita": "45.60"
+   }
+  ],
+  "autor": "A",
+  "notas": "E2GraphRAG Tabla 1 (Qwen2.5-7B): GraphRAG-L 43.34, LightRAG 38.57, RAPTOR 37.27, E2GraphRAG 45.60."
+ },
+ {
+  "id": "JDi-31",
+  "texto": "What is the best score reported at the 128K setting in the RULER paper?",
+  "tipo": "T1",
+  "respuesta_oraculo": "Gemini-1.5-Pro with 94.4 at 128K (GPT-4 reaches 81.2 and GLM4 (9B) 83.1; Table 3).",
+  "respuesta_clave": [
+   "94.4",
+   "Gemini-1.5-Pro"
+  ],
+  "fuentes_requeridas": [
+   "2404.06654"
+  ],
+  "citas": [
+   {
+    "paper": "2404.06654",
+    "cita": "94.4"
+   },
+   {
+    "paper": "2404.06654",
+    "cita": "81.2"
+   }
+  ],
+  "autor": "A",
+  "notas": "RULER Tabla 3: Gemini-1.5-Pro 94.4 (mejor a 128K), GPT-4 81.2, GLM4 (9B) 83.1."
+ },
+ {
+  "id": "JDi-32",
+  "texto": "Which agent has the highest overall score in the main MemoryAgentBench table?",
+  "tipo": "T1",
+  "respuesta_oraculo": "GPT-5-mini with a 400K context, with an overall score of 60.6 (Table 3).",
+  "respuesta_clave": [
+   "GPT-5-mini",
+   "60.6"
+  ],
+  "fuentes_requeridas": [
+   "2507.05257"
+  ],
+  "citas": [
+   {
+    "paper": "2507.05257",
+    "cita": "GPT-5-mini (400K)"
+   },
+   {
+    "paper": "2507.05257",
+    "cita": "60.6"
+   }
+  ],
+  "autor": "A",
+  "notas": "MemoryAgentBench Tabla 3: GPT-5-mini (400K) 60.6, el mayor «Overall»."
+ },
+ {
+  "id": "JDi-33",
+  "texto": "How many documents and how many tokens does the Agriculture dataset have in the LightRAG paper?",
+  "tipo": "T1",
+  "respuesta_oraculo": "12 documents and 2,017,886 tokens (Table 4).",
+  "respuesta_clave": [
+   "12",
+   "2,017,886"
+  ],
+  "fuentes_requeridas": [
+   "2410.05779"
+  ],
+  "citas": [
+   {
+    "paper": "2410.05779",
+    "cita": "2,017,886"
+   }
+  ],
+  "autor": "A",
+  "notas": "LightRAG Tabla 4: Agriculture 12 documentos y 2,017,886 tokens."
+ },
+ {
+  "id": "JDi-37",
+  "texto": "Which paper introduces the benchmark called FactConsolidation?",
+  "tipo": "T1",
+  "respuesta_oraculo": "MemoryAgentBench, which builds FactConsolidation (single-hop and multi-hop) for selective forgetting; other papers only mention it.",
+  "respuesta_clave": [
+   "MemoryAgentBench"
+  ],
+  "fuentes_requeridas": [
+   "2507.05257"
+  ],
+  "citas": [
+   {
+    "paper": "2507.05257",
+    "cita": "FC-SH and FC-MH mean FactConsolidation Single Hop"
+   }
+  ],
+  "autor": "A",
+  "notas": "MemoryAgentBench Tabla 3: «FC-SH and FC-MH mean FactConsolidation Single Hop and FactConsolidation Multi Hop». Que otros cinco papers solo lo mencionen no lo pude comprobar."
+ },
+ {
+  "id": "JDi-39",
+  "texto": "Which four abilities does MemoryAgentBench test?",
+  "tipo": "T1",
+  "respuesta_oraculo": "Accurate retrieval, test-time learning, long-range understanding and selective forgetting.",
+  "respuesta_clave": [
+   "accurate retrieval",
+   "test-time learning",
+   "long-range understanding",
+   "selective forgetting"
+  ],
+  "fuentes_requeridas": [
+   "2507.05257"
+  ],
+  "citas": [
+   {
+    "paper": "2507.05257",
+    "cita": "accurate retrieval, test-time learning, long-range understanding, and selective forgetting"
+   }
+  ],
+  "autor": "A",
+  "notas": "Resumen de MemoryAgentBench: accurate retrieval, test-time learning, long-range understanding y selective forgetting."
+ },
+ {
+  "id": "JD-01",
+  "texto": "What accuracy has been reported for Zep on the DMR benchmark?",
+  "tipo": "T1",
+  "respuesta_oraculo": "94.8% with gpt-4-turbo and 98.2% with gpt-4o-mini on the Deep Memory Retrieval benchmark, above the 93.4% reported for MemGPT.",
+  "respuesta_clave": [
+   "94.8",
+   "98.2"
+  ],
+  "fuentes_requeridas": [
+   "2501.13956"
+  ],
+  "citas": [
+   {
+    "paper": "2501.13956",
+    "cita": "Zep achieved 94.8% accuracy with gpt-4-turbo and 98.2% with gpt-4o-mini"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Tabla 1 del paper de Zep."
+ },
+ {
+  "id": "JD-02",
+  "texto": "What overall J score has been reported for Mem0 on LoCoMo with gpt-4o-mini?",
+  "tipo": "T3",
+  "respuesta_oraculo": "The Mem0 paper reports an overall J of 66.88%; the MemOS paper measures Mem0 at 64.57 under its own setup, and 2610.30755 recomputes it as 62.14 by weighting the published category scores by question counts.",
+  "respuesta_clave": [
+   "66.88",
+   "64.57",
+   "62.14"
+  ],
+  "fuentes_requeridas": [
+   "2504.19413",
+   "2507.03724",
+   "2610.30755"
+  ],
+  "citas": [
+   {
+    "paper": "2504.19413",
+    "cita": "1764 | 0.148 | 0.200 | 0.708 | 1.440 | 66.88"
+   },
+   {
+    "paper": "2507.03724",
+    "cita": "Mem0 | 1172 | 73.33 | 58.75 | 52.34 | 45.83 | 64.57"
+   },
+   {
+    "paper": "2610.30755",
+    "cita": "gives 62.14, rather than the published overall score of 66.88"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Mismo nombre de métrica (J) con protocolos distintos."
+ },
+ {
+  "id": "JD-06",
+  "texto": "What single-hop LLM-judge score does MemOS report for itself on LoCoMo?",
+  "tipo": "T1",
+  "respuesta_oraculo": "81.09 for MemOS-1031 with GPT-4o-mini (Table 3 of the long MemOS paper); the short first MemOS paper reports no LoCoMo result.",
+  "respuesta_clave": [
+   "81.09"
+  ],
+  "fuentes_requeridas": [
+   "2507.03724"
+  ],
+  "citas": [
+   {
+    "paper": "2507.03724",
+    "cita": "MemOS-1031 | 1589 | 81.09 | 67.49 | 75.18 | 55.90 | 75.80 | 45.27"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "En esa tabla, Mem0 tiene 73.33 y Zep 66.23 en single-hop. Hay dos artículos MemOS: 2505.22101 (corto, sin experimentos) y 2507.03724."
+ },
+ {
+  "id": "JD-08",
+  "texto": "Which paper links an agent's notes to each other, following a note-taking method from a German sociologist?",
+  "tipo": "T1",
+  "respuesta_oraculo": "A-MEM, which follows the Zettelkasten method to create interconnected notes through dynamic indexing and linking.",
+  "respuesta_clave": [
+   "A-MEM"
+  ],
+  "fuentes_requeridas": [
+   "2502.12110"
+  ],
+  "citas": [
+   {
+    "paper": "2502.12110",
+    "cita": "Following the basic principles of the Zettelkasten method"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": ""
+ },
+ {
+  "id": "JD-09",
+  "texto": "Which paper copies the stages of human sleep and short-term versus long-term storage to cut the number of tokens a memory system uses?",
+  "tipo": "T1",
+  "respuesta_oraculo": "LightMem, which organizes memory in three stages inspired by the Atkinson–Shiffrin model and uses a sleep-time update for long-term memory.",
+  "respuesta_clave": [
+   "LightMem"
+  ],
+  "fuentes_requeridas": [
+   "2510.18866"
+  ],
+  "citas": [
+   {
+    "paper": "2510.18866",
+    "cita": "Inspired by the Atkinson–Shiffrin model of human memory"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": ""
+ },
+ {
+  "id": "JD-10",
+  "texto": "Which benchmark checks whether a memory system invents false facts when it stores, updates or answers?",
+  "tipo": "T1",
+  "respuesta_oraculo": "HaluMem, which evaluates memory hallucinations in memory extraction, memory updating and question answering.",
+  "respuesta_clave": [
+   "HaluMem"
+  ],
+  "fuentes_requeridas": [
+   "2511.03506"
+  ],
+  "citas": [
+   {
+    "paper": "2511.03506",
+    "cita": "determine whether hallucinations occur in memory extraction, memory updating, or question answering"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": ""
+ },
+ {
+  "id": "JD-13",
+  "texto": "What accuracy does Zep reach on MemBench?",
+  "tipo": "T5",
+  "respuesta_oraculo": "The ingested corpus does not contain this information.",
+  "respuesta_clave": [],
+  "fuentes_requeridas": [],
+  "citas": [],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Zep y MemBench existen en el corpus pero ningún paper los reporta juntos; ningún bloque de texto de los 100 papers los contiene a la vez."
+ },
+ {
+  "id": "JD-15",
+  "texto": "What F1 score does Mem0 reach on MuSiQue?",
+  "tipo": "T5",
+  "respuesta_oraculo": "The ingested corpus does not contain this information.",
+  "respuesta_clave": [],
+  "fuentes_requeridas": [],
+  "citas": [],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Mem0 y MuSiQue aparecen en el corpus pero nunca en el mismo bloque de texto; ningún paper reporta Mem0 en MuSiQue."
+ },
+ {
+  "id": "JD-17",
+  "texto": "How does MemOS perform on REALTALK?",
+  "tipo": "T5",
+  "respuesta_oraculo": "The ingested corpus does not contain this information.",
+  "respuesta_clave": [],
+  "fuentes_requeridas": [],
+  "citas": [],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Ningún paper contiene a la vez MemOS y REALTALK."
+ },
+ {
+  "id": "JD-19",
+  "texto": "How many conversations does LoCoMo contain?",
+  "tipo": "T3",
+  "respuesta_oraculo": "The papers disagree: the LoCoMo paper lists 50 conversations, while two later papers evaluate on 10 conversations.",
+  "respuesta_clave": [
+   "50",
+   "10"
+  ],
+  "fuentes_requeridas": [
+   "2402.17753",
+   "2511.01448",
+   "2603.02473"
+  ],
+  "citas": [
+   {
+    "paper": "2402.17753",
+    "cita": "Total. # conversations $h$. | 50"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "LoCoMo dataset includes 1,986 questions constructed from 10 long-form dialogues"
+   },
+   {
+    "paper": "2603.02473",
+    "cita": "10 multi-session conversations"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Versión del conjunto de datos: completa (50) frente a la que usan otros papers (10)."
+ },
+ {
+  "id": "JD-22",
+  "texto": "What accuracy does Mem0 get on LongMemEval?",
+  "tipo": "T3",
+  "respuesta_oraculo": "It depends on the paper and the backbone: 53.61% with GPT-4o-mini in LightMem, 66.4 in the MemOS paper, and 56.80% with Llama-3.1-70B in LiCoMemory.",
+  "respuesta_clave": [
+   "53.61",
+   "66.4",
+   "56.80"
+  ],
+  "fuentes_requeridas": [
+   "2510.18866",
+   "2507.03724",
+   "2511.01448"
+  ],
+  "citas": [
+   {
+    "paper": "2510.18866",
+    "cita": "Mem0 | 53.61 | 424.13 | 17.76 | 560.17 | 150.56 | 1,152.62"
+   },
+   {
+    "paper": "2507.03724",
+    "cita": "Mem0 | 1.1k | 90.0 | 26.8 | 72.2 | 63.2 | 66.7 | 82.9 | 66.4"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "Mem0 | 1.87$\\pm$0.58s | 2.3$\\pm$0.1k | 56.80$\\pm$0.71%"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Modelo base y juez distintos en cada paper: dar las cifras con su contexto."
+ },
+ {
+  "id": "JD-23",
+  "texto": "Which papers in the collection mention MEMTRACK?",
+  "tipo": "T2",
+  "respuesta_oraculo": "Three papers: 2510.01353 (the MEMTRACK paper itself), 2602.06052 and 2609.24971.",
+  "respuesta_clave": [
+   "2510.01353",
+   "2602.06052",
+   "2609.24971"
+  ],
+  "fuentes_requeridas": [
+   "2510.01353",
+   "2602.06052",
+   "2609.24971"
+  ],
+  "citas": [
+   {
+    "paper": "2510.01353",
+    "cita": "We introduce Memtrack, a benchmark designed to evaluate long-term memory and state tracking"
+   },
+   {
+    "paper": "2602.06052",
+    "cita": "MemTrack (Deshpande et al., 2025)"
+   },
+   {
+    "paper": "2609.24971",
+    "cita": "MEMTRACK [5]"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Conjunto cerrado: son los únicos tres de los 100 textos."
+ },
+ {
+  "id": "JD-25",
+  "texto": "Which papers in the collection mention REALTALK?",
+  "tipo": "T2",
+  "respuesta_oraculo": "Five papers: 2502.13270 (the REALTALK paper), 2507.05257, 2603.02473, 2607.26637 and 2609.24971.",
+  "respuesta_clave": [
+   "2502.13270",
+   "2507.05257",
+   "2603.02473",
+   "2607.26637",
+   "2609.24971"
+  ],
+  "fuentes_requeridas": [
+   "2502.13270",
+   "2507.05257",
+   "2603.02473",
+   "2607.26637",
+   "2609.24971"
+  ],
+  "citas": [
+   {
+    "paper": "2502.13270",
+    "cita": "we introduce RealTalk, a 21-day corpus of authentic messaging app dialogues"
+   },
+   {
+    "paper": "2507.05257",
+    "cita": "RealTalk (Lee et al., 2025)"
+   },
+   {
+    "paper": "2603.02473",
+    "cita": "RealTalk (Lee et al., 2025)"
+   },
+   {
+    "paper": "2607.26637",
+    "cita": "PersonaMem, REALTALK"
+   },
+   {
+    "paper": "2609.24971",
+    "cita": "RealTalk [10]"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Conjunto cerrado: son los únicos cinco de los 100 textos."
+ },
+ {
+  "id": "JD-27",
+  "texto": "What accuracy does Zep get on LongMemEval according to the Zep paper, and what do later papers report for it?",
+  "tipo": "T3",
+  "respuesta_oraculo": "The Zep paper reports 63.8% with gpt-4o-mini and 71.2% with gpt-4o. The MemOS paper lists the same 63.8 for Zep, while LiCoMemory re-measures Zep at 60.20% with Llama-3.1-70B.",
+  "respuesta_clave": [
+   "63.8",
+   "71.2",
+   "60.20"
+  ],
+  "fuentes_requeridas": [
+   "2501.13956",
+   "2507.03724",
+   "2511.01448"
+  ],
+  "citas": [
+   {
+    "paper": "2501.13956",
+    "cita": "Zep | gpt-4o | 71.2% | 2.58 s | 0.684 s | 1.6k"
+   },
+   {
+    "paper": "2507.03724",
+    "cita": "Zep | 1.6k | 53.3 | 75.0 | 54.1 | 47.4 | 74.4 | 92.9 | 63.8"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "Zep | 5.22$\\pm$1.73s | 4.1$\\pm$0.2k | 60.20$\\pm$0.81%"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": ""
+ },
+ {
+  "id": "JD-29",
+  "texto": "What accuracy is reported for A-MEM on LongMemEval, and which paper reports it?",
+  "tipo": "T3",
+  "respuesta_oraculo": "The A-MEM paper does not evaluate LongMemEval. LightMem reports 62.60% for A-MEM with GPT-4o-mini and LiCoMemory reports 57.40% with Llama-3.1-70B.",
+  "respuesta_clave": [
+   "62.60",
+   "57.40"
+  ],
+  "fuentes_requeridas": [
+   "2510.18866",
+   "2511.01448"
+  ],
+  "citas": [
+   {
+    "paper": "2510.18866",
+    "cita": "A-MEM | 62.60 | 214.66 | 42.82"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "A-Mem | 4.31$\\pm$1.26s | 4.5$\\pm$0.2k | 57.40$\\pm$0.88%"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "A-MEM evalúa en LoCoMo y DialSim; las cifras en LongMemEval son de segunda mano."
+ },
+ {
+  "id": "JD-31",
+  "texto": "How many questions does the LoCoMo benchmark contain?",
+  "tipo": "T3",
+  "respuesta_oraculo": "7,512 questions across 50 conversations in the LoCoMo paper. Later papers that use 10 conversations report 1,986 questions or 1,540 non-adversarial questions.",
+  "respuesta_clave": [
+   "7,512",
+   "1,986",
+   "1,540"
+  ],
+  "fuentes_requeridas": [
+   "2402.17753",
+   "2511.01448",
+   "2603.02473"
+  ],
+  "citas": [
+   {
+    "paper": "2402.17753",
+    "cita": "Total. # questions. | 7,512"
+   },
+   {
+    "paper": "2511.01448",
+    "cita": "LoCoMo dataset includes 1,986 questions"
+   },
+   {
+    "paper": "2603.02473",
+    "cita": "1,540 non-adversarial questions"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Tabla 5 del paper de LoCoMo; los otros dos usan el subconjunto de 10 conversaciones."
+ },
+ {
+  "id": "JD-33",
+  "texto": "How many memory tokens do Mem0, its graph variant and Zep use per conversation in the Mem0 paper?",
+  "tipo": "T1",
+  "respuesta_oraculo": "Mem0 uses 1764 memory tokens, Mem0g 3616 and Zep 3911.",
+  "respuesta_clave": [
+   "1764",
+   "3616",
+   "3911"
+  ],
+  "fuentes_requeridas": [
+   "2504.19413"
+  ],
+  "citas": [
+   {
+    "paper": "2504.19413",
+    "cita": "1764 | 0.148 | 0.200 | 0.708 | 1.440 | 66.88"
+   },
+   {
+    "paper": "2504.19413",
+    "cita": "3616 | 0.476 | 0.657 | 1.091 | 2.590 | 68.44"
+   },
+   {
+    "paper": "2504.19413",
+    "cita": "Zep | | 3911 | 0.513 | 0.778 | 1.292 | 2.926 | 65.99"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Tabla 2 del paper de Mem0."
+ },
+ {
+  "id": "JD-35",
+  "texto": "In the A-MEM paper, what memory usage and retrieval time does A-MEM have with 10,000 memories?",
+  "tipo": "T1",
+  "respuesta_oraculo": "14.65 MB of memory and a retrieval time of 0.38 ± 0.25 µs.",
+  "respuesta_clave": [
+   "14.65",
+   "0.38"
+  ],
+  "fuentes_requeridas": [
+   "2502.12110"
+  ],
+  "citas": [
+   {
+    "paper": "2502.12110",
+    "cita": "10,000 | A-Mem | 14.65 | 0.38"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": "Tabla 4 del paper de A-MEM."
+ },
+ {
+  "id": "JD-37",
+  "texto": "Which paper uses the dataset called InfiniteChoice?",
+  "tipo": "T1",
+  "respuesta_oraculo": "E2GraphRAG, which takes the English multiple-choice subset of InfiniteBench and calls it InfiniteChoice.",
+  "respuesta_clave": [
+   "E2GraphRAG"
+  ],
+  "fuentes_requeridas": [
+   "2505.24226"
+  ],
+  "citas": [
+   {
+    "paper": "2505.24226",
+    "cita": "referred to as InfiniteChoice and InfiniteQA"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": ""
+ },
+ {
+  "id": "JD-39",
+  "texto": "Which five abilities does LongMemEval test?",
+  "tipo": "T1",
+  "respuesta_oraculo": "Information extraction, multi-session reasoning, temporal reasoning, knowledge updates and abstention.",
+  "respuesta_clave": [
+   "information extraction",
+   "multi-session reasoning",
+   "temporal reasoning",
+   "knowledge updates",
+   "abstention"
+  ],
+  "fuentes_requeridas": [
+   "2410.10813"
+  ],
+  "citas": [
+   {
+    "paper": "2410.10813",
+    "cita": "five core long-term memory abilities of chat assistants: information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention"
+   }
+  ],
+  "autor": "B",
+  "verificado_por": "Juan David Cruz",
+  "notas": ""
+ }
+]

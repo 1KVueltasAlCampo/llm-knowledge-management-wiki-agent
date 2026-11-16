@@ -87,6 +87,20 @@ def test_escribe_los_cinco_archivos_y_el_resumen_muestra_denominadores(tmp_path:
     assert "n_respondibles" in resumen and "| rag |" in resumen
 
 
+def test_el_informe_incluye_la_comparacion_pareada_con_sus_limites(tmp_path: Path):
+    _guardar(tmp_path, _evaluados())
+    escribir_informe(tmp_path)
+    informe = tmp_path / "informe"
+    filas = (informe / "comparacion_pareada.csv").read_text(encoding="utf-8").splitlines()
+    assert filas[0] == (
+        "ingest_step,tipo,n,cobertura_rag,cobertura_wiki,diferencia,ic95_inf,ic95_sup,"
+        "solo_rag,solo_wiki,p_mcnemar"
+    )
+    assert len(filas) > 1
+    resumen = (informe / "resumen.md").read_text(encoding="utf-8")
+    assert "Comparación pareada" in resumen and "comparaciones múltiples" in resumen
+
+
 def test_el_informe_es_identico_al_repetirlo(tmp_path: Path):
     _guardar(tmp_path, _evaluados())
     escribir_informe(tmp_path)

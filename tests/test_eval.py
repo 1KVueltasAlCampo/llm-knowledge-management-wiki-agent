@@ -199,6 +199,49 @@ def test_juez_interpreta_y_solo_se_usa_en_indeterminadas():
     assert cliente.llamadas == 1
 
 
+def _juez_con_reloj_falso(intervalo_s):
+    @dataclass
+    class _Resp:
+        texto: str = '{"veredicto": "correcta", "motivo": "ok"}'
+
+    class _Cliente:
+        def generar(self, mensajes, etiqueta, max_tokens):
+            return _Resp()
+
+    class _Tiempo:
+        ahora = 100.0
+        esperas: list[float] = []
+
+        def reloj(self):
+            return self.ahora
+
+        def dormir(self, segundos):
+            self.esperas.append(segundos)
+            self.ahora += segundos
+
+    tiempo = _Tiempo()
+    tiempo.esperas = []
+    juez = Juez(_Cliente(), intervalo_s=intervalo_s, dormir=tiempo.dormir, reloj=tiempo.reloj)
+    return juez, tiempo
+
+
+def test_juez_espera_el_intervalo_entre_llamadas_para_no_pasar_el_limite():
+    juez, tiempo = _juez_con_reloj_falso(6.0)
+    esperado = type("E", (), {"respuesta_oraculo": "0,71"})()
+    pregunta = _pregunta()
+    for _ in range(3):
+        juez(pregunta, {"answer": "x", "system": "wiki", "ingest_step": 2}, esperado)
+    assert tiempo.esperas == [6.0, 6.0]  # la primera llamada no espera
+
+
+def test_juez_sin_intervalo_no_espera():
+    juez, tiempo = _juez_con_reloj_falso(0.0)
+    esperado = type("E", (), {"respuesta_oraculo": "0,71"})()
+    for _ in range(3):
+        juez(_pregunta(), {"answer": "x", "system": "wiki", "ingest_step": 2}, esperado)
+    assert tiempo.esperas == []
+
+
 def test_sin_extra_body_quita_la_opcion_de_deepseek():
     class _Fake:
         def __init__(self):

@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 from xml.sax.saxutils import escape
 
+from wikillm.eval.estadistica import comparar_pareado
 from wikillm.eval.metricas import agregar
 
 COLORES = {"rag": "#1f77b4", "wiki": "#d62728"}
@@ -84,8 +85,42 @@ def _tabla_markdown(filas: list[dict[str, Any]], claves: tuple[str, ...]) -> str
     return "\n".join(lineas)
 
 
+def _tabla_pareada(filas: list[dict[str, Any]]) -> str:
+    """Tabla por paso (sin el corte por tipo) con el intervalo en una sola celda."""
+    columnas = (
+        "ingest_step",
+        "n",
+        "cobertura_rag",
+        "cobertura_wiki",
+        "diferencia",
+        "IC95",
+        "solo_rag",
+        "solo_wiki",
+        "p_mcnemar",
+    )
+    lineas = ["| " + " | ".join(columnas) + " |", "|" + "|".join(["---"] * len(columnas)) + "|"]
+    for f in (f for f in filas if f["tipo"] == ""):
+        ic = f"[{_celda(f['ic95_inf'])}, {_celda(f['ic95_sup'])}]"
+        celdas = [_celda(f[c]) if c != "IC95" else ic for c in columnas]
+        lineas.append("| " + " | ".join(celdas) + " |")
+    return "\n".join(lineas)
+
+
+NOTA_PAREADA = (
+    "Pares: preguntas respondibles en ese paso con respuesta de ambos brazos; acierta quien "
+    "tiene veredicto `correcta`. `diferencia` = cobertura del wiki menos la de RAG. El IC95 sale "
+    "de 2.000 remuestreos de las preguntas (semilla fija) y `p_mcnemar` es la prueba exacta sobre "
+    "los pares discordantes (`solo_rag`, `solo_wiki`). Los intervalos suponen preguntas "
+    "independientes y no hay corrección por comparaciones múltiples: con pocas preguntas por "
+    "paso o por tipo conviene leerlos como orientativos."
+)
+
+
 def _resumen_markdown(
-    nombre: str, general: list[dict[str, Any]], tipos: list[dict[str, Any]]
+    nombre: str,
+    general: list[dict[str, Any]],
+    tipos: list[dict[str, Any]],
+    pareada: list[dict[str, Any]],
 ) -> str:
     return (
         f"# Resumen de la corrida {nombre}\n\n"
@@ -95,7 +130,10 @@ def _resumen_markdown(
         "## Por sistema y paso\n\n"
         f"{_tabla_markdown(general, ('system', 'ingest_step'))}\n\n"
         "## Por sistema, tipo y paso\n\n"
-        f"{_tabla_markdown(tipos, ('system', 'tipo', 'ingest_step'))}\n"
+        f"{_tabla_markdown(tipos, ('system', 'tipo', 'ingest_step'))}\n\n"
+        "## Comparación pareada (wiki frente a RAG)\n\n"
+        f"{NOTA_PAREADA}\n\n"
+        f"{_tabla_pareada(pareada)}\n"
     )
 
 
@@ -201,12 +239,16 @@ def escribir_informe(carpeta: Path) -> Path:
     evaluados = leer_evaluados(carpeta)
     general = agregar(evaluados)
     tipos = por_tipo(evaluados)
+    pareada = comparar_pareado(evaluados)
     destino = carpeta / "informe"
     destino.mkdir(exist_ok=True)
     nombre = carpeta.name
     _escribir_csv(destino / "por_sistema_paso.csv", general)
     _escribir_csv(destino / "por_tipo.csv", tipos)
-    (destino / "resumen.md").write_text(_resumen_markdown(nombre, general, tipos), encoding="utf-8")
+    _escribir_csv(destino / "comparacion_pareada.csv", pareada)
+    (destino / "resumen.md").write_text(
+        _resumen_markdown(nombre, general, tipos, pareada), encoding="utf-8"
+    )
     figuras = {
         "cobertura_por_paso.svg": _figura(
             f"Cobertura por paso de ingesta ({nombre})",

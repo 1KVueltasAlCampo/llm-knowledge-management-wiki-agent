@@ -47,6 +47,8 @@ uv run python -m wikillm.eval borradores --autor A   # plan y costo (sin gastar)
 uv run python -m wikillm.eval metricas --respuestas results/<corrida>/respuestas.jsonl
 uv run python -m wikillm.eval informe --corrida results/<corrida>   # tablas y figuras SVG (sin gasto)
 uv run python -m wikillm.eval auxiliar exportar|importar --corrida results/<corrida>   # 2.º juez (ADR 0006)
+uv run python -m wikillm.eval fallos --corrida results/<corrida>   # por qué falla cada brazo (sin gasto)
+uv run python -m wikillm.eval ampliar-banco --definiciones ... --manifest ... --spans ... --gold ... --salida ...   # banco de 100 papers
 ```
 
 ## Modelos y gasto

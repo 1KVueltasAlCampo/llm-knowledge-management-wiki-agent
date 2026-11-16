@@ -488,3 +488,57 @@ inferior** hasta pasar por el juez.
 **Pendiente.** Pasar las indeterminadas por el juez (Gemini) y calibrarlo, la evaluación auxiliar con
 un segundo juez (decisión 0006) y el análisis de fallos. Las cifras de esta tabla no son todavía las
 del informe final.
+
+### 2026-11-16 · `oficial-1` con juez, evaluación auxiliar y análisis de fallos
+
+**Juez (Gemini flash-lite).** El primer intento falló con un 429 tras 39 llamadas (unas 23 por
+minuto) y, como `metricas` solo escribe al final, perdió ese avance. Se añadió un intervalo entre
+llamadas (`JUDGE_MIN_INTERVAL_SECONDS`, por defecto 0) y se repitió a 6 s. Resolvió las 139
+indeterminadas: 68 correctas y 71 incorrectas. Costo estimado: unos 0,05 USD (178 llamadas; la
+corrida no lo registra en dólares).
+
+**Cobertura con los veredictos finales** (`results/oficial-1/informe/`). Pares: preguntas
+respondibles con respuesta de ambos brazos; IC95 por bootstrap sobre las preguntas y McNemar exacto.
+
+| Paso | n | RAG | Wiki | Diferencia | IC95 | p (McNemar) |
+|---|---|---|---|---|---|---|
+| 10 | 17 | 0,41 | 0,71 | +0,29 | [0,12, 0,53] | 0,063 |
+| 25 | 34 | 0,50 | 0,74 | +0,24 | [0,06, 0,41] | 0,039 |
+| 40 | 47 | 0,57 | 0,83 | +0,26 | [0,11, 0,43] | 0,008 |
+| 50 | 50 | 0,54 | 0,78 | +0,24 | [0,08, 0,40] | 0,012 |
+
+El wiki supera a RAG en todos los pasos, y la diferencia es significativa desde el paso 25. Los
+intervalos suponen preguntas independientes y no hay corrección por comparaciones múltiples; con pocas
+preguntas respondibles en los pasos iniciales (13 en el paso 5) son orientativos.
+
+**Evaluación auxiliar (decisión 0006).** Califiqué a ciegas 179 ítems (las 139 que resolvió el juez más
+40 deterministas elegidos con semilla 1): acuerdo 93,3 % y kappa 0,865. En el origen determinista el
+acuerdo fue 100 % (40 de 40); en el del juez 91,4 % (kappa 0,827). Hubo 12 discrepancias: en 8 el juez
+principal fue más estricto y en 4 más permisivo. Siete son una sola pregunta (A003-T3-02, ColBERTv2 en
+2WikiMultiHopQA): las respuestas de ambos brazos dan 65,6 como valor de ColBERTv2, pero en la tabla de
+HippoRAG 65,6 es el **promedio** de los tres datasets y el de 2Wiki es 68,2; el «incorrecta» de Gemini
+era el correcto y mi «correcta» fue demasiado permisiva. Mi calificación ciega se conserva tal cual; con
+ese error contado como acuerdo, este sería de 97,2 %. La evaluación auxiliar no reemplaza el veredicto
+principal ni cambia ninguna cobertura: sustituir el veredicto del juez por el mío deja iguales las
+coberturas de los pasos 25 y 50.
+
+**Por qué fallan los brazos** (`results/oficial-1/fallos/`; categorías por abstención, fuentes citadas
+y marca de obsolescencia, sin llamar a ningún modelo).
+
+| Sistema | No correctas | Abstención errónea | Fuente parcial | Obsoleta | No se abstuvo | Fuentes completas, error | Sin fuente |
+|---|---|---|---|---|---|---|---|
+| RAG | 169 | 157 | 4 | 0 | 1 | 2 | 5 |
+| Wiki | 124 | 24 | 26 | 18 | 40 | 15 | 1 |
+
+El fallo de RAG es casi siempre abstenerse cuando la respuesta sí estaba en el corpus (157 de 169, el
+93 %): no recuperó el fragmento y no inventó. El wiki falla de forma más variada: responde cuando
+debía abstenerse (40, de ellas 29 en T2, antes de ingerir todas las fuentes: da una respuesta
+parcial en vez de la frase de abstención), cita solo parte de las fuentes (26) y deja respuestas
+obsoletas (18). En un caso (i0081 de la muestra auxiliar) el agente devolvió una llamada a herramienta
+como texto crudo en lugar de responder.
+
+**Límites.** Preguntas verificadas por sus autores, con acuerdo entre ellos bajo (kappa 0,40 y 0,15);
+T4 solo tiene 4 preguntas; el juez Gemini no se calibró contra etiquetas humanas, solo contra mi
+calificación (el mismo contenido que las 139 que resolvió); y el wiki no es determinista, así que una
+repetición podría dar otras cifras. El tope de salida del wiki se subió a 32.000 a mitad de la corrida
+(decisión 0007).

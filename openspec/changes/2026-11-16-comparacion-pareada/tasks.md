@@ -6,4 +6,4 @@
 
 ## 2. Informe
 - [x] 2.1 `escribir_informe` escribe `comparacion_pareada.csv` y la sección del resumen. Verificación: `tests/test_informe.py` y las nuevas en verde; el informe sigue siendo idéntico al repetirlo.
-- [ ] 2.2 Regenerar `results/oficial-1/informe/` y anotarlo en la bitácora. Verificación: `ruff check`, `ruff format --check` y `pytest`.
+- [x] 2.2 Regenerar `results/oficial-1/informe/` y anotarlo en la bitácora. Verificación: `ruff check`, `ruff format --check` y `pytest`.

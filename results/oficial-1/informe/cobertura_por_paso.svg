@@ -26,30 +26,30 @@
 <text x="616.0" y="320" text-anchor="middle">50</text>
 <text x="340.0" y="338" text-anchor="middle">Paso de ingesta (papers ingeridos)</text>
 <text x="16" y="172.0" text-anchor="middle" transform="rotate(-90 16 172.0)">Cobertura (respondibles correctas)</text>
-<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,243.1 125.3,210.8 186.7,208.0 248.0,196.8 309.3,187.5 370.7,178.3 432.0,178.0 493.3,174.8 554.7,180.4 616.0,187.8"/>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,243.1 125.3,195.3 186.7,196.0 248.0,180.2 309.3,172.0 370.7,153.1 432.0,154.0 493.3,152.3 554.7,158.0 616.0,161.4"/>
 <circle cx="64.0" cy="243.1" r="3" fill="#1f77b4"/>
-<circle cx="125.3" cy="210.8" r="3" fill="#1f77b4"/>
-<circle cx="186.7" cy="208.0" r="3" fill="#1f77b4"/>
-<circle cx="248.0" cy="196.8" r="3" fill="#1f77b4"/>
-<circle cx="309.3" cy="187.5" r="3" fill="#1f77b4"/>
-<circle cx="370.7" cy="178.3" r="3" fill="#1f77b4"/>
-<circle cx="432.0" cy="178.0" r="3" fill="#1f77b4"/>
-<circle cx="493.3" cy="174.8" r="3" fill="#1f77b4"/>
-<circle cx="554.7" cy="180.4" r="3" fill="#1f77b4"/>
-<circle cx="616.0" cy="187.8" r="3" fill="#1f77b4"/>
+<circle cx="125.3" cy="195.3" r="3" fill="#1f77b4"/>
+<circle cx="186.7" cy="196.0" r="3" fill="#1f77b4"/>
+<circle cx="248.0" cy="180.2" r="3" fill="#1f77b4"/>
+<circle cx="309.3" cy="172.0" r="3" fill="#1f77b4"/>
+<circle cx="370.7" cy="153.1" r="3" fill="#1f77b4"/>
+<circle cx="432.0" cy="154.0" r="3" fill="#1f77b4"/>
+<circle cx="493.3" cy="152.3" r="3" fill="#1f77b4"/>
+<circle cx="554.7" cy="158.0" r="3" fill="#1f77b4"/>
+<circle cx="616.0" cy="161.4" r="3" fill="#1f77b4"/>
 <rect x="76" y="46" width="12" height="12" fill="#1f77b4"/>
 <text x="94" y="56">rag</text>
-<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,161.8 125.3,148.7 186.7,148.0 248.0,122.5 309.3,140.9 370.7,128.0 432.0,130.0 493.3,113.0 554.7,129.9 616.0,156.2"/>
+<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,161.8 125.3,117.6 186.7,136.0 248.0,89.5 309.3,109.9 370.7,102.9 432.0,100.0 493.3,84.9 554.7,101.8 616.0,98.1"/>
 <circle cx="64.0" cy="161.8" r="3" fill="#d62728"/>
-<circle cx="125.3" cy="148.7" r="3" fill="#d62728"/>
-<circle cx="186.7" cy="148.0" r="3" fill="#d62728"/>
-<circle cx="248.0" cy="122.5" r="3" fill="#d62728"/>
-<circle cx="309.3" cy="140.9" r="3" fill="#d62728"/>
-<circle cx="370.7" cy="128.0" r="3" fill="#d62728"/>
-<circle cx="432.0" cy="130.0" r="3" fill="#d62728"/>
-<circle cx="493.3" cy="113.0" r="3" fill="#d62728"/>
-<circle cx="554.7" cy="129.9" r="3" fill="#d62728"/>
-<circle cx="616.0" cy="156.2" r="3" fill="#d62728"/>
+<circle cx="125.3" cy="117.6" r="3" fill="#d62728"/>
+<circle cx="186.7" cy="136.0" r="3" fill="#d62728"/>
+<circle cx="248.0" cy="89.5" r="3" fill="#d62728"/>
+<circle cx="309.3" cy="109.9" r="3" fill="#d62728"/>
+<circle cx="370.7" cy="102.9" r="3" fill="#d62728"/>
+<circle cx="432.0" cy="100.0" r="3" fill="#d62728"/>
+<circle cx="493.3" cy="84.9" r="3" fill="#d62728"/>
+<circle cx="554.7" cy="101.8" r="3" fill="#d62728"/>
+<circle cx="616.0" cy="98.1" r="3" fill="#d62728"/>
 <rect x="166" y="46" width="12" height="12" fill="#d62728"/>
 <text x="184" y="56">wiki</text>
 </svg>

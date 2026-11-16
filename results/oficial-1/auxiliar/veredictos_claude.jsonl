@@ -1,0 +1,180 @@
+{"meta": {"modelo": "Claude Sonnet 5.5 (claude-sonnet-5-5) en Claude Code", "fecha": "2026-11-16", "calificacion": "ciega, rúbrica del juez principal"}}
+{"item_id": "i0001", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0002", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0003", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0004", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0008", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0010", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0011", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0012", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0013", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0014", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0017", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0018", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0021", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0026", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0027", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0031", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0035", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0036", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0043", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0009", "veredicto": "correcta", "motivo": "20 puntos y la limitación del survey coinciden; la cifra de ColBERTv2 difiere pero no es lo preguntado"}
+{"item_id": "i0044", "veredicto": "correcta", "motivo": "20 puntos y la limitación del survey coinciden; la cifra de ColBERTv2 difiere pero no es lo preguntado"}
+{"item_id": "i0045", "veredicto": "correcta", "motivo": "20 puntos y la limitación del survey coinciden; la cifra de ColBERTv2 difiere pero no es lo preguntado"}
+{"item_id": "i0034", "veredicto": "correcta", "motivo": "71.0 es la cifra de referencia en este paso"}
+{"item_id": "i0005", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0032", "veredicto": "incorrecta", "motivo": "da 74.7 y la referencia en este paso es 52.94 (cifra posterior)"}
+{"item_id": "i0006", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 (referencia 0.624) y la diferencia no coincide (25.3 frente a 11.5)"}
+{"item_id": "i0022", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 (referencia 0.624) y la diferencia no coincide (25.3 frente a 11.5)"}
+{"item_id": "i0007", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0016", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0019", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0029", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0030", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0033", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0038", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0041", "veredicto": "incorrecta", "motivo": "dice que no hay cifra absoluta y la referencia es 71.0"}
+{"item_id": "i0020", "veredicto": "incorrecta", "motivo": "compara con 69.7 (NV-Embed-v2); la referencia es 74.7 frente a 51.9, 22.8 puntos"}
+{"item_id": "i0024", "veredicto": "incorrecta", "motivo": "compara con 69.7 (NV-Embed-v2); la referencia es 74.7 frente a 51.9, 22.8 puntos"}
+{"item_id": "i0015", "veredicto": "incorrecta", "motivo": "responde sobre otros papers y no sobre WiCER frente al estudio de una ronda"}
+{"item_id": "i0025", "veredicto": "incorrecta", "motivo": "responde sobre otros papers y no sobre WiCER frente al estudio de una ronda"}
+{"item_id": "i0039", "veredicto": "incorrecta", "motivo": "responde sobre otros papers y no sobre WiCER frente al estudio de una ronda"}
+{"item_id": "i0023", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0028", "veredicto": "incorrecta", "motivo": "da 24 papers y la referencia es 218 artículos de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0040", "veredicto": "incorrecta", "motivo": "da 24 papers y la referencia es 218 artículos de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0037", "veredicto": "incorrecta", "motivo": "omite que el survey clasifica los grafos como un almacén estructural"}
+{"item_id": "i0042", "veredicto": "incorrecta", "motivo": "omite que el survey clasifica los grafos como un almacén estructural"}
+{"item_id": "i0048", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0049", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0050", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0051", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0054", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0055", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0056", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0057", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0058", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0060", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0061", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0062", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0064", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0066", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0067", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0068", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0069", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0070", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0071", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0075", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0076", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0078", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0079", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0080", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0082", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0084", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0085", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0086", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0088", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0046", "veredicto": "incorrecta", "motivo": "no da la limitación del survey que pide la referencia"}
+{"item_id": "i0047", "veredicto": "incorrecta", "motivo": "se abstiene o dice que no hay cifra y la referencia tiene respuesta"}
+{"item_id": "i0052", "veredicto": "incorrecta", "motivo": "se abstiene o dice que no hay cifra y la referencia tiene respuesta"}
+{"item_id": "i0053", "veredicto": "incorrecta", "motivo": "se abstiene o dice que no hay cifra y la referencia tiene respuesta"}
+{"item_id": "i0072", "veredicto": "incorrecta", "motivo": "se abstiene o dice que no hay cifra y la referencia tiene respuesta"}
+{"item_id": "i0059", "veredicto": "incorrecta", "motivo": "compara con 69.7 y la referencia es 74.7 frente a 51.9 (22.8 puntos)"}
+{"item_id": "i0087", "veredicto": "incorrecta", "motivo": "compara con 69.7 y la referencia es 74.7 frente a 51.9 (22.8 puntos)"}
+{"item_id": "i0089", "veredicto": "incorrecta", "motivo": "compara con 69.7 y la referencia es 74.7 frente a 51.9 (22.8 puntos)"}
+{"item_id": "i0063", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0065", "veredicto": "incorrecta", "motivo": "responde sobre otros papers y no sobre WiCER frente al estudio de una ronda"}
+{"item_id": "i0073", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 y la diferencia no coincide con 11.5 puntos"}
+{"item_id": "i0074", "veredicto": "incorrecta", "motivo": "da 24 papers y la referencia es 218 de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0077", "veredicto": "incorrecta", "motivo": "da 24 papers y la referencia es 218 de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0081", "veredicto": "incorrecta", "motivo": "la respuesta es una llamada a herramienta en texto crudo, sin contenido"}
+{"item_id": "i0083", "veredicto": "incorrecta", "motivo": "da 74.7 y la referencia en este paso es 52.94 (cifra posterior)"}
+{"item_id": "i0090", "veredicto": "incorrecta", "motivo": "no identifica el grafo abierto de HippoRAG 2 que pide la referencia"}
+{"item_id": "i0091", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0092", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0093", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0094", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0096", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0098", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0099", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0102", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0103", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0104", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0105", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0107", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0110", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0111", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0113", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0118", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0120", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0121", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0123", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0124", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0125", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0126", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0130", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0131", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0095", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0097", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 y la diferencia no coincide con 11.5 puntos"}
+{"item_id": "i0100", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 y la diferencia no coincide con 11.5 puntos"}
+{"item_id": "i0108", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 y la diferencia no coincide con 11.5 puntos"}
+{"item_id": "i0135", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 y la diferencia no coincide con 11.5 puntos"}
+{"item_id": "i0101", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0106", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0112", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0115", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0128", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0109", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0116", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0119", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0122", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0133", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0114", "veredicto": "incorrecta", "motivo": "compara con 69.7 y la referencia es 74.7 frente a 51.9 (22.8 puntos)"}
+{"item_id": "i0132", "veredicto": "incorrecta", "motivo": "compara con 69.7 y la referencia es 74.7 frente a 51.9 (22.8 puntos)"}
+{"item_id": "i0117", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0129", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0127", "veredicto": "incorrecta", "motivo": "omite la segunda parte (regret de -20.0 de Online WiCER)"}
+{"item_id": "i0134", "veredicto": "incorrecta", "motivo": "dice que no hay cifra absoluta y la referencia es 71.0"}
+{"item_id": "i0138", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0140", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0141", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0142", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0147", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0154", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0155", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0156", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0157", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0158", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0160", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0163", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0164", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0165", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0166", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0168", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0169", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0170", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0171", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0172", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0174", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0177", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0178", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0179", "veredicto": "correcta", "motivo": "coincide con la referencia"}
+{"item_id": "i0136", "veredicto": "incorrecta", "motivo": "da 24 papers y la referencia es 218 de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0137", "veredicto": "incorrecta", "motivo": "usa 48.6 para HippoRAG 2 y la diferencia no coincide con 11.5 puntos"}
+{"item_id": "i0139", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0145", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0148", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0151", "veredicto": "incorrecta", "motivo": "se abstiene y la referencia tiene respuesta"}
+{"item_id": "i0143", "veredicto": "incorrecta", "motivo": "omite que el survey clasifica los grafos como un almacén estructural"}
+{"item_id": "i0144", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0146", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0162", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0167", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0175", "veredicto": "incorrecta", "motivo": "da 89.5 y la referencia es 90.4"}
+{"item_id": "i0149", "veredicto": "incorrecta", "motivo": "compara con 69.7 y la referencia es 74.7 frente a 51.9 (22.8 puntos)"}
+{"item_id": "i0150", "veredicto": "incorrecta", "motivo": "no identifica el grafo abierto de HippoRAG 2 que pide la referencia"}
+{"item_id": "i0152", "veredicto": "incorrecta", "motivo": "dice que no está el valor de la fila con asterisco y la referencia es 51.9 (22.8 puntos)"}
+{"item_id": "i0173", "veredicto": "incorrecta", "motivo": "dice que no está el valor de la fila con asterisco y la referencia es 51.9 (22.8 puntos)"}
+{"item_id": "i0153", "veredicto": "incorrecta", "motivo": "dice que el corpus no trae la cifra y la referencia es 53.2"}
+{"item_id": "i0159", "veredicto": "incorrecta", "motivo": "dice que no hay comparación y la referencia describe ReFind frente a Raw-RAG"}
+{"item_id": "i0161", "veredicto": "incorrecta", "motivo": "da 71.0 y la referencia en este paso es 0.831 (cifra posterior)"}
+{"item_id": "i0176", "veredicto": "incorrecta", "motivo": "omite la segunda parte (regret de -20.0 de Online WiCER)"}

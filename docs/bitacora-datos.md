@@ -455,3 +455,36 @@ los dos papers. Se dejan hasta decidir si cuentan como pista.
 citados por los 50 papers y que no están en el corpus (de la bibliografía del HTML original), con los
 papers que los citan y un nivel. 31 son de dic-2023 a 2025 y las citan 3 o más papers del corpus;
 22 son anteriores a dic-2023 y no tienen HTML nativo en arXiv. No se comprobó la existencia del HTML.
+
+## 2026-11-16 (Juan Diego): corrida oficial `oficial-1`, capa determinista
+
+**Qué se corrió.** Las 60 preguntas `acordado` (huella del banco en `results/oficial-1/corrida.json`),
+11 pasos de ingesta (0, 5, …, 50) y los dos brazos: 1.320 respuestas únicas, `deepseek-flash`,
+temperatura 0 y razonamiento desactivado. Empezó el 16-nov a las 01:59 UTC (en hora pico, con tope
+de 10 USD confirmado) y terminó esa misma madrugada.
+
+**Incidente.** En el paso 20 la ingesta del wiki falló con `2606.06240`: la escritura llegó al tope
+de 16.000 tokens de salida y el JSON quedó cortado en los dos intentos. Se subió el tope a 32.000
+(decisión 0007) y se reanudó con la misma orden y el mismo nombre; los pasos 0–15 no se repitieron.
+La escritura del paper 13 (`2605.18490`) también se había cortado una vez y se reintentó con
+éxito, así que sus páginas salen de la segunda respuesta. El paper más grande (`2610.04794`) entró
+sin problema con el tope nuevo. El commit registrado al iniciar es `0d5407fd`; el cambio del tope
+llegó en `f3448c7`.
+
+**Gasto.** 2,52 USD en total: RAG 0,12 (preguntas) y wiki 1,41 (ingesta) más 0,99 (preguntas). Muy
+por debajo de la cota de 4,67 USD a tarifa normal y del tope de 10.
+
+**Resultados deterministas** (`results/oficial-1/informe/`). Las 139 respuestas indeterminadas
+(38 de RAG y 101 del wiki; 62 son T2) cuentan como no correctas, así que la cobertura es una **cota
+inferior** hasta pasar por el juez.
+
+| Paso | Cobertura RAG | Cobertura wiki | Contexto medio RAG | Contexto medio wiki |
+|---|---|---|---|---|
+| 5 | 0,23 | 0,54 | 1.284 | 3.861 |
+| 25 | 0,44 | 0,62 | 1.296 | 4.690 |
+| 40 | 0,49 | 0,72 | 1.245 | 4.166 |
+| 50 | 0,44 | 0,56 | 1.241 | 4.650 |
+
+**Pendiente.** Pasar las indeterminadas por el juez (Gemini) y calibrarlo, la evaluación auxiliar con
+un segundo juez (decisión 0006) y el análisis de fallos. Las cifras de esta tabla no son todavía las
+del informe final.

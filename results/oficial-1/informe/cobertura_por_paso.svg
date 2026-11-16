@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="sans-serif" font-size="12">
+<title>Cobertura por paso de ingesta (oficial-1)</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="320.0" y="22" text-anchor="middle" font-size="14">Cobertura por paso de ingesta (oficial-1)</text>
+<line x1="64" y1="40" x2="64" y2="304" stroke="#333333"/>
+<line x1="64" y1="304" x2="616" y2="304" stroke="#333333"/>
+<line x1="64" y1="304.0" x2="616" y2="304.0" stroke="#dddddd"/>
+<text x="58" y="308.0" text-anchor="end">0</text>
+<line x1="64" y1="238.0" x2="616" y2="238.0" stroke="#dddddd"/>
+<text x="58" y="242.0" text-anchor="end">0.25</text>
+<line x1="64" y1="172.0" x2="616" y2="172.0" stroke="#dddddd"/>
+<text x="58" y="176.0" text-anchor="end">0.5</text>
+<line x1="64" y1="106.0" x2="616" y2="106.0" stroke="#dddddd"/>
+<text x="58" y="110.0" text-anchor="end">0.75</text>
+<line x1="64" y1="40.0" x2="616" y2="40.0" stroke="#dddddd"/>
+<text x="58" y="44.0" text-anchor="end">1</text>
+<text x="64.0" y="320" text-anchor="middle">5</text>
+<text x="125.3" y="320" text-anchor="middle">10</text>
+<text x="186.7" y="320" text-anchor="middle">15</text>
+<text x="248.0" y="320" text-anchor="middle">20</text>
+<text x="309.3" y="320" text-anchor="middle">25</text>
+<text x="370.7" y="320" text-anchor="middle">30</text>
+<text x="432.0" y="320" text-anchor="middle">35</text>
+<text x="493.3" y="320" text-anchor="middle">40</text>
+<text x="554.7" y="320" text-anchor="middle">45</text>
+<text x="616.0" y="320" text-anchor="middle">50</text>
+<text x="340.0" y="338" text-anchor="middle">Paso de ingesta (papers ingeridos)</text>
+<text x="16" y="172.0" text-anchor="middle" transform="rotate(-90 16 172.0)">Cobertura (respondibles correctas)</text>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,243.1 125.3,210.8 186.7,208.0 248.0,196.8 309.3,187.5 370.7,178.3 432.0,178.0 493.3,174.8 554.7,180.4 616.0,187.8"/>
+<circle cx="64.0" cy="243.1" r="3" fill="#1f77b4"/>
+<circle cx="125.3" cy="210.8" r="3" fill="#1f77b4"/>
+<circle cx="186.7" cy="208.0" r="3" fill="#1f77b4"/>
+<circle cx="248.0" cy="196.8" r="3" fill="#1f77b4"/>
+<circle cx="309.3" cy="187.5" r="3" fill="#1f77b4"/>
+<circle cx="370.7" cy="178.3" r="3" fill="#1f77b4"/>
+<circle cx="432.0" cy="178.0" r="3" fill="#1f77b4"/>
+<circle cx="493.3" cy="174.8" r="3" fill="#1f77b4"/>
+<circle cx="554.7" cy="180.4" r="3" fill="#1f77b4"/>
+<circle cx="616.0" cy="187.8" r="3" fill="#1f77b4"/>
+<rect x="76" y="46" width="12" height="12" fill="#1f77b4"/>
+<text x="94" y="56">rag</text>
+<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,161.8 125.3,148.7 186.7,148.0 248.0,122.5 309.3,140.9 370.7,128.0 432.0,130.0 493.3,113.0 554.7,129.9 616.0,156.2"/>
+<circle cx="64.0" cy="161.8" r="3" fill="#d62728"/>
+<circle cx="125.3" cy="148.7" r="3" fill="#d62728"/>
+<circle cx="186.7" cy="148.0" r="3" fill="#d62728"/>
+<circle cx="248.0" cy="122.5" r="3" fill="#d62728"/>
+<circle cx="309.3" cy="140.9" r="3" fill="#d62728"/>
+<circle cx="370.7" cy="128.0" r="3" fill="#d62728"/>
+<circle cx="432.0" cy="130.0" r="3" fill="#d62728"/>
+<circle cx="493.3" cy="113.0" r="3" fill="#d62728"/>
+<circle cx="554.7" cy="129.9" r="3" fill="#d62728"/>
+<circle cx="616.0" cy="156.2" r="3" fill="#d62728"/>
+<rect x="166" y="46" width="12" height="12" fill="#d62728"/>
+<text x="184" y="56">wiki</text>
+</svg>

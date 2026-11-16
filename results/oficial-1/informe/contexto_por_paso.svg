@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="sans-serif" font-size="12">
+<title>Tokens de contexto medios por paso (oficial-1)</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="320.0" y="22" text-anchor="middle" font-size="14">Tokens de contexto medios por paso (oficial-1)</text>
+<line x1="64" y1="40" x2="64" y2="304" stroke="#333333"/>
+<line x1="64" y1="304" x2="616" y2="304" stroke="#333333"/>
+<line x1="64" y1="304.0" x2="616" y2="304.0" stroke="#dddddd"/>
+<text x="58" y="308.0" text-anchor="end">0</text>
+<line x1="64" y1="238.0" x2="616" y2="238.0" stroke="#dddddd"/>
+<text x="58" y="242.0" text-anchor="end">1.26e+03</text>
+<line x1="64" y1="172.0" x2="616" y2="172.0" stroke="#dddddd"/>
+<text x="58" y="176.0" text-anchor="end">2.53e+03</text>
+<line x1="64" y1="106.0" x2="616" y2="106.0" stroke="#dddddd"/>
+<text x="58" y="110.0" text-anchor="end">3.8e+03</text>
+<line x1="64" y1="40.0" x2="616" y2="40.0" stroke="#dddddd"/>
+<text x="58" y="44.0" text-anchor="end">5.06e+03</text>
+<text x="64.0" y="320" text-anchor="middle">0</text>
+<text x="119.2" y="320" text-anchor="middle">5</text>
+<text x="174.4" y="320" text-anchor="middle">10</text>
+<text x="229.6" y="320" text-anchor="middle">15</text>
+<text x="284.8" y="320" text-anchor="middle">20</text>
+<text x="340.0" y="320" text-anchor="middle">25</text>
+<text x="395.2" y="320" text-anchor="middle">30</text>
+<text x="450.4" y="320" text-anchor="middle">35</text>
+<text x="505.6" y="320" text-anchor="middle">40</text>
+<text x="560.8" y="320" text-anchor="middle">45</text>
+<text x="616.0" y="320" text-anchor="middle">50</text>
+<text x="340.0" y="338" text-anchor="middle">Paso de ingesta (papers ingeridos)</text>
+<text x="16" y="172.0" text-anchor="middle" transform="rotate(-90 16 172.0)">Tokens de contexto (media)</text>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,303.8 119.2,237.0 174.4,239.2 229.6,237.6 284.8,237.6 340.0,236.4 395.2,237.8 450.4,238.4 505.6,239.1 560.8,239.0 616.0,239.3"/>
+<circle cx="64.0" cy="303.8" r="3" fill="#1f77b4"/>
+<circle cx="119.2" cy="237.0" r="3" fill="#1f77b4"/>
+<circle cx="174.4" cy="239.2" r="3" fill="#1f77b4"/>
+<circle cx="229.6" cy="237.6" r="3" fill="#1f77b4"/>
+<circle cx="284.8" cy="237.6" r="3" fill="#1f77b4"/>
+<circle cx="340.0" cy="236.4" r="3" fill="#1f77b4"/>
+<circle cx="395.2" cy="237.8" r="3" fill="#1f77b4"/>
+<circle cx="450.4" cy="238.4" r="3" fill="#1f77b4"/>
+<circle cx="505.6" cy="239.1" r="3" fill="#1f77b4"/>
+<circle cx="560.8" cy="239.0" r="3" fill="#1f77b4"/>
+<circle cx="616.0" cy="239.3" r="3" fill="#1f77b4"/>
+<rect x="76" y="46" width="12" height="12" fill="#1f77b4"/>
+<text x="94" y="56">rag</text>
+<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,303.8 119.2,102.6 174.4,65.4 229.6,64.5 284.8,40.0 340.0,59.3 395.2,57.9 450.4,42.5 505.6,86.6 560.8,73.3 616.0,61.4"/>
+<circle cx="64.0" cy="303.8" r="3" fill="#d62728"/>
+<circle cx="119.2" cy="102.6" r="3" fill="#d62728"/>
+<circle cx="174.4" cy="65.4" r="3" fill="#d62728"/>
+<circle cx="229.6" cy="64.5" r="3" fill="#d62728"/>
+<circle cx="284.8" cy="40.0" r="3" fill="#d62728"/>
+<circle cx="340.0" cy="59.3" r="3" fill="#d62728"/>
+<circle cx="395.2" cy="57.9" r="3" fill="#d62728"/>
+<circle cx="450.4" cy="42.5" r="3" fill="#d62728"/>
+<circle cx="505.6" cy="86.6" r="3" fill="#d62728"/>
+<circle cx="560.8" cy="73.3" r="3" fill="#d62728"/>
+<circle cx="616.0" cy="61.4" r="3" fill="#d62728"/>
+<rect x="166" y="46" width="12" height="12" fill="#d62728"/>
+<text x="184" y="56">wiki</text>
+</svg>

@@ -298,6 +298,31 @@ def _informe(args: argparse.Namespace) -> int:
     return 0
 
 
+def _auxiliar(args: argparse.Namespace) -> int:
+    from wikillm.eval import auxiliar
+
+    carpeta = Path(args.corrida)
+    if args.accion == "exportar":
+        if not (carpeta / "evaluados.jsonl").is_file():
+            print(f"No hay {carpeta / 'evaluados.jsonl'}: ejecuta antes `wikillm.eval metricas`.")
+            return 1
+        n = auxiliar.exportar(carpeta, leer_banco(Path(args.banco)), args.muestra, args.semilla)
+        print(f"{n} ítems ciegos en {carpeta / 'auxiliar' / 'items.jsonl'}")
+        return 0
+    ruta = carpeta / "auxiliar" / auxiliar.VEREDICTOS_CLAUDE
+    if not ruta.is_file():
+        print(f"Falta {ruta}: guarda ahí los veredictos del segundo juez.")
+        return 1
+    try:
+        resultado = auxiliar.importar(carpeta)
+    except ValueError as error:
+        print(f"Error: {error}")
+        return 1
+    total = resultado["total"]
+    print(f"n={total['n']} acuerdo={total['porcentaje']:.1%} kappa={total['kappa']}")
+    return 0
+
+
 def main() -> int:
     analizador = argparse.ArgumentParser(description="Banco de preguntas y métricas de calidad.")
     ordenes = analizador.add_subparsers(dest="orden", required=True)
@@ -349,6 +374,12 @@ def main() -> int:
     cerrado.add_argument("--ejecutar", action="store_true")
     informe = ordenes.add_parser("informe", help="tablas y figuras de una corrida evaluada")
     informe.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
+    auxiliar = ordenes.add_parser("auxiliar", help="segundo juez auxiliar (decisión 0006)")
+    auxiliar.add_argument("accion", choices=["exportar", "importar"])
+    auxiliar.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
+    auxiliar.add_argument("--banco", default=BANCO)
+    auxiliar.add_argument("--muestra", type=int, default=40, help="deterministas a auditar")
+    auxiliar.add_argument("--semilla", type=int, default=1)
     acuerdo = ordenes.add_parser("acuerdo")
     acuerdo.add_argument("--a", required=True)
     acuerdo.add_argument("--b", required=True)
@@ -363,6 +394,10 @@ def main() -> int:
 
     if args.orden == "acordar":
         return _acordar(args)
+    if args.orden == "informe":
+        return _informe(args)
+    if args.orden == "auxiliar":
+        return _auxiliar(args)
 
     if args.orden == "borradores":
         return _borradores(args)

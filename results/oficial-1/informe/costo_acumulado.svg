@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="sans-serif" font-size="12">
+<title>Costo acumulado por sistema (oficial-1)</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="320.0" y="22" text-anchor="middle" font-size="14">Costo acumulado por sistema (oficial-1)</text>
+<line x1="64" y1="40" x2="64" y2="304" stroke="#333333"/>
+<line x1="64" y1="304" x2="616" y2="304" stroke="#333333"/>
+<line x1="64" y1="304.0" x2="616" y2="304.0" stroke="#dddddd"/>
+<text x="58" y="308.0" text-anchor="end">0</text>
+<line x1="64" y1="238.0" x2="616" y2="238.0" stroke="#dddddd"/>
+<text x="58" y="242.0" text-anchor="end">0.248</text>
+<line x1="64" y1="172.0" x2="616" y2="172.0" stroke="#dddddd"/>
+<text x="58" y="176.0" text-anchor="end">0.496</text>
+<line x1="64" y1="106.0" x2="616" y2="106.0" stroke="#dddddd"/>
+<text x="58" y="110.0" text-anchor="end">0.744</text>
+<line x1="64" y1="40.0" x2="616" y2="40.0" stroke="#dddddd"/>
+<text x="58" y="44.0" text-anchor="end">0.991</text>
+<text x="64.0" y="320" text-anchor="middle">0</text>
+<text x="119.2" y="320" text-anchor="middle">5</text>
+<text x="174.4" y="320" text-anchor="middle">10</text>
+<text x="229.6" y="320" text-anchor="middle">15</text>
+<text x="284.8" y="320" text-anchor="middle">20</text>
+<text x="340.0" y="320" text-anchor="middle">25</text>
+<text x="395.2" y="320" text-anchor="middle">30</text>
+<text x="450.4" y="320" text-anchor="middle">35</text>
+<text x="505.6" y="320" text-anchor="middle">40</text>
+<text x="560.8" y="320" text-anchor="middle">45</text>
+<text x="616.0" y="320" text-anchor="middle">50</text>
+<text x="340.0" y="338" text-anchor="middle">Paso de ingesta (papers ingeridos)</text>
+<text x="16" y="172.0" text-anchor="middle" transform="rotate(-90 16 172.0)">USD acumulados</text>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,303.0 119.2,297.7 174.4,293.4 229.6,289.9 284.8,286.8 340.0,283.3 395.2,280.4 450.4,277.6 505.6,275.4 560.8,274.2 616.0,272.9"/>
+<circle cx="64.0" cy="303.0" r="3" fill="#1f77b4"/>
+<circle cx="119.2" cy="297.7" r="3" fill="#1f77b4"/>
+<circle cx="174.4" cy="293.4" r="3" fill="#1f77b4"/>
+<circle cx="229.6" cy="289.9" r="3" fill="#1f77b4"/>
+<circle cx="284.8" cy="286.8" r="3" fill="#1f77b4"/>
+<circle cx="340.0" cy="283.3" r="3" fill="#1f77b4"/>
+<circle cx="395.2" cy="280.4" r="3" fill="#1f77b4"/>
+<circle cx="450.4" cy="277.6" r="3" fill="#1f77b4"/>
+<circle cx="505.6" cy="275.4" r="3" fill="#1f77b4"/>
+<circle cx="560.8" cy="274.2" r="3" fill="#1f77b4"/>
+<circle cx="616.0" cy="272.9" r="3" fill="#1f77b4"/>
+<rect x="76" y="46" width="12" height="12" fill="#1f77b4"/>
+<text x="94" y="56">rag</text>
+<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,303.2 119.2,275.3 174.4,244.6 229.6,213.5 284.8,181.5 340.0,149.7 395.2,119.2 450.4,88.5 505.6,66.6 560.8,53.0 616.0,40.0"/>
+<circle cx="64.0" cy="303.2" r="3" fill="#d62728"/>
+<circle cx="119.2" cy="275.3" r="3" fill="#d62728"/>
+<circle cx="174.4" cy="244.6" r="3" fill="#d62728"/>
+<circle cx="229.6" cy="213.5" r="3" fill="#d62728"/>
+<circle cx="284.8" cy="181.5" r="3" fill="#d62728"/>
+<circle cx="340.0" cy="149.7" r="3" fill="#d62728"/>
+<circle cx="395.2" cy="119.2" r="3" fill="#d62728"/>
+<circle cx="450.4" cy="88.5" r="3" fill="#d62728"/>
+<circle cx="505.6" cy="66.6" r="3" fill="#d62728"/>
+<circle cx="560.8" cy="53.0" r="3" fill="#d62728"/>
+<circle cx="616.0" cy="40.0" r="3" fill="#d62728"/>
+<rect x="166" y="46" width="12" height="12" fill="#d62728"/>
+<text x="184" y="56">wiki</text>
+</svg>

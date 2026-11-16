@@ -7,8 +7,8 @@
   "elegida": true,
   "pregunta_corregida": "On the MuSiQue dataset, how does HippoRAG 2's passage recall@5 compare to the original HippoRAG's value as reported (starred row) in the HippoRAG 2 paper?",
   "respuesta_corregida": "HippoRAG 2 reaches 74.7 recall@5 on MuSiQue, 22.8 points higher than the 51.9 reported for the original HippoRAG.",
-  "claves_corregidas": "74.7 | 22.8 | 51.9",
-  "notas": "El HippoRAG original da 52.1 (Contriever) y 51.9 (ColBERTv2); 22.8 solo sale con 51.9. Fuente requerida: solo 2502.14802."
+  "claves_corregidas": "74.7 | 51.9",
+  "notas": "El HippoRAG original da 52.1 (Contriever) y 51.9 (ColBERTv2); 22.8 solo sale con 51.9. Fuente requerida: solo 2502.14802. Acordado con la revisión de Juan Diego (revision_B_por_A.json): la diferencia 22.8 no está escrita en los papers, así que no es clave; queda en la respuesta de referencia."
  },
  {
   "question_id": "B013-T3-05",
@@ -29,8 +29,8 @@
   "elegida": true,
   "pregunta_corregida": "",
   "respuesta_corregida": "",
-  "claves_corregidas": "20.3 | 56.8 | 36.5",
-  "notas": "La pregunta pide 'by how many points': falta la clave de la diferencia."
+  "claves_corregidas": "20.3 | 56.8",
+  "notas": "La diferencia (36.5) no está escrita en el paper y el 36.5% de la tabla A.10 es otra cifra. Acordado con la revisión de Juan Diego (revision_B_por_A.json): solo las cifras del paper son claves; la diferencia queda en la respuesta de referencia."
  },
  {
   "question_id": "B017-T3-05",

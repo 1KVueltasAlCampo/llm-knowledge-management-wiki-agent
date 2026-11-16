@@ -1,0 +1,13 @@
+[
+ {
+  "variante": "generico",
+  "n": 9,
+  "correctas": 0,
+  "llamadas": 4.0,
+  "tokens_entrada": 11428,
+  "tokens_contexto": 4440,
+  "tokens_salida": 419,
+  "usd": 0.000467,
+  "segundos": 6.6
+ }
+]

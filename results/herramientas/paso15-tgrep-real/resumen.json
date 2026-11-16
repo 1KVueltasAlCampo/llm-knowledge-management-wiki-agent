@@ -1,0 +1,13 @@
+[
+ {
+  "variante": "tgrep",
+  "n": 9,
+  "correctas": 9,
+  "llamadas": 4.56,
+  "tokens_entrada": 6567,
+  "tokens_contexto": 1942,
+  "tokens_salida": 116,
+  "usd": 0.000357,
+  "segundos": 5.4
+ }
+]

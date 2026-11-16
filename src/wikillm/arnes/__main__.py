@@ -64,6 +64,7 @@ from wikillm.common.responder import Brazo
 from wikillm.eval.banco import ESTADOS, leer_banco
 from wikillm.rag import BASE_VECTORIAL
 from wikillm.wiki.almacen import ErrorDeAlmacen
+from wikillm.wiki.capas import ErrorDeCapa, crear_capas, nombre_del_brazo
 from wikillm.wiki.ingesta import ErrorDeIngesta
 
 BRAZOS = ("rag", "wiki")
@@ -112,16 +113,45 @@ def armar_brazos(
 
     spans = cargar_span_ids(argumentos.spans) if argumentos.spans.exists() else None
     carpeta_wiki = getattr(argumentos, "wiki", None) or Path("data/wiki") / argumentos.corrida
-    return [
+    wiki = Wiki(carpeta_wiki)
+    brazos: list[Brazo] = [
         BrazoRag(modelo, indice, k=argumentos.k, spans_validos=spans),
         BrazoWiki(
             modelo,
-            Wiki(carpeta_wiki),
+            wiki,
             argumentos.gold,
             max_acciones=argumentos.max_acciones,
             spans_validos=spans,
         ),
     ]
+    graphify = getattr(argumentos, "graphify", None)
+    if graphify:
+        # Tercer brazo opcional: el mismo wiki, consultado con las capas (no reingiere).
+        from wikillm.wiki.brazo import BrazoWikiCapas
+
+        tgrep = getattr(argumentos, "tgrep", None)
+        trabajo = (
+            getattr(argumentos, "capas_trabajo", None) or Path("data/grafo") / argumentos.corrida
+        )
+        brazos.append(
+            BrazoWikiCapas(
+                nombre_del_brazo(bool(tgrep)),
+                modelo,
+                wiki,
+                crear_capas(wiki, graphify, trabajo, tgrep=tgrep),
+                max_acciones=argumentos.max_acciones,
+                spans_validos=spans,
+            )
+        )
+    return brazos
+
+
+def nombres_de_brazos(argumentos: argparse.Namespace) -> list[str]:
+    """``rag`` y ``wiki``, más el brazo con capas si se pidió con ``--graphify``."""
+    nombres = list(BRAZOS)
+    if getattr(argumentos, "graphify", None):
+        nombres.append(nombre_del_brazo(bool(getattr(argumentos, "tgrep", None))))
+    return nombres
 
 
 def _lista(texto: str | None) -> list[str] | None:
@@ -144,6 +174,19 @@ def _analizar(argv: Sequence[str] | None) -> argparse.Namespace:
     correr.add_argument("--preguntas", help="solo estos id, separados por comas")
     correr.add_argument("--k", type=int, default=5, help="fragmentos que recupera el RAG")
     correr.add_argument("--max-acciones", type=int, default=8, help="tope del agente del wiki")
+    correr.add_argument(
+        "--graphify",
+        type=Path,
+        help="ejecutable de graphify: añade el brazo wiki_grafo (mismo wiki, consulta con grafo)",
+    )
+    correr.add_argument(
+        "--tgrep",
+        type=Path,
+        help="ejecutable de tgrep: el brazo con grafo lo usa como herramienta opcional",
+    )
+    correr.add_argument(
+        "--capas-trabajo", type=Path, help="carpeta del grafo y del índice (data/grafo/<corrida>)"
+    )
     correr.add_argument("--estimar", action="store_true", help="solo imprime el costo esperado")
     correr.add_argument("--confirmo-usd", type=float, default=0.0, help="acepta gasto mayor de 5")
     cmp_ = ordenes.add_parser(
@@ -180,10 +223,26 @@ def _errores_conocidos() -> tuple[type[BaseException], ...]:
         ErrorDeCorrida,
         ErrorDeAlmacen,
         ErrorDeIngesta,
+        ErrorDeCapa,
         ErrorDeDispositivo,
         GoldDistinto,
         FileNotFoundError,
     )
+
+
+def _brazos_declarados(argumentos: argparse.Namespace) -> dict[str, Any]:
+    brazos: dict[str, Any] = {
+        "rag": {"k": argumentos.k, "base_vectorial": BASE_VECTORIAL},
+        "wiki": {"max_acciones": argumentos.max_acciones},
+    }
+    if getattr(argumentos, "graphify", None):
+        con_tgrep = bool(getattr(argumentos, "tgrep", None))
+        brazos[nombre_del_brazo(con_tgrep)] = {
+            "max_acciones": argumentos.max_acciones,
+            "capas": ["graphify", *(["tgrep"] if con_tgrep else [])],
+            "comparte_wiki_con": "wiki",
+        }
+    return brazos
 
 
 def _metadatos(
@@ -209,10 +268,7 @@ def _metadatos(
         },
         "max_usd_por_run": ajustes.max_usd_per_run,
         "pasos": list(pasos),
-        "brazos": {
-            "rag": {"k": argumentos.k, "base_vectorial": BASE_VECTORIAL},
-            "wiki": {"max_acciones": argumentos.max_acciones},
-        },
+        "brazos": _brazos_declarados(argumentos),
         "banco": {
             "ruta": str(argumentos.banco),
             "sha256": huella_archivo(argumentos.banco),
@@ -306,13 +362,18 @@ def principal(
         print(f"Error: {error}", file=sys.stderr)
         return 1
 
+    if getattr(argumentos, "tgrep", None) and not getattr(argumentos, "graphify", None):
+        print(
+            "Error: --tgrep se usa junto con --graphify (va en el brazo con grafo).",
+            file=sys.stderr,
+        )
+        return 1
     valida = valida_para_informe(preguntas)
-    estimacion = estimar(
-        list(BRAZOS), preguntas=len(preguntas), pasos=len(pasos), papers=max(pasos)
-    )
+    nombres = nombres_de_brazos(argumentos)
+    estimacion = estimar(nombres, preguntas=len(preguntas), pasos=len(pasos), papers=max(pasos))
     salida(
-        f"{len(preguntas)} preguntas × {len(pasos)} pasos × {len(BRAZOS)} brazos = "
-        f"{estimacion.llamadas_de_pregunta * len(BRAZOS)} respuestas; {max(pasos)} papers por "
+        f"{len(preguntas)} preguntas × {len(pasos)} pasos × {len(nombres)} brazos = "
+        f"{estimacion.llamadas_de_pregunta * len(nombres)} respuestas; {max(pasos)} papers por "
         f"ingerir. Estimado (cota alta): {estimacion.total:.2f} USD "
         f"({estimacion.usd_ingesta:.2f} de ingesta y {estimacion.usd_preguntas:.2f} de preguntas)."
     )

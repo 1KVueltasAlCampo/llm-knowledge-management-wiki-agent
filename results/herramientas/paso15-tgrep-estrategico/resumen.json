@@ -1,0 +1,35 @@
+[
+ {
+  "variante": "opcional",
+  "n": 6,
+  "correctas": 3,
+  "llamadas": 4.83,
+  "tokens_entrada": 18577,
+  "tokens_contexto": 5229,
+  "tokens_salida": 469,
+  "usd": 0.000769,
+  "segundos": 9.7
+ },
+ {
+  "variante": "tras_grafo",
+  "n": 6,
+  "correctas": 3,
+  "llamadas": 5.0,
+  "tokens_entrada": 20134,
+  "tokens_contexto": 5023,
+  "tokens_salida": 476,
+  "usd": 0.000737,
+  "segundos": 10.0
+ },
+ {
+  "variante": "tras_lectura",
+  "n": 6,
+  "correctas": 3,
+  "llamadas": 4.33,
+  "tokens_entrada": 14884,
+  "tokens_contexto": 4534,
+  "tokens_salida": 475,
+  "usd": 0.00068,
+  "segundos": 8.8
+ }
+]

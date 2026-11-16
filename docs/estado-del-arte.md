@@ -225,6 +225,37 @@ posición en el LLM-como-juez para resumen.
 caracterizada —estructura en prosa enlazada, no en tripletas— y esa caracterización
 empírica *no existe todavía en la literatura*. Es una oportunidad concreta.
 
+### 5.1 Capas de consulta sobre un wiki: grafo e índice de texto
+
+A finales de 2026 circulan tres ideas para bajar el costo de consulta de un agente que lee
+texto, sin añadir una base vectorial. Se resumen aquí con lo que sabemos de cada una; las que
+vienen de terceros están por verificar en su fuente (nota de verificación 6).
+
+- **Un grafo derivado de los archivos.** [Graphify](https://github.com/Graphify-Labs/graphify)
+  construye un grafo de conocimiento desde una carpeta; está pensado para código. Su cifra de
+  ahorro (71,5×) se mide frente a leer los archivos en bruto, no frente a una búsqueda por
+  palabras clave, y hay análisis críticos que lo señalan.
+- **Un índice de trigramas.** [tgrep](https://github.com/microsoft/tgrep) es un `grep` con
+  índice y arquitectura cliente-servidor para repositorios grandes. Sus benchmarks miden
+  latencia, no tokens.
+- **Divulgación progresiva.** Entregar primero resúmenes y recuperar por palabras clave antes
+  de abrir una página completa. arXiv:2607.04576 reporta una reducción de costo de 30 % a
+  34 %; ColGrep-Agent reporta −34 % por hacer menos turnos; otro informe técnico no encontró
+  ahorro de tokens al añadir un índice.
+
+**Lo que medimos nosotros** (detalle en [evaluacion-tgrep-graphify.md](evaluacion-tgrep-graphify.md),
+wiki de 15 papers, mismo modelo): usar el grafo solo para decidir qué páginas leer mejoró las
+preguntas que combinan varias fuentes, sin que el wiki deje de ser un WikiLLM (las páginas
+siguen siendo Markdown escrito por el modelo y el grafo se regenera sin gastar tokens). tgrep
+no redujo el costo: devuelve párrafos enteros, su recorte muestra el inicio de la línea y no el
+dato buscado, y su índice acelera una búsqueda que ya era instantánea. Lo que sí ahorró tokens
+fue recortar la salida, algo que no requiere tgrep.
+
+**Implicación para el proyecto:** el costo de consultar un wiki depende de los turnos del
+agente y del contexto que devuelve cada herramienta, no de la velocidad de búsqueda. Es una
+hipótesis de diseño para el brazo adicional con grafo, no un resultado: la medición es pequeña
+y se repetirá sobre la corrida completa.
+
 ---
 
 ## 6. El problema difícil: mantener el wiki
@@ -621,3 +652,7 @@ Antes de citar en el documento final:
    `docs/fichas-lectura.md` conserva el detalle completo de cada una (metodología,
    resultados exactos, limitaciones, preguntas abiertas) para quien necesite más
    profundidad que la síntesis aquí.
+6. Confirmar en las fuentes originales lo citado en §5.1 sobre ahorro de costo: arXiv:2607.04576,
+   ColGrep-Agent, el informe técnico sobre índices y los análisis críticos de la cifra de 71,5×
+   de Graphify. Se leyeron en una búsqueda web del 10-nov-2026 y no se reabrieron al escribir
+   la sección.

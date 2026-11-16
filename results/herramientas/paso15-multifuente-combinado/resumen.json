@@ -1,0 +1,24 @@
+[
+ {
+  "variante": "graphify",
+  "n": 9,
+  "correctas": 7,
+  "llamadas": 4.56,
+  "tokens_entrada": 15176,
+  "tokens_contexto": 5614,
+  "tokens_salida": 351,
+  "usd": 0.00053,
+  "segundos": 9.1
+ },
+ {
+  "variante": "combinado",
+  "n": 9,
+  "correctas": 3,
+  "llamadas": 5.33,
+  "tokens_entrada": 20462,
+  "tokens_contexto": 5039,
+  "tokens_salida": 402,
+  "usd": 0.000739,
+  "segundos": 8.7
+ }
+]

@@ -1,0 +1,13 @@
+[
+ {
+  "variante": "combinado",
+  "n": 8,
+  "correctas": 4,
+  "llamadas": 5.12,
+  "tokens_entrada": 13826,
+  "tokens_contexto": 3269,
+  "tokens_salida": 246,
+  "usd": 0.000851,
+  "segundos": 7.7
+ }
+]

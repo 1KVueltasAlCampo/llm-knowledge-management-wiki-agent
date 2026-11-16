@@ -1,0 +1,190 @@
+﻿id,lista,tipo,pregunta,papers_donde_mirar,respuesta_de_la_wiki,fragmentos_para_ctrl_f,nota_de_claude,la_escoge_su_autor,el_autor_confirma_la_respuesta,el_otro_esta_de_acuerdo,notas
+JD-01,Juan David,Antiguo frente a nuevo,What accuracy has been reported for Zep on the DMR benchmark?,2501.13956; 2310.08560,"Zep reaches 94.8% on DMR with gpt-4-turbo and 98.2% with gpt-4o-mini, against 93.4% for MemGPT (Zep paper 2501.13956; MemGPT figure from 2310.08560).","[2501.13956] «Zep demonstrates superior performance (94.8% vs 93.4%)»
+[2501.13956] «98.2%»
+[2310.08560] «93.4%»","Antes de ingerir a Zep (2501.13956) lo correcto es abstenerse; con MemGPT solo se puede decir que MemGPT tiene 93,4 %.",,,,
+JD-02,Juan David,Antiguo frente a nuevo,What overall J score has been reported for Mem0 on LoCoMo with gpt-4o-mini?,2504.19413; 2507.03724; 2610.30755,"The Mem0 paper reports an overall J of 66.88% for Mem0 and 68.44% for its graph variant Mem0g (2504.19413). A later paper, MemOS (2507.03724), measures Mem0 at 64.57 under its own setup, and 2610.30755 argues that weighting the published category scores by question counts gives 62.14 instead of 66.88.","[2504.19413] «66.88»
+[2504.19413] «68.44»
+[2507.03724] «64.57»
+[2610.30755] «62.14»","La clave principal es 66,88 (paper original); las otras cifras son contexto de papers posteriores.",,,,
+JD-03,Juan David,Antiguo frente a nuevo,How many sessions can a LoCoMo conversation have?,2402.17753; 2511.01448; 2512.12818,"Up to 35 sessions, with about 300 turns and 9K tokens per conversation, and 19.3 sessions on average (LoCoMo paper 2402.17753). Later papers describe the data differently: 2511.01448 gives an average of 27.2 sessions.","[2402.17753] «over up to 35 sessions»
+[2402.17753] «19.3»
+[2511.01448] «average of 27.2 sessions»","El resumen del paper dice «hasta 35 sesiones»; la Tabla 5 dice 19,3 de media.",,,,
+JD-04,Juan David,Antiguo frente a nuevo,"With GPT-4o-mini, what accuracy does LightMem reach on LongMemEval-S and how does it compare with A-MEM?",2510.18866,"LightMem reaches between 64.29% and 68.64% depending on its settings (best: 68.64% with r=0.7, th=512), against 62.60% for A-MEM and 56.80% for passing the full text. The paper states a gain of 2.09%–6.40% over the strongest baseline with GPT backbones.","[2510.18866] «68.64»
+[2510.18866] «64.29»
+[2510.18866] «62.60»
+[2510.18866] «2.09%–6.40%»","Tabla 2 de LightMem; hay tres bloques según el modelo base (GPT-4o-mini, Qwen3, GLM-4.6).",,,,
+JD-05,Juan David,Antiguo frente a nuevo,"With GPT-4o-mini, how well does A-MEM do on the multi-hop questions of LoCoMo?",2502.12110; 2504.19413,"A-MEM scores 27.02 F1 and 20.09 BLEU-1 on multi-hop questions (Table 1 of 2502.12110), against 26.65 F1 for MemGPT and 25.02 for the LoCoMo baseline.","[2502.12110] «27.02»
+[2502.12110] «20.09»
+[2502.12110] «26.65»","OJO: el paper de Mem0 pone esas mismas cifras base (25,02; 19,75) bajo «Single Hop», no «Multi Hop»: los dos papers etiquetan las categorías al revés. Ficha a completar.",,,,
+JD-06,Juan David,Antiguo frente a nuevo,What single-hop LLM-judge score does MemOS report for itself on LoCoMo?,2507.03724; 2505.22101,81.09 for MemOS-1031 with GPT-4o-mini (Table 3 of the long MemOS paper 2507.03724). The short first MemOS paper (2505.22101) reports no LoCoMo result.,"[2507.03724] «81.09»
+[2507.03724] «MemOS-1031»","En la misma tabla, Mem0 tiene 73,33 y Zep 66,23 en single-hop.",,,,
+JD-07,Juan David,Vocabulario distinto,"Which paper makes stored conversation memories fade over time, in a way inspired by how people forget?",2305.10250,"MemoryBank (2305.10250): its memory updater is inspired by the Ebbinghaus Forgetting Curve, so memories are forgotten or reinforced according to elapsed time and importance.",[2305.10250] «inspired by the Ebbinghaus Forgetting Curve theory»,Otros papers también citan la curva del olvido; el que la implementa es MemoryBank.,,,,
+JD-08,Juan David,Vocabulario distinto,"Which paper links an agent's notes to each other, following a note-taking method from a German sociologist?",2502.12110,"A-MEM (2502.12110): it follows the Zettelkasten method, creating interconnected notes through dynamic indexing and linking.",[2502.12110] «Following the basic principles of the Zettelkasten method»,Otros papers citan Zettelkasten; el original es A-MEM.,,,,
+JD-09,Juan David,Vocabulario distinto,Which paper copies the stages of human sleep and short-term versus long-term storage to cut the number of tokens a memory system uses?,2510.18866,"LightMem (2510.18866): it organizes memory in three stages inspired by the Atkinson–Shiffrin model and uses a sleep-time update to maintain long-term memory, reducing token use.","[2510.18866] «Inspired by the Atkinson–Shiffrin model of human memory»
+[2510.18866] «sleep-time update mechanism»",,,,,
+JD-10,Juan David,Vocabulario distinto,"Which benchmark checks whether a memory system invents false facts when it stores, updates or answers?",2511.03506,"HaluMem (2511.03506): it evaluates memory hallucinations at three operations: memory extraction, memory updating and question answering.","[2511.03506] «whether hallucinations occur in memory extraction, memory updating, or question answering»",,,,,
+JD-11,Juan David,Vocabulario distinto,Which paper stores facts in a graph where each fact carries the time during which it was true?,2501.13956,"Zep (2501.13956): a temporal knowledge graph with a bi-temporal model that tracks when facts were created, expired, valid and invalid.","[2501.13956] «Zep: A Temporal Knowledge Graph Architecture for Agent Memory»
+[2501.13956] «bi-temporal model»",,,,,
+JD-12,Juan David,Vocabulario distinto,"Which paper simulates characters in a small virtual town who remember, think about their memories and plan their days?",2304.03442,"Generative Agents (2304.03442): 25 agents live in the sandbox town of Smallville with memory, reflection and planning.","[2304.03442] «A community of 25 unique agents inhabits Smallville»
+[2304.03442] «Smallville»",Muy famoso: puede responderse a libro cerrado.,,,,
+JD-13,Juan David,Abstención,What accuracy does Zep reach on MemBench?,2501.13956; 2506.21605,The ingested corpus does not contain this information.,"[2501.13956] «Zep: A Temporal Knowledge Graph Architecture for Agent Memory»
+[2506.21605] «MemBench»","Zep y MemBench existen en el corpus, pero ningún paper los reporta juntos. Los fragmentos muestran que cada uno existe por separado.",,,,
+JD-14,Juan David,Abstención,What score does LightMem get on HaluMem?,2510.18866; 2511.03506,The ingested corpus does not contain this information.,"[2510.18866] «LightMem»
+[2511.03506] «HaluMem: Evaluating Hallucinations»",Ningún paper reporta LightMem en HaluMem.,,,,
+JD-15,Juan David,Abstención,What F1 score does Mem0 reach on MuSiQue?,2504.19413; 2503.04338,The ingested corpus does not contain this information.,"[2504.19413] «Mem0»
+[2503.04338] «MuSiQue»","Mem0 y MuSiQue aparecen en el corpus, pero nunca en el mismo bloque de texto.",,,,
+JD-16,Juan David,Abstención,What accuracy does LiCoMemory reach on BEAM?,2511.01448; 2510.27246,The ingested corpus does not contain this information.,"[2511.01448] «LiCoMemory»
+[2510.27246] «BEAM»",Ningún paper reporta LiCoMemory en BEAM.,,,,
+JD-17,Juan David,Abstención,How does MemOS perform on REALTALK?,2507.03724; 2502.13270,The ingested corpus does not contain this information.,"[2507.03724] «MemOS»
+[2502.13270] «RealTalk»",Ningún paper contiene a la vez MemOS y REALTALK.,,,,
+JD-18,Juan David,Abstención,What score does MemGPT get on BEAM?,2310.08560; 2510.27246,The ingested corpus does not contain this information.,"[2310.08560] «MemGPT»
+[2510.27246] «BEAM»",Ningún paper reporta MemGPT en BEAM.,,,,
+JD-19,Juan David,Contradicción,How many conversations does LoCoMo contain?,2402.17753; 2511.01448; 2512.12818; 2603.02473,"The papers disagree. The LoCoMo paper (Table 5 of 2402.17753) lists 50 conversations, and 2512.12818 repeats that figure. 2511.01448 and 2603.02473 evaluate on 10 conversations. The collection does not say why the numbers differ.","[2402.17753] «Total. # conversations»
+[2512.12818] «50 human-human conversations»
+[2511.01448] «10 long-form dialogues»
+[2603.02473] «10 multi-session conversations»",Ficha: versión del conjunto de datos (completa frente a la publicada).,,,,
+JD-20,Juan David,Contradicción,What single-hop score has Mem0 been reported with on LoCoMo?,2504.19413; 2507.03724; 2610.30755,"The Mem0 paper reports a single-hop J of 67.13 (2504.19413), which 2610.30755 repeats as the published figure. The MemOS paper (2507.03724) reports 73.33 for Mem0 under its own evaluation with GPT-4o-mini. The setups differ, so the figures are not directly comparable.","[2504.19413] «67.13»
+[2507.03724] «73.33»
+[2610.30755] «67.13»",Diferencia de protocolo probable: la clave debe dar las dos cifras.,,,,
+JD-21,Juan David,Contradicción,How many tokens does a LoCoMo dialogue have?,2402.17753; 2511.01448; 2502.12110,"About 9K tokens per conversation in the LoCoMo paper (9,209.2 on average, Table 5). 2511.01448 states roughly 16k tokens per dialogue, and the A-MEM paper lists the LoCoMo baseline with a token length of 16,910.","[2402.17753] «9,209.2»
+[2511.01448] «roughly 16k tokens per dialogue»
+[2502.12110] «16,910»","Ficha: A-MEM mide el contexto que se pasa al modelo, no el tamaño del diálogo.",,,,
+JD-22,Juan David,Contradicción,What accuracy does Mem0 get on LongMemEval?,2510.18866; 2507.03724; 2511.01448,"It depends on the paper and the backbone: 53.61% with GPT-4o-mini in LightMem (2510.18866), 66.4 in the MemOS paper (2507.03724), and 56.80% with Llama-3.1-70B or 62.60% with GPT-4o-mini in LiCoMemory (2511.01448).","[2510.18866] «53.61»
+[2507.03724] «66.4»
+[2511.01448] «56.80»
+[2511.01448] «62.60»",Diferencia de protocolo: modelo base y juez distintos. La clave debe dar las cifras con su contexto.,,,,
+JD-23,Juan David,Agregación,Which papers in the collection mention MEMTRACK?,2510.01353; 2602.06052; 2609.24971,"Three papers: 2510.01353 (the MEMTRACK paper itself), 2602.06052 and 2609.24971.","[2510.01353] «Memtrack : Evaluating Long-Term Memory and State Tracking»
+[2602.06052] «MemTrack (Deshpande et al., 2025)»
+[2609.24971] «MEMTRACK [5]»",Conjunto cerrado: confirmar con búsqueda de texto.,,,,
+JD-24,Juan David,Agregación,Which papers in the collection mention HaluMem?,2511.03506; 2602.06052; 2605.20926; 2606.06240; 2609.05441,"Five papers: 2511.03506 (the HaluMem paper), 2602.06052, 2605.20926, 2606.06240 and 2609.05441.","[2511.03506] «HaluMem: Evaluating Hallucinations in Memory Systems of Agents»
+[2602.06052] «HaluMem (Chen et al., 2025a)»
+[2605.20926] «HaluMem (Chen et al., 2025)»
+[2606.06240] «HaluMem (Chen et al., 2025)»
+[2609.05441] «HaluMem (HaluMem, 2025)»",Conjunto cerrado.,,,,
+JD-25,Juan David,Agregación,Which papers in the collection mention REALTALK?,2502.13270; 2507.05257; 2603.02473; 2607.26637; 2609.24971,"Five papers: 2502.13270 (the REALTALK paper), 2507.05257, 2603.02473, 2607.26637 and 2609.24971.","[2502.13270] «RealTalk : A 21-Day Real-World Dataset»
+[2507.05257] «RealTalk (Lee et al., 2025)»
+[2603.02473] «RealTalk (Lee et al., 2025)»
+[2607.26637] «PersonaMem, REALTALK»
+[2609.24971] «RealTalk [10]»",Conjunto cerrado.,,,,
+JD-26,Juan David,Agregación,Which papers in the collection mention ConvoMem?,2511.10523; 2602.06052; 2606.06240,"Three papers: 2511.10523 (the ConvoMem paper), 2602.06052 and 2606.06240.","[2511.10523] «ConvoMem Benchmark: Why Your First 150 Conversations»
+[2602.06052] «ConvoMem (Pakhomov et al., 2025)»
+[2606.06240] «LongMemEval/LoCoMo/ConvoMem»",Conjunto cerrado.,,,,
+JD-27,Juan David,Segunda mano,"What accuracy does Zep get on LongMemEval according to the Zep paper, and what do later papers report for it?",2501.13956; 2507.03724; 2511.01448,"The Zep paper reports 63.8% with gpt-4o-mini and 71.2% with gpt-4o on LongMemEval (2501.13956). The MemOS paper lists the same 63.8 for Zep (2507.03724), while LiCoMemory re-measures Zep at 60.20% with Llama-3.1-70B and 58.60% with GPT-4o-mini (2511.01448).","[2501.13956] «63.8%»
+[2501.13956] «71.2%»
+[2507.03724] «63.8»
+[2511.01448] «60.20»
+[2511.01448] «58.60»",,,,,
+JD-28,Juan David,Segunda mano,"What overall J does the Mem0 paper give for its graph variant, and what do later papers report for it?",2504.19413; 2610.30755; 2511.01448,"The Mem0 paper reports 68.44% overall J for the graph variant Mem0g (2504.19413). 2610.30755 repeats 68.44 as the published score, and LiCoMemory measures Mem0g at 55.48% accuracy on LoCoMo with Llama-3.1-70B (2511.01448).","[2504.19413] «68.44»
+[2610.30755] «68.44»
+[2511.01448] «55.48»",Métricas distintas (J frente a exactitud): no son comparables.,,,,
+JD-29,Juan David,Segunda mano,"What accuracy is reported for A-MEM on LongMemEval, and which paper reports it?",2510.18866; 2511.01448; 2502.12110,"The A-MEM paper does not evaluate LongMemEval. Other papers report it: LightMem gives 62.60% (GPT-4o-mini), 65.20% (Qwen3-30B) and 70.60% (GLM-4.6) (2510.18866), and LiCoMemory gives 57.40% with Llama-3.1-70B (2511.01448).","[2510.18866] «62.60»
+[2510.18866] «65.20»
+[2510.18866] «70.60»
+[2511.01448] «57.40»",Cita de segunda mano pura: A-MEM no tiene esta cifra en su propio paper.,,,,
+JD-30,Juan David,Segunda mano,"What does the MemGPT paper report on DMR, and what does the Zep paper report for MemGPT?",2310.08560; 2501.13956,The MemGPT paper reports 93.4% accuracy on DMR (2310.08560). The Zep paper reproduces that 93.4% for MemGPT in its Table 1 (marked with a dagger) and reports 94.8% for Zep with gpt-4-turbo (2501.13956).,"[2310.08560] «93.4%»
+[2501.13956] «MemGPT†»
+[2501.13956] «94.8%»",,,,,
+JD-31,Juan David,Marco temporal,How many questions does the LoCoMo benchmark contain?,2402.17753; 2511.01448; 2603.02473,"7,512 questions across 50 conversations in the LoCoMo paper (Table 5 of 2402.17753). Later papers that use 10 conversations report 1,986 questions (2511.01448) or 1,540 non-adversarial questions (2603.02473).","[2402.17753] «7,512»
+[2511.01448] «1,986 questions»
+[2603.02473] «1,540 non-adversarial questions»","La clave cambia según qué papers se hayan ingerido: antes de los posteriores, solo 7.512.",,,,
+JD-32,Juan David,Marco temporal,Which memory system has the highest reported accuracy on the DMR benchmark?,2501.13956; 2310.08560,"Zep: 98.2% with gpt-4o-mini and 94.8% with gpt-4-turbo (2501.13956). Before Zep, the best system in the MemGPT paper was MemGPT at 93.4%.","[2501.13956] «98.2%»
+[2501.13956] «94.8%»
+[2310.08560] «93.4%»","Con solo MemGPT ingerido, la respuesta es MemGPT (93,4 %); con Zep, Zep. DMR solo aparece en 3 papers.",,,,
+JD-33,Juan David,Detalle de tabla,"How many memory tokens do Mem0, its graph variant and Zep use per conversation in the Mem0 paper?",2504.19413,"Mem0 uses 1764 memory tokens, Mem0g 3616 and Zep 3911 (latency table of 2504.19413).","[2504.19413] «1764»
+[2504.19413] «3616»
+[2504.19413] «3911»",Tabla 2 del paper de Mem0.,,,,
+JD-34,Juan David,Detalle de tabla,"In the Zep paper's LongMemEval table, what latency and context size does Zep have with gpt-4o-mini?",2501.13956,"Zep has a median latency of 3.20 s and an average context of 1.6k tokens, against 31.3 s and 115k tokens for the full-context baseline; its accuracy is 63.8% against 55.4%.","[2501.13956] «3.20 s»
+[2501.13956] «1.6k»
+[2501.13956] «31.3 s»
+[2501.13956] «115k»",Tabla 2 del paper de Zep.,,,,
+JD-35,Juan David,Detalle de tabla,"In the A-MEM paper, what memory usage and retrieval time does A-MEM have with 10,000 memories?",2502.12110,14.65 MB of memory and a retrieval time of 0.38 ± 0.25 µs (Table 4 of 2502.12110).,"[2502.12110] «14.65»
+[2502.12110] «0.38»",,,,,
+JD-36,Juan David,Detalle de tabla,"In the MemBench paper, what accuracy does the retrieval memory mechanism reach on the factual-memory participation scenario at 100k tokens?",2506.21605,"0.833, against 0.489 for FullMemory and 0.422 for RecentMemory (Table 3 of 2506.21605).","[2506.21605] «0.833»
+[2506.21605] «0.489»",En la tabla el método se llama «RetrievalMemmory» (errata del paper).,,,,
+JD-37,Juan David,Identificador exacto,Which paper uses the dataset called InfiniteChoice?,2505.24226,E2GraphRAG (2505.24226): it takes the English multiple-choice subset of InfiniteBench and calls it InfiniteChoice.,[2505.24226] «referred to as InfiniteChoice and InfiniteQA»,,,,,
+JD-38,Juan David,Identificador exacto,Which paper introduces the dataset called HaluMem-Long?,2511.03506,HaluMem (2511.03506): it builds HaluMem-Medium and HaluMem-Long.,[2511.03506] «HaluMem-Medium and HaluMem-Long»,,,,,
+JD-39,Juan David,Dato antiguo vigente,Which five abilities does LongMemEval test?,2410.10813,"Information extraction, multi-session reasoning, temporal reasoning, knowledge updates and abstention.","[2410.10813] «information extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention»","Lo repiten los papers posteriores, así que no debería cambiar.",,,,
+JD-40,Juan David,Dato antiguo vigente,Which three scores does Generative Agents use to choose which memories to bring back?,2304.03442,"Recency, importance and relevance, combined as a weighted score.","[2304.03442] «relevance, recency, and importance»",Muy famoso: puede responderse a libro cerrado.,,,,
+JDi-01,Juan Diego,Antiguo frente a nuevo,What accuracy does RAPTOR reach on QuALITY when paired with GPT-4?,2401.18059,"82.6%, a new state of the art that surpasses the previous best of 62.3% (2401.18059).","[2401.18059] «82.6%»
+[2401.18059] «62.3%»","Con otros modelos base la cifra es otra (p. ej. 62,4 %): no mezclar.",,,,
+JDi-02,Juan Diego,Antiguo frente a nuevo,What accuracy has been reported for Hindsight on LongMemEval?,2512.12818,"91.4% with Gemini-3 Pro; 89.0% with OSS-120B and 83.6% with OSS-20B, on the S setting with 500 questions (2512.12818).","[2512.12818] «91.4%»
+[2512.12818] «89.0%»
+[2512.12818] «83.6%»",Las tablas de este paper NO se extrajeron en nuestro Gold (0 tablas); las cifras salen del texto.,,,,
+JDi-03,Juan Diego,Antiguo frente a nuevo,What accuracy has been reported for Hindsight on LoCoMo?,2512.12818,"89.61% overall with Gemini-3; 85.67% with OSS-120B and 83.18% with OSS-20B, against 75.78% for the strongest prior open system, Memobase (2512.12818).","[2512.12818] «89.61%»
+[2512.12818] «85.67%»
+[2512.12818] «75.78%»","Cifras de texto, no de tabla.",,,,
+JDi-04,Juan Diego,Antiguo frente a nuevo,How often does GraphRAG's global approach beat plain vector retrieval on comprehensiveness?,2404.16130,Global approaches win 72–83% of comparisons on the Podcast transcripts and 72–80% on the News articles (p<.001).,[2404.16130] «comprehensiveness win rates between 72-83%»,Son los niveles de comunidad C0 a C3 frente a la búsqueda vectorial (SS).,,,,
+JDi-05,Juan Diego,Antiguo frente a nuevo,What win rate does LightRAG have against the naive retrieval baseline overall on the Agriculture dataset?,2410.05779,"67.6% for LightRAG against 32.4% for NaiveRAG (Table 1 of 2410.05779, Overall row).","[2410.05779] «67.6%»
+[2410.05779] «32.4%»",La tabla tiene varios bloques; el primero compara con NaiveRAG.,,,,
+JDi-06,Juan Diego,Antiguo frente a nuevo,"What effective context length does RULER report for GPT-4, compared with its claimed length?",2404.06654,"GPT-4 claims 128K but its effective length is 64K (Table 3 of RULER, 2404.06654).","[2404.06654] «GPT-4»
+[2404.06654] «effective context length is the maximum length passing this threshold»","Tabla 3, fila GPT-4: longitud anunciada 128K, efectiva 64K.",,,,
+JDi-07,Juan Diego,Vocabulario distinto,"Which paper builds a tree by repeatedly grouping pieces of text and summarising each group, so questions can be answered at different levels of detail?",2401.18059,"RAPTOR (2401.18059): it recursively embeds, clusters and summarizes chunks of text, building a tree with different levels of summarization from the bottom up.","[2401.18059] «recursively embedding, clustering, and summarizing chunks of text»",,,,,
+JDi-08,Juan Diego,Vocabulario distinto,Which paper answers broad questions about a whole collection of texts by first summarising groups of closely connected entities?,2404.16130,GraphRAG (2404.16130): it builds an entity knowledge graph and pregenerates community summaries for groups of closely related entities.,[2404.16130] «pregenerate community summaries for all groups of closely related entities»,,,,,
+JDi-09,Juan Diego,Vocabulario distinto,Which paper found that models answer worse when the useful passage sits in the middle of a long input?,2307.03172,Lost in the Middle (2307.03172): performance is highest when relevant information is at the beginning or end and degrades in the middle (a U-shaped curve).,[2307.03172] «significantly degrades when models must access relevant information in the middle of long contexts»,Famoso: puede responderse a libro cerrado.,,,,
+JDi-10,Juan Diego,Vocabulario distinto,Which paper skips retrieval altogether by loading the whole knowledge base into the model's precomputed state?,2412.15605,"Cache-augmented generation, CAG (2412.15605): it preloads all relevant documents into the model's extended context and caches the runtime parameters, bypassing real-time retrieval.",[2412.15605] «preloading all relevant resources»,,,,,
+JDi-11,Juan Diego,Vocabulario distinto,Which paper uses a light long-term memory to draft clues about what is needed before searching the database?,2409.05591,MemoRAG (2409.05591): a light long-range system builds a global memory of the long context and generates draft answers that guide retrieval.,[2409.05591] «generates draft answers»,,,,,
+JDi-12,Juan Diego,Vocabulario distinto,"Which paper lets a model keep improving a growing playbook of strategies, adding small changes so it does not collapse into short summaries?",2510.04618,"Agentic Context Engineering, ACE (2510.04618): contexts are treated as comprehensive, evolving playbooks, with incremental updates to avoid brevity bias and context collapse.","[2510.04618] «contexts should function not as concise summaries, but as comprehensive, structured playbooks»
+[2510.04618] «context collapse»","Cuidado con Dynamic Cheatsheet (2504.07952), que se parece.",,,,
+JDi-13,Juan Diego,Abstención,What score does Hindsight get on MemoryAgentBench?,2512.12818; 2507.05257,The ingested corpus does not contain this information.,"[2512.12818] «Hindsight»
+[2507.05257] «MemoryAgentBench»",Ningún paper reporta Hindsight en MemoryAgentBench.,,,,
+JDi-14,Juan Diego,Abstención,What accuracy does Hindsight reach on PersonaMem?,2512.12818; 2504.14225,The ingested corpus does not contain this information.,"[2512.12818] «Hindsight»
+[2504.14225] «PersonaMem»",Ningún paper reporta Hindsight en PersonaMem.,,,,
+JDi-15,Juan Diego,Abstención,How does LightRAG perform on REALTALK?,2410.05779; 2502.13270,The ingested corpus does not contain this information.,"[2410.05779] «LightRAG»
+[2502.13270] «RealTalk»",Ningún paper contiene a la vez LightRAG y REALTALK.,,,,
+JDi-16,Juan Diego,Abstención,What score does GraphRAG get on HaluMem?,2404.16130; 2511.03506,The ingested corpus does not contain this information.,"[2404.16130] «GraphRAG»
+[2511.03506] «HaluMem: Evaluating Hallucinations»",Ningún paper reporta GraphRAG en HaluMem.,,,,
+JDi-17,Juan Diego,Abstención,What accuracy does RAPTOR reach on MemBench?,2401.18059; 2506.21605,The ingested corpus does not contain this information.,"[2401.18059] «RAPTOR»
+[2506.21605] «MemBench»",Ningún paper contiene a la vez RAPTOR y MemBench.,,,,
+JDi-18,Juan Diego,Abstención,What score does GraphRAG get on RULER?,2404.16130; 2404.06654,The ingested corpus does not contain this information.,"[2404.16130] «GraphRAG»
+[2404.06654] «RULER»",Ningún paper reporta GraphRAG en RULER.,,,,
+JDi-19,Juan Diego,Contradicción,How many turns does a LoCoMo conversation have?,2402.17753; 2603.02473; 2511.01448,"The LoCoMo paper says each conversation has about 300 turns (2402.17753; its Table 5 gives 19.3 sessions with 15.8 turns each). 2603.02473 describes the 10 conversations it uses as about 600 turns each, and 2511.01448 describes 27.2 sessions of about 21 turns each.","[2402.17753] «each encompassing 300 turns»
+[2603.02473] «600 turns each»
+[2511.01448] «each with about 21 turns»",Ficha: versión del conjunto de datos.,,,,
+JDi-20,Juan Diego,Contradicción,What accuracy does Zep get on LoCoMo?,2504.19413; 2507.03724; 2511.01448,"It depends on the paper: an overall J of 65.99% in the Mem0 paper (2504.19413), 59.22 in the MemOS paper (2507.03724), and 40.30% (Llama-3.1-70B) or 44.76% (GPT-4o-mini) accuracy in LiCoMemory (2511.01448).","[2504.19413] «65.99»
+[2507.03724] «59.22»
+[2511.01448] «40.30»
+[2511.01448] «44.76»","Diferencia de protocolo: juez, modelo base y métrica distintos.",,,,
+JDi-21,Juan Diego,Contradicción,Do the papers agree on whether Zep or Mem0 scores higher on LongMemEval?,2501.13956; 2507.03724; 2511.01448,"No. In the MemOS paper Mem0 is higher (66.4 against 63.8 for Zep, 2507.03724) and in LiCoMemory with GPT-4o-mini Mem0 is higher (62.60% against 58.60%), but in LiCoMemory with Llama-3.1-70B Zep is higher (60.20% against 56.80%) (2511.01448).","[2507.03724] «66.4»
+[2511.01448] «62.60»
+[2511.01448] «58.60»
+[2511.01448] «60.20»
+[2511.01448] «56.80»",Desacuerdo real entre configuraciones; la clave debe dar el contexto.,,,,
+JDi-22,Juan Diego,Contradicción,"Does Mem0 or Zep score higher overall on MemoryAgentBench, and is it the same on LoCoMo?",2507.05257; 2504.19413; 2507.03724,"On MemoryAgentBench Zep scores higher overall: 24.0 against 21.1 for Mem0 (2507.05257). On LoCoMo it is the other way round: Mem0 beats Zep in the Mem0 paper (66.88 against 65.99, 2504.19413) and in the MemOS paper (64.57 against 59.22, 2507.03724).","[2507.05257] «24.0»
+[2507.05257] «21.1»
+[2504.19413] «65.99»
+[2507.03724] «59.22»","Dos benchmarks, dos órdenes.",,,,
+JDi-23,Juan Diego,Agregación,Which papers in the collection mention NovelQA?,2505.24226; 2507.05257,"Two papers: 2505.24226 (E2GraphRAG, which also reports results on it) and 2507.05257 (MemoryAgentBench, which only mentions it).","[2505.24226] «as in NovelQA [43]»
+[2507.05257] «NovelQA(Wang et al., 2024a)»",Conjunto cerrado.,,,,
+JDi-24,Juan Diego,Agregación,Which papers in the collection mention UltraDomain?,2409.05591; 2410.05779; 2505.24226,"Three papers: 2409.05591 (MemoRAG, which introduces it), 2410.05779 (LightRAG, which uses four of its datasets) and 2505.24226 (E2GraphRAG, which says it does not adopt it).","[2409.05591] «introducing the UltraDomain benchmark»
+[2410.05779] «four datasets from the UltraDomain benchmark»
+[2505.24226] «We do not adopt the UltraDomain»",Conjunto cerrado.,,,,
+JDi-25,Juan Diego,Segunda mano,"What overall LoCoMo score does the Mem0 paper publish for Mem0, and how does a later paper treat it?",2504.19413; 2610.30755,"The Mem0 paper publishes 66.88% overall J (2504.19413). The later paper 2610.30755 weights the published category scores (67.13, 51.15, 55.51, 72.93) by question counts and gets 62.14 instead.","[2504.19413] «66.88»
+[2610.30755] «62.14»",Cita de segunda mano con reanálisis.,,,,
+JDi-26,Juan Diego,Segunda mano,What accuracy do GraphRAG (local) and LightRAG reach on NovelQA with Qwen2.5-7B-Instruct according to the E2GraphRAG paper?,2505.24226; 2404.16130; 2410.05779,"43.34 for GraphRAG-L and 38.57 for LightRAG, against 37.27 for RAPTOR and 45.60 for E2GraphRAG (Table 1 of 2505.24226). Neither the GraphRAG nor the LightRAG paper evaluates NovelQA.","[2505.24226] «43.34»
+[2505.24226] «38.57»
+[2505.24226] «45.60»",Las cifras de GraphRAG y LightRAG solo existen en el paper de E2GraphRAG.,,,,
+JDi-27,Juan Diego,Segunda mano,"What does GAM report for RULER multi-hop tracing with GPT-4o-mini, compared with a long-context baseline?",2511.18423; 2404.06654,GAM reaches 93.20% accuracy against 60.60% for the long-context LLM and 0.00% for RAG (Table 1 of 2511.18423); the text says GAM exceeds 90% on multi-hop tracing.,"[2511.18423] «93.20»
+[2511.18423] «60.60»
+[2511.18423] «over 90% accuracy on the multi-hop tracing»",,,,,
+JDi-28,Juan Diego,Segunda mano,"What overall score does MemoryAgentBench report for Mem0, and for GPT-4o-mini with a 128K context?",2507.05257,"Mem0 scores 21.1 overall, against 42.3 for GPT-4o-mini and 41.5 for BM25 (Table 3 of 2507.05257).","[2507.05257] «21.1»
+[2507.05257] «42.3»",El mismo Mem0 puntúa distinto en otros papers (otro benchmark).,,,,
+JDi-29,Juan Diego,Marco temporal,Which method has the best reported accuracy on NovelQA?,2505.24226,"With Qwen2.5-7B-Instruct, E2GraphRAG has the best accuracy (45.60); with Llama3.1-8B-Instruct, GraphRAG-L does (43.64) (Table 1 of 2505.24226).","[2505.24226] «45.60»
+[2505.24226] «43.64»",Solo hay una fuente; sirve de control sin cambio entre tandas.,,,,
+JDi-30,Juan Diego,Marco temporal,What is the best accuracy reported on QuALITY?,2401.18059,"82.6%, from RAPTOR with GPT-4, against a previous best of 62.3% (2401.18059).","[2401.18059] «82.6%»
+[2401.18059] «62.3%»","Sin RAPTOR ingerido, la respuesta correcta es abstenerse.",,,,
+JDi-31,Juan Diego,Marco temporal,What is the best score reported at the 128K setting in the RULER paper?,2404.06654,Gemini-1.5-Pro with 94.4 at 128K; GPT-4 reaches 81.2 and GLM4 (9B) 83.1 (Table 3 of 2404.06654).,"[2404.06654] «94.4»
+[2404.06654] «81.2»",,,,,
+JDi-32,Juan Diego,Marco temporal,Which agent has the highest overall score in the main MemoryAgentBench table?,2507.05257,"GPT-5-mini with a 400K context, with an overall score of 60.6 (Table 3 of 2507.05257).","[2507.05257] «GPT-5-mini (400K)»
+[2507.05257] «60.6»",,,,,
+JDi-33,Juan Diego,Detalle de tabla,How many documents and how many tokens does the Agriculture dataset have in the LightRAG paper?,2410.05779,"12 documents and 2,017,886 tokens (Table 4 of 2410.05779).","[2410.05779] «2,017,886»",,,,,
+JDi-34,Juan Diego,Detalle de tabla,"In the RULER paper, what are the claimed and effective context lengths of Llama3.1 (70B), and its score at 128K?",2404.06654,"Claimed length 128K, effective length 64K, and 66.6 at 128K (Table 3 of 2404.06654).","[2404.06654] «Llama3.1 (70B)»
+[2404.06654] «66.6»",,,,,
+JDi-35,Juan Diego,Detalle de tabla,"In the Lost in the Middle paper, what closed-book and oracle accuracy does GPT-3.5-Turbo get?",2307.03172,56.1% closed-book and 88.3% oracle (Table 1 of 2307.03172).,"[2307.03172] «56.1%»
+[2307.03172] «88.3%»",Famoso: la respuesta de cifras no se sabe de memoria.,,,,
+JDi-36,Juan Diego,Detalle de tabla,"In the GAM paper, what F1 does GAM get on HotpotQA with a 56K context and GPT-4o-mini?",2511.18423,"63.22, against 56.56 for the long-context LLM and 52.71 for RAG (Table 1 of 2511.18423).","[2511.18423] «63.22»
+[2511.18423] «56.56»",,,,,
+JDi-37,Juan Diego,Identificador exacto,Which paper introduces the benchmark called FactConsolidation?,2507.05257,"MemoryAgentBench (2507.05257), which builds FactConsolidation (single-hop and multi-hop) for selective forgetting. Five other papers only mention it.",[2507.05257] «FC-SH and FC-MH mean FactConsolidation Single Hop»,,,,,
+JDi-38,Juan Diego,Identificador exacto,Which paper presents the test set called UltraDomain?,2409.05591,"MemoRAG (2409.05591), which introduces UltraDomain with 20 datasets of long contexts and high-level queries. LightRAG and E2GraphRAG only use or discuss it.",[2409.05591] «introducing the UltraDomain benchmark»,,,,,
+JDi-39,Juan Diego,Dato antiguo vigente,Which four abilities does MemoryAgentBench test?,2507.05257,"Accurate retrieval, test-time learning, long-range understanding and selective forgetting.","[2507.05257] «accurate retrieval, test-time learning, long-range understanding, and selective forgetting»",,,,,
+JDi-40,Juan Diego,Dato antiguo vigente,Which four criteria does the GraphRAG paper use to judge answers?,2404.16130,"Comprehensiveness, diversity, empowerment and directness.","[2404.16130] «Empowerment»
+[2404.16130] «directness is effectively in opposition to comprehensiveness and diversity»",,,,,

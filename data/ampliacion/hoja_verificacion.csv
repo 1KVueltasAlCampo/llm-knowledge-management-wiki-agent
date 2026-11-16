@@ -1,0 +1,154 @@
+﻿arxiv_id,nombre,responsable,prioridad,enlace_html,que_buscar,tiene_la_informacion_o_esta_relacionado,donde,notas
+2310.08560,MemGPT,Juan David,1,https://ar5iv.labs.arxiv.org/html/2310.08560,"Caso de borde: Cita de segunda mano, vocabulario (el más citado del corpus).
+De qué habla: Trata la ventana de contexto como la memoria virtual de un sistema operativo: el modelo mueve información entre un contexto principal y un almacenamiento externo con llamadas a funciones.
+Relación con el corpus: lo citan 26 papers del corpus actual en su bibliografía y lo mencionan 19 en el texto (3 con cifras suyas en tablas).",,,
+2402.17753,LoCoMo,Juan David,1,https://arxiv.org/html/2402.17753,"Caso de borde: Contradicción en los datos del benchmark.
+De qué habla: Presenta LoCoMo, un conjunto de conversaciones muy largas (hasta 35 sesiones) con preguntas de cinco tipos; es la base de casi todos los papers de memoria.
+Relación con el corpus: lo citan 8 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto (9 con cifras suyas en tablas).",,,
+2410.10813,LongMemEval,Juan David,1,https://arxiv.org/html/2410.10813,"Caso de borde: Agregación.
+De qué habla: Presenta LongMemEval: 500 preguntas sobre cinco habilidades de memoria (extracción, varias sesiones, temporal, actualización y abstención) en historiales de chat largos.
+Relación con el corpus: lo citan 13 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto (9 con cifras suyas en tablas).",,,
+2501.13956,Zep,Juan David,1,https://arxiv.org/html/2501.13956,"Caso de borde: Contradicción.
+De qué habla: Propone Zep, una memoria con grafo de conocimiento temporal, y la compara con MemGPT en DMR y con el contexto completo en LongMemEval.
+Relación con el corpus: lo citan 19 papers del corpus actual en su bibliografía y lo mencionan 14 en el texto (7 con cifras suyas en tablas).",,,
+2504.19413,Mem0,Juan David,1,https://arxiv.org/html/2504.19413,"Caso de borde: Cita de segunda mano, antiguo frente a nuevo, agregación.
+De qué habla: Propone Mem0, una memoria que extrae y actualiza hechos de las conversaciones, con una variante de grafo (Mem0g); mide exactitud, latencia y tokens en LoCoMo.
+Relación con el corpus: lo citan 25 papers del corpus actual en su bibliografía y lo mencionan 27 en el texto (10 con cifras suyas en tablas).",,,
+2505.22101,MemOS (primer artículo),Juan David,1,https://arxiv.org/html/2505.22101,"Caso de borde: Distractor por mismo nombre, antiguo frente a nuevo.
+De qué habla: Versión corta de MemOS: un «sistema operativo de memoria» para modelos de lenguaje con la unidad MemCube; no trae experimentos.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (4 con cifras suyas en tablas).
+OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",,,
+2510.18866,LightMem,Juan David,1,https://arxiv.org/html/2510.18866,"Caso de borde: Contradicción, agregación.
+De qué habla: Propone LightMem: memoria en tres etapas inspirada en la memoria humana y una actualización «en sueño» para gastar menos tokens; se evalúa en LongMemEval y LoCoMo.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (5 con cifras suyas en tablas).",,,
+2305.10250,MemoryBank,Juan David,1,https://ar5iv.labs.arxiv.org/html/2305.10250,"Caso de borde: Vocabulario, antiguo frente a nuevo.
+De qué habla: Propone MemoryBank: una memoria para compañeros conversacionales que olvida y refuerza recuerdos según la curva del olvido de Ebbinghaus.
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 11 en el texto (3 con cifras suyas en tablas).",,,
+2502.12110,A-MEM,Juan David,1,https://arxiv.org/html/2502.12110,"Caso de borde: Vocabulario distinto.
+De qué habla: Propone A-MEM: una memoria de agentes que organiza notas enlazadas siguiendo el método Zettelkasten; se evalúa en LoCoMo y DialSim.
+Relación con el corpus: lo citan 10 papers del corpus actual en su bibliografía y lo mencionan 23 en el texto (13 con cifras suyas en tablas).",,,
+2506.21605,MemBench,Juan David,1,https://arxiv.org/html/2506.21605,"Caso de borde: Vocabulario distinto.
+De qué habla: Presenta MemBench: un benchmark de memoria factual y reflexiva en escenarios de participación y de observación, con varios mecanismos de memoria.
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (6 con cifras suyas en tablas).",,,
+2510.27246,BEAM,Juan David,1,https://arxiv.org/html/2510.27246,"Caso de borde: Escala, marco temporal.
+De qué habla: Genera conversaciones de hasta 10 millones de tokens con preguntas de prueba (BEAM) y compara modelos y métodos de memoria.
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (4 con cifras suyas en tablas).",,,
+2511.01448,LiCoMemory,Juan David,1,https://arxiv.org/html/2511.01448,"Caso de borde: Agregación.
+De qué habla: Propone LiCoMemory: una memoria con grafo ligero que reduce latencia y tokens; compara con Mem0, Zep, A-MEM y otros en LongMemEval y LoCoMo.
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 5 en el texto (3 con cifras suyas en tablas).",,,
+2304.03442,Generative Agents,Juan David,1,https://ar5iv.labs.arxiv.org/html/2304.03442,"Caso de borde: Antiguo frente a nuevo, vocabulario.
+De qué habla: Simula 25 agentes en un pueblo virtual (Smallville) que tienen memoria, reflexionan y planifican su día.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (1 con cifras suyas en tablas).
+OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",,,
+2511.03506,HaluMem,Juan David,1,https://arxiv.org/html/2511.03506,"Caso de borde: Abstracción.
+De qué habla: Presenta HaluMem: un benchmark que mide las alucinaciones de un sistema de memoria al extraer, actualizar y responder.
+Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 4 en el texto (3 con cifras suyas en tablas).",,,
+2511.18423,General Agentic Memory,Juan David,1,https://arxiv.org/html/2511.18423,"Caso de borde: Vocabulario distinto.
+De qué habla: Propone GAM: un memorizador que guarda el historial y un investigador que busca en el momento de la consulta; se evalúa en HotpotQA, RULER, LoCoMo y NarrativeQA.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 3 en el texto (2 con cifras suyas en tablas).",,,
+2406.13805,WikiContradict,Juan David,2,https://arxiv.org/html/2406.13805,"Caso de borde: Contradicción.
+De qué habla: Presenta WikiContradict: preguntas con pasajes de Wikipedia que se contradicen, y cómo responden los modelos cuando el contexto no está de acuerdo consigo mismo.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",,,
+2503.04338,In-depth Analysis of Graph-based RAG,Juan David,2,https://arxiv.org/html/2503.04338,"Caso de borde: Agregación, contradicción.
+De qué habla: Compara en las mismas condiciones el RAG normal y varios RAG con grafos; tiene 77 tablas, incluidas filas de HippoRAG.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2505.24226,E2GraphRAG,Juan David,2,https://arxiv.org/html/2505.24226,"Caso de borde: Cita de segunda mano, agregación.
+De qué habla: Propone E2GraphRAG: un GraphRAG más barato (árbol de resúmenes y grafo de entidades) que indexa mucho más rápido; se evalúa en NovelQA e InfiniteBench.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto (1 con cifras suyas en tablas).",,,
+2510.09720,Preference-Aware Memory Update,Juan David,2,https://arxiv.org/html/2510.09720,"Caso de borde: Antiguo frente a nuevo.
+De qué habla: Estudia cómo actualizar la memoria cuando las preferencias del usuario cambian y chocan con lo guardado antes.
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2510.13614,MemoTime,Juan David,2,https://arxiv.org/html/2510.13614,"Caso de borde: Marco temporal.
+De qué habla: Propone MemoTime: razonamiento temporal con memoria sobre grafos de conocimiento que cambian en el tiempo.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",,,
+2511.10523,ConvoMem,Juan David,2,https://arxiv.org/html/2511.10523,"Caso de borde: Contradicción con la necesidad de RAG, marco temporal.
+De qué habla: Presenta ConvoMem, un benchmark de memoria conversacional; argumenta que las primeras 150 conversaciones no necesitan RAG.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (1 con cifras suyas en tablas).",,,
+2511.13593,O-Mem,Juan David,2,https://arxiv.org/html/2511.13593,"Caso de borde: Vocabulario, marco temporal.
+De qué habla: Propone O-Mem: una memoria con perfil de usuario para personalización; se compara con Zep, MemOS y otros en LoCoMo y más.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (1 con cifras suyas en tablas).",,,
+2312.06648,Dense X Retrieval,Juan David,2,https://arxiv.org/html/2312.06648,"Caso de borde: Vocabulario distinto, distractor.
+De qué habla: Estudia con qué granularidad recuperar (documento, párrafo, frase) y propone usar «proposiciones» como unidad de recuperación.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2510.01353,MEMTRACK,Juan David,2,https://arxiv.org/html/2510.01353,"Caso de borde: Marco temporal, agregación.
+De qué habla: Presenta MEMTRACK: un benchmark de memoria y seguimiento de estado en entornos de trabajo con varias plataformas.
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (1 con cifras suyas en tablas).",,,
+2511.20857,Evo-Memory,Juan David,2,https://arxiv.org/html/2511.20857,"Caso de borde: Agregación.
+De qué habla: Presenta Evo-Memory: mide si los agentes aprenden de la experiencia con una memoria que evoluciona mientras se les prueba.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto (1 con cifras suyas en tablas).",,,
+2507.03724,MemOS (artículo largo),Juan Diego,1,https://arxiv.org/html/2507.03724,"Caso de borde: Distractor por nombre parecido.
+De qué habla: Versión larga de MemOS: la unidad MemCube y la programación de memoria; compara con Mem0, Zep, Memobase y otros en LoCoMo y LongMemEval.
+Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (4 con cifras suyas en tablas).",,,
+2401.18059,RAPTOR,Juan Diego,1,https://arxiv.org/html/2401.18059,"Caso de borde: Distractor frente al wiki.
+De qué habla: Propone RAPTOR: un árbol de resúmenes que se construye agrupando y resumiendo texto de forma recursiva, para recuperar a varios niveles de detalle.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 12 en el texto (8 con cifras suyas en tablas).",,,
+2507.05257,MemoryAgentBench,Juan Diego,1,https://arxiv.org/html/2507.05257,"Caso de borde: Vocabulario distinto.
+De qué habla: Presenta MemoryAgentBench: cuatro competencias (recuperación precisa, aprendizaje en la prueba, largo alcance y olvido selectivo) para comparar RAG, memorias comerciales y contexto largo.
+Relación con el corpus: lo citan 10 papers del corpus actual en su bibliografía y lo mencionan 14 en el texto (6 con cifras suyas en tablas).",,,
+2404.16130,GraphRAG,Juan Diego,1,https://arxiv.org/html/2404.16130,"Caso de borde: Vocabulario, distractor.
+De qué habla: Propone GraphRAG: un grafo de entidades con resúmenes de comunidades para responder preguntas globales sobre toda una colección.
+Relación con el corpus: lo citan 19 papers del corpus actual en su bibliografía y lo mencionan 18 en el texto (5 con cifras suyas en tablas).",,,
+2410.05779,LightRAG,Juan Diego,1,https://arxiv.org/html/2410.05779,"Caso de borde: Misma herramienta, escalas distintas.
+De qué habla: Propone LightRAG: RAG con grafo y recuperación en dos niveles; lo compara con RAG ingenuo y con GraphRAG.
+Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (4 con cifras suyas en tablas).",,,
+2502.13270,REALTALK,Juan Diego,1,https://arxiv.org/html/2502.13270,"Caso de borde: Contradicción (conversaciones reales frente a sintéticas).
+De qué habla: Presenta REALTALK: 21 días de conversación real entre personas, para probar memoria de largo plazo.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 3 en el texto (2 con cifras suyas en tablas).",,,
+2504.14225,PersonaMem,Juan Diego,1,https://arxiv.org/html/2504.14225,"Caso de borde: Marco temporal (preferencias que cambian).
+De qué habla: Presenta PersonaMem: un benchmark de personalización con perfiles de usuario que cambian a lo largo del tiempo.
+Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (4 con cifras suyas en tablas).",,,
+2512.12818,Hindsight is 20/20,Juan Diego,1,https://arxiv.org/html/2512.12818,"Caso de borde: Agregación, afirmaciones que se pisan.
+De qué habla: Propone Hindsight: memoria con redes separadas de hechos, observaciones y opiniones; reporta 91,4 % en LongMemEval.
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 6 en el texto (3 con cifras suyas en tablas).
+OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",,,
+2307.03172,Lost in the Middle,Juan Diego,1,https://ar5iv.labs.arxiv.org/html/2307.03172,"Caso de borde: Contradicción con «poner todo en el contexto».
+De qué habla: Muestra que los modelos aprovechan peor la información que está en el medio de un contexto largo que la del principio o el final.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 6 en el texto.",,,
+2404.06654,RULER,Juan Diego,1,https://arxiv.org/html/2404.06654,"Caso de borde: Vocabulario (tamaño real del contexto).
+De qué habla: Presenta RULER: pruebas sintéticas de contexto largo que separan la longitud anunciada de la longitud efectiva de cada modelo.
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 6 en el texto.",,,
+2005.11401,"RAG (Lewis et al., 2020)",Juan Diego,1,https://ar5iv.labs.arxiv.org/html/2005.11401,"Caso de borde: Antiguo frente a nuevo, vocabulario (qué significaba RAG).
+De qué habla: Es el artículo original de RAG: un generador que consulta un recuperador sobre Wikipedia.
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto.",,,
+2406.19354,Fundamental Problems With Model Editing,Juan Diego,1,https://arxiv.org/html/2406.19354,"Caso de borde: Antiguo frente a nuevo (cambiar una creencia).
+De qué habla: Analiza los problemas de fondo de la edición de modelos y cómo debería funcionar la revisión de creencias en un modelo de lenguaje.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 6 en el texto.",,,
+2408.12076,ConflictBank,Juan Diego,1,https://arxiv.org/html/2408.12076,"Caso de borde: Contradicción, antiguo frente a nuevo.
+De qué habla: Presenta ConflictBank: un benchmark de conflictos de conocimiento, tanto en el contexto recuperado como entre éste y lo que el modelo ya sabe.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto.",,,
+2409.05591,MemoRAG,Juan Diego,1,https://arxiv.org/html/2409.05591,"Caso de borde: Vocabulario distinto.
+De qué habla: Propone MemoRAG: una memoria global ligera que redacta pistas para guiar la recuperación; presenta el conjunto UltraDomain.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (2 con cifras suyas en tablas).",,,
+2503.03704,Memory Injection Attacks (MINJA),Juan Diego,1,https://arxiv.org/html/2503.03704,"Caso de borde: Seguridad (rúbrica Cr7).
+De qué habla: Presenta MINJA: un ataque que inyecta recuerdos falsos en la memoria de un agente solo con sus consultas normales.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2510.04618,Agentic Context Engineering (ACE),Juan Diego,2,https://arxiv.org/html/2510.04618,"Caso de borde: Antiguo frente a nuevo, detalle.
+De qué habla: Propone ACE: tratar el contexto como un manual de estrategias que crece con cambios pequeños para evitar que se resuma de más.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",,,
+1809.09600,HotpotQA,Juan Diego,2,https://ar5iv.labs.arxiv.org/html/1809.09600,"Caso de borde: Agregación, detalle (el benchmark más usado).
+De qué habla: Presenta HotpotQA: un conjunto de preguntas de varios saltos con apoyo en frases concretas.
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 11 en el texto (1 con cifras suyas en tablas).",,,
+2312.10997,RAG Survey (2023),Juan Diego,2,https://arxiv.org/html/2312.10997,"Caso de borde: Abstención, distractor.
+De qué habla: Es una encuesta de RAG (hasta 2023) que ordena las técnicas en RAG ingenuo, avanzado y modular.
+Relación con el corpus: lo citan 8 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2402.14207,STORM,Juan Diego,2,https://arxiv.org/html/2402.14207,"Caso de borde: Distractor frente a LLM-Wiki.
+De qué habla: Propone STORM: un sistema que investiga y escribe artículos largos tipo Wikipedia desde cero con preguntas a varias perspectivas.
+Relación con el corpus: no aparece en las bibliografías ni en el texto del corpus actual: confirmar por qué lo incluimos.",,,
+2407.12784,AgentPoison,Juan Diego,2,https://arxiv.org/html/2407.12784,"Caso de borde: Seguridad (rúbrica Cr7).
+De qué habla: Presenta AgentPoison: un ataque que envenena la memoria o la base de conocimiento de un agente para activar un comportamiento malicioso.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto.",,,
+2412.15605,Don't Do RAG (CAG),Juan Diego,2,https://arxiv.org/html/2412.15605,"Caso de borde: Contradicción parcial con WiCER (depende de la escala).
+De qué habla: Propone CAG: en lugar de recuperar, precarga toda la base de conocimiento en la memoria (caché) del modelo.
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto.",,,
+2506.06331,How Significant Are the Real Gains? (GraphRAG),Juan Diego,2,https://arxiv.org/html/2506.06331,"Caso de borde: Contradicción con cifras reportadas, cita de segunda mano.
+De qué habla: Critica la forma habitual de evaluar GraphRAG (preguntas poco relacionadas y sesgos del juez) y propone una evaluación sin sesgo para saber si GraphRAG mejora de verdad.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2504.07952,Dynamic Cheatsheet,Juan Diego,2,https://arxiv.org/html/2504.07952,"Caso de borde: Vocabulario distinto.
+De qué habla: Propone Dynamic Cheatsheet: una libreta de estrategias que el modelo actualiza mientras resuelve tareas, sin cambiar sus pesos.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",,,
+2506.02404,GraphRAG-Bench,Juan Diego,2,https://arxiv.org/html/2506.02404,"Caso de borde: Agregación.
+De qué habla: Presenta GraphRAG-Bench: un benchmark grande y por dominio para evaluar el razonamiento de los sistemas GraphRAG, porque los conjuntos de QA tradicionales se quedan cortos.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+2511.14937,CIMemories,Juan Diego,2,https://arxiv.org/html/2511.14937,"Caso de borde: Privacidad (rúbrica Cr7).
+De qué habla: Presenta CIMemories: mide si la memoria de un modelo revela información personal en contextos donde no debería.
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,

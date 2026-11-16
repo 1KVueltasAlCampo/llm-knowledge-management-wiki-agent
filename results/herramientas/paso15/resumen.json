@@ -1,0 +1,57 @@
+[
+ {
+  "variante": "actual",
+  "n": 10,
+  "correctas": 6,
+  "llamadas": 5.5,
+  "tokens_entrada": 15786,
+  "tokens_contexto": 4540,
+  "tokens_salida": 229,
+  "usd": 0.001722,
+  "segundos": 7.4
+ },
+ {
+  "variante": "generico",
+  "n": 10,
+  "correctas": 6,
+  "llamadas": 4.7,
+  "tokens_entrada": 10415,
+  "tokens_contexto": 3560,
+  "tokens_salida": 181,
+  "usd": 0.001256,
+  "segundos": 6.1
+ },
+ {
+  "variante": "grep",
+  "n": 10,
+  "correctas": 6,
+  "llamadas": 5.1,
+  "tokens_entrada": 18615,
+  "tokens_contexto": 4385,
+  "tokens_salida": 182,
+  "usd": 0.001637,
+  "segundos": 7.0
+ },
+ {
+  "variante": "secciones",
+  "n": 10,
+  "correctas": 6,
+  "llamadas": 5.9,
+  "tokens_entrada": 12283,
+  "tokens_contexto": 2618,
+  "tokens_salida": 333,
+  "usd": 0.001213,
+  "segundos": 8.3
+ },
+ {
+  "variante": "graphify",
+  "n": 10,
+  "correctas": 6,
+  "llamadas": 5.6,
+  "tokens_entrada": 11232,
+  "tokens_contexto": 2844,
+  "tokens_salida": 194,
+  "usd": 0.001277,
+  "segundos": 13.9
+ }
+]

@@ -5,5 +5,5 @@
 - [x] 1.2 `src/wikillm/eval/fallos.py` y subcomando `fallos` en `eval/__main__.py`. Verificación: en verde.
 
 ## 2. Uso
-- [ ] 2.1 Ejecutar sobre `results/oficial-1` y leer a mano una muestra de `fuentes_completas_error` para ver cuántos son falsos negativos de las claves. Verificación: resultado anotado en la bitácora.
-- [ ] 2.2 `AGENTS.md` y `ruff` + `pytest`.
+- [x] 2.1 Ejecutar sobre `results/oficial-1` y leer a mano una muestra de `fuentes_completas_error` para ver cuántos son falsos negativos de las claves. Verificación: resultado anotado en la bitácora.
+- [x] 2.2 `AGENTS.md` y `ruff` + `pytest`.

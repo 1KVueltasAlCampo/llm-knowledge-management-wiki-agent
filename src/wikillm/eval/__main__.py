@@ -298,6 +298,33 @@ def _informe(args: argparse.Namespace) -> int:
     return 0
 
 
+def _ampliar_banco(args: argparse.Namespace) -> int:
+    from wikillm.eval.ampliacion import CitaNoEncontrada, construir_preguntas, reordenar_banco
+
+    orden = _orden(args.manifest)
+    definiciones = json.loads(Path(args.definiciones).read_text(encoding="utf-8"))
+    try:
+        nuevas = construir_preguntas(
+            definiciones, leer_jsonl(Path(args.spans)), Path(args.gold), args.definiciones
+        )
+        banco = reordenar_banco([*leer_banco(Path(args.banco)), *nuevas], orden)
+    except (CitaNoEncontrada, KeyError) as error:
+        print(f"Error: {error}")
+        return 1
+    problemas = validar_banco(banco, orden)
+    for problema in problemas:
+        print(problema)
+    if problemas:
+        return 1
+    escribir_jsonl(Path(args.salida), banco)
+    sin_acordar = sum(1 for p in banco if p["estado_verificacion"] != "acordado")
+    print(
+        f"{len(banco)} preguntas en {args.salida} ({len(nuevas)} nuevas); "
+        f"{sin_acordar} no están 'acordado': los resultados con ellas son preliminares."
+    )
+    return 0
+
+
 def _fallos(args: argparse.Namespace) -> int:
     from wikillm.eval.fallos import escribir_fallos
 
@@ -386,6 +413,13 @@ def main() -> int:
     cerrado.add_argument("--ejecutar", action="store_true")
     informe = ordenes.add_parser("informe", help="tablas y figuras de una corrida evaluada")
     informe.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
+    ampliar = ordenes.add_parser("ampliar-banco", help="banco del corpus de 100 papers")
+    ampliar.add_argument("--banco", default=BANCO)
+    ampliar.add_argument("--definiciones", required=True, help="JSON con las preguntas nuevas")
+    ampliar.add_argument("--manifest", required=True, help="manifest del corpus ampliado")
+    ampliar.add_argument("--spans", required=True)
+    ampliar.add_argument("--gold", required=True, help="carpeta con los .md del Gold ampliado")
+    ampliar.add_argument("--salida", required=True)
     fallos = ordenes.add_parser("fallos", help="por qué falla cada brazo (categorías de fallo)")
     fallos.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
     fallos.add_argument("--banco", default=BANCO)
@@ -415,6 +449,8 @@ def main() -> int:
         return _auxiliar(args)
     if args.orden == "fallos":
         return _fallos(args)
+    if args.orden == "ampliar-banco":
+        return _ampliar_banco(args)
 
     if args.orden == "borradores":
         return _borradores(args)

@@ -10,6 +10,11 @@ data/processed/
 data/gold/*
 !data/gold/corpus.jsonl
 !data/gold/spans.jsonl
+data/corpus100/raw/
+data/corpus100/processed/
+data/corpus100/gold/*
+!data/corpus100/gold/corpus.jsonl
+!data/corpus100/gold/spans.jsonl
 
 # Índices vectoriales y cachés locales
 chroma/

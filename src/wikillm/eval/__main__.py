@@ -298,6 +298,18 @@ def _informe(args: argparse.Namespace) -> int:
     return 0
 
 
+def _fallos(args: argparse.Namespace) -> int:
+    from wikillm.eval.fallos import escribir_fallos
+
+    carpeta = Path(args.corrida)
+    if not (carpeta / "evaluados.jsonl").is_file():
+        print(f"No hay {carpeta / 'evaluados.jsonl'}: ejecuta antes `wikillm.eval metricas`.")
+        return 1
+    destino = escribir_fallos(carpeta, leer_banco(Path(args.banco)))
+    print(f"Análisis de fallos en {destino}")
+    return 0
+
+
 def _auxiliar(args: argparse.Namespace) -> int:
     from wikillm.eval import auxiliar
 
@@ -374,6 +386,9 @@ def main() -> int:
     cerrado.add_argument("--ejecutar", action="store_true")
     informe = ordenes.add_parser("informe", help="tablas y figuras de una corrida evaluada")
     informe.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
+    fallos = ordenes.add_parser("fallos", help="por qué falla cada brazo (categorías de fallo)")
+    fallos.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
+    fallos.add_argument("--banco", default=BANCO)
     auxiliar = ordenes.add_parser("auxiliar", help="segundo juez auxiliar (decisión 0006)")
     auxiliar.add_argument("accion", choices=["exportar", "importar"])
     auxiliar.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
@@ -398,6 +413,8 @@ def main() -> int:
         return _informe(args)
     if args.orden == "auxiliar":
         return _auxiliar(args)
+    if args.orden == "fallos":
+        return _fallos(args)
 
     if args.orden == "borradores":
         return _borradores(args)

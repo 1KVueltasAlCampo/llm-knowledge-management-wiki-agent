@@ -27,7 +27,7 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
 | WikiLLM (ingesta controlada y consulta por agente) | Listo. |
 | Arnés de comparación (reanudable, con control de costo) y comparación puntual de una pregunta | Listo; ejecutado en un piloto que no se usa en el informe. |
 | Métricas (correctitud, fundamentación, cobertura, abstención, respuestas obsoletas, acuerdo) | Listas y probadas con resultados sintéticos. |
-| Banco de 60 preguntas | 30 de la mitad A verificadas por un autor; 30 de la mitad B seleccionadas y en espera de verificación. Falta el acuerdo entre autores. |
+| Banco de 60 preguntas | 60 verificadas por su autor (30 de la mitad A y 30 de la mitad B, esta última por consenso de revisión). Falta la verificación cruzada y el acuerdo entre autores (kappa). |
 | Corrida completa, análisis, informe y demostración | Pendientes. |
 
 ## Diseño experimental

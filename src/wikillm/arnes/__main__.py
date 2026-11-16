@@ -113,16 +113,31 @@ def armar_brazos(
 
     spans = cargar_span_ids(argumentos.spans) if argumentos.spans.exists() else None
     carpeta_wiki = getattr(argumentos, "wiki", None) or Path("data/wiki") / argumentos.corrida
-    wiki = Wiki(carpeta_wiki)
-    brazos: list[Brazo] = [
-        BrazoRag(modelo, indice, k=argumentos.k, spans_validos=spans),
-        BrazoWiki(
+    origen = _origen_del_wiki(argumentos)
+    if origen is not None:
+        from wikillm.wiki.brazo import BrazoWikiPrestado
+
+        # copia del wiki ya construido: el original no se toca
+        wiki = (
+            Wiki(carpeta_wiki)
+            if (carpeta_wiki / ".git").exists()
+            else Wiki.clonar_desde(origen, carpeta_wiki)
+        )
+        brazo_wiki: Brazo = BrazoWikiPrestado(
+            modelo, wiki, max_acciones=argumentos.max_acciones, spans_validos=spans
+        )
+    else:
+        wiki = Wiki(carpeta_wiki)
+        brazo_wiki = BrazoWiki(
             modelo,
             wiki,
             argumentos.gold,
             max_acciones=argumentos.max_acciones,
             spans_validos=spans,
-        ),
+        )
+    brazos: list[Brazo] = [
+        BrazoRag(modelo, indice, k=argumentos.k, spans_validos=spans),
+        brazo_wiki,
     ]
     graphify = getattr(argumentos, "graphify", None)
     if graphify:
@@ -144,6 +159,15 @@ def armar_brazos(
             )
         )
     return brazos
+
+
+def _origen_del_wiki(argumentos: argparse.Namespace) -> Path | None:
+    """Carpeta del wiki que se reutiliza (`--wiki-de`), o None si la corrida construye el suyo."""
+    wiki_de = getattr(argumentos, "wiki_de", None)
+    if not wiki_de:
+        return None
+    ruta = Path(wiki_de)
+    return ruta if (ruta / ".git").exists() else Path("data/wiki") / wiki_de
 
 
 def nombres_de_brazos(argumentos: argparse.Namespace) -> list[str]:
@@ -186,6 +210,10 @@ def _analizar(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     correr.add_argument(
         "--capas-trabajo", type=Path, help="carpeta del grafo y del índice (data/grafo/<corrida>)"
+    )
+    correr.add_argument(
+        "--wiki-de",
+        help="corrida o carpeta con un wiki ya construido: el brazo wiki lo reutiliza sin ingerir",
     )
     correr.add_argument("--estimar", action="store_true", help="solo imprime el costo esperado")
     correr.add_argument("--confirmo-usd", type=float, default=0.0, help="acepta gasto mayor de 5")
@@ -235,6 +263,8 @@ def _brazos_declarados(argumentos: argparse.Namespace) -> dict[str, Any]:
         "rag": {"k": argumentos.k, "base_vectorial": BASE_VECTORIAL},
         "wiki": {"max_acciones": argumentos.max_acciones},
     }
+    if getattr(argumentos, "wiki_de", None):
+        brazos["wiki"]["reutiliza_wiki_de"] = str(argumentos.wiki_de)
     if getattr(argumentos, "graphify", None):
         con_tgrep = bool(getattr(argumentos, "tgrep", None))
         brazos[nombre_del_brazo(con_tgrep)] = {
@@ -368,9 +398,24 @@ def principal(
             file=sys.stderr,
         )
         return 1
+    origen = _origen_del_wiki(argumentos)
+    if origen is not None:
+        from wikillm.wiki.almacen import ErrorDeAlmacen, validar_prestamo
+
+        try:
+            validar_prestamo(origen, orden, list(pasos))
+        except ErrorDeAlmacen as error:
+            print(f"Error: {error}", file=sys.stderr)
+            return 1
     valida = valida_para_informe(preguntas)
     nombres = nombres_de_brazos(argumentos)
-    estimacion = estimar(nombres, preguntas=len(preguntas), pasos=len(pasos), papers=max(pasos))
+    # un wiki prestado ya pagó su ingesta: la estimación no la cuenta
+    estimacion = estimar(
+        nombres,
+        preguntas=len(preguntas),
+        pasos=len(pasos),
+        papers=0 if origen is not None else max(pasos),
+    )
     salida(
         f"{len(preguntas)} preguntas × {len(pasos)} pasos × {len(nombres)} brazos = "
         f"{estimacion.llamadas_de_pregunta * len(nombres)} respuestas; {max(pasos)} papers por "

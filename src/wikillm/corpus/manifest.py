@@ -33,6 +33,29 @@ def ordenar(registros: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(registros, key=lambda r: (r["fecha_publicacion"], r["arxiv_id"]))
 
 
+def aplicar_fases(filas: list[dict[str, Any]], fases: dict[str, int]) -> list[dict[str, Any]]:
+    """Reordena el manifest por fases de carga: fase, luego fecha de la primera versión.
+
+    Las fases (1, 2, 3...) son las cargas progresivas del experimento; dentro de cada una se
+    conserva el orden cronológico. Añade `fase` a cada fila y renumera `orden_ingesta`.
+    """
+    ids = {f["arxiv_id"] for f in filas}
+    if set(fases) != ids:
+        sobran, faltan = sorted(set(fases) - ids), sorted(ids - set(fases))
+        raise ValueError(
+            f"las fases no coinciden con el manifest: sobran {sobran}, faltan {faltan}"
+        )
+    if any(not isinstance(n, int) or n < 1 for n in fases.values()):
+        raise ValueError("cada fase debe ser un entero desde 1")
+    ordenadas = sorted(
+        filas, key=lambda f: (fases[f["arxiv_id"]], f["fecha_publicacion"], f["arxiv_id"])
+    )
+    return [
+        {**f, "orden_ingesta": posicion, "fase": fases[f["arxiv_id"]]}
+        for posicion, f in enumerate(ordenadas, start=1)
+    ]
+
+
 def mitad(orden_ingesta: int) -> str:
     """Impar → A, par → B: cada autor cubre toda la línea de tiempo y cualquier prefijo."""
     return "A" if orden_ingesta % 2 == 1 else "B"

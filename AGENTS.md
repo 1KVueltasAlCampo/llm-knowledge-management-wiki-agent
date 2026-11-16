@@ -49,6 +49,8 @@ uv run python -m wikillm.eval informe --corrida results/<corrida>   # tablas y f
 uv run python -m wikillm.eval auxiliar exportar|importar --corrida results/<corrida>   # 2.º juez (ADR 0006)
 uv run python -m wikillm.eval fallos --corrida results/<corrida>   # por qué falla cada brazo (sin gasto)
 uv run python -m wikillm.eval ampliar-banco --definiciones ... --manifest ... --spans ... --gold ... --salida ...   # banco de 100 papers
+uv run python -m wikillm.corpus fases --manifest ... --fases data/corpus100/fases.json   # tres cargas del corpus de 100 (0009)
+uv run python -m wikillm.arnes correr --corrida <nueva> --wiki-de <corrida>   # reutiliza el wiki ya construido de otra corrida
 ```
 
 ## Modelos y gasto

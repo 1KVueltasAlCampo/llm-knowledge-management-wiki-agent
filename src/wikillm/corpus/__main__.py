@@ -5,6 +5,7 @@ uv run python -m wikillm.corpus spans        # data/gold/spans.jsonl (fragmentos
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -53,6 +54,10 @@ def main() -> int:
     spans.add_argument("--datos", default="data")
     spans.add_argument("--salida", default="data/gold/spans.jsonl")
 
+    fases = ordenes.add_parser("fases", help="reordenar el manifest por fases de carga")
+    fases.add_argument("--manifest", required=True)
+    fases.add_argument("--fases", required=True, help="JSON con {'fases': {arxiv_id: n}}")
+
     seleccion = ordenes.add_parser("seleccionar", help="elegir los N papers y escribir la lista")
     seleccion.add_argument("--candidatos", default=SALIDA_CANDIDATOS)
     seleccion.add_argument("--semillas", nargs="+", default=SEMILLAS)
@@ -88,6 +93,17 @@ def main() -> int:
         filas = spans_de_carpeta(datos / "gold", leer_ids(argumentos.ids))
         escribir_jsonl(Path(argumentos.salida), filas)
         print(f"{len(filas)} fragmentos en {argumentos.salida}")
+    elif argumentos.orden == "fases":
+        from wikillm.corpus.manifest import aplicar_fases
+
+        ruta = Path(argumentos.manifest)
+        definicion = json.loads(Path(argumentos.fases).read_text(encoding="utf-8"))
+        filas = aplicar_fases(leer_jsonl(ruta), {k: int(v) for k, v in definicion["fases"].items()})
+        escribir_jsonl(ruta, filas)
+        tamanos = {
+            n: sum(1 for f in filas if f["fase"] == n) for n in sorted({f["fase"] for f in filas})
+        }
+        print(f"{len(filas)} papers reordenados en {ruta}; papers por fase: {tamanos}")
     elif argumentos.orden == "seleccionar":
         return _seleccionar(argumentos)
     return 0

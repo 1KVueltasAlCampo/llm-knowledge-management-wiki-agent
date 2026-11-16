@@ -204,3 +204,46 @@ def test_no_se_reanuda_una_corrida_hecha_con_chroma(tmp_path, capsys):
     assert e.correr("--pasos", "0") == 1
     assert "'brazos'" in capsys.readouterr().err
     assert e.fabricas == llamadas  # aborta antes de crear los brazos: ninguna llamada
+
+
+def _wiki_construido(carpeta):
+    from wikillm.wiki.almacen import Pagina, Wiki
+
+    wiki = Wiki(carpeta)
+    for paso, arxiv_id in enumerate(ORDEN, start=1):
+        wiki.escribir(
+            Pagina(f"p{paso}", "T", "paper", "r", [arxiv_id], paso, f"- d [{arxiv_id}#s1.p1]")
+        )
+        wiki.marcar_ingerido(arxiv_id)
+        wiki.regenerar_indice()
+        wiki.guardar_copia(paso, f"ingest {paso}")
+
+
+def test_un_wiki_prestado_no_cuenta_ingesta_en_la_estimacion(tmp_path):
+    entorno = Entorno(tmp_path, preguntas(("A1", "T1", "acordado")))
+    _wiki_construido(tmp_path / "wiki-origen")
+    codigo = entorno.correr(
+        "--pasos", "0,2", "--estimar", "--wiki-de", str(tmp_path / "wiki-origen")
+    )
+    assert codigo == 0
+    assert "0.00 de ingesta" in entorno.texto
+
+
+def test_un_wiki_prestado_con_otro_orden_se_rechaza_antes_de_gastar(tmp_path):
+    entorno = Entorno(tmp_path, preguntas(("A1", "T1", "acordado")))
+    _wiki_construido(tmp_path / "wiki-origen")
+    manifest = [json.loads(linea) for linea in entorno.manifest.read_text().splitlines()]
+    manifest[0]["orden_ingesta"], manifest[1]["orden_ingesta"] = 2, 1
+    entorno.manifest.write_text("\n".join(json.dumps(f) for f in manifest) + "\n")
+    codigo = entorno.correr("--pasos", "0,2", "--wiki-de", str(tmp_path / "wiki-origen"))
+    assert codigo == 1
+    assert entorno.fabricas == 0
+    assert not (tmp_path / "results" / "c1").exists()
+
+
+def test_la_corrida_con_wiki_prestado_lo_declara(tmp_path):
+    entorno = Entorno(tmp_path, preguntas(("A1", "T1", "acordado")))
+    _wiki_construido(tmp_path / "wiki-origen")
+    assert entorno.correr("--pasos", "0,2", "--wiki-de", str(tmp_path / "wiki-origen")) == 0
+    declarado = leer_corrida(entorno.carpeta / "corrida.json")["brazos"]["wiki"]
+    assert declarado["reutiliza_wiki_de"] == str(tmp_path / "wiki-origen")

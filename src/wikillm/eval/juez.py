@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import re
+import time
+from collections.abc import Callable
 from typing import Any
 
 from wikillm.eval.banco import Esperado
@@ -57,11 +59,30 @@ def interpretar(texto: str) -> tuple[str, str]:
 class Juez:
     """Adaptador para `evaluar_resultados`: llama al cliente del juez y guarda el motivo."""
 
-    def __init__(self, cliente: Any) -> None:
+    def __init__(
+        self,
+        cliente: Any,
+        intervalo_s: float = 0.0,
+        dormir: Callable[[float], None] = time.sleep,
+        reloj: Callable[[], float] = time.monotonic,
+    ) -> None:
         self._cliente = cliente
+        self._intervalo_s = intervalo_s
+        self._dormir = dormir
+        self._reloj = reloj
+        self._ultima: float | None = None
         self.motivos: dict[tuple[str, str, int], str] = {}
 
+    def _esperar(self) -> None:
+        """Separa las llamadas al menos `intervalo_s` para no pasar el límite por minuto."""
+        if self._intervalo_s > 0 and self._ultima is not None:
+            falta = self._intervalo_s - (self._reloj() - self._ultima)
+            if falta > 0:
+                self._dormir(falta)
+        self._ultima = self._reloj()
+
     def __call__(self, pregunta: dict[str, Any], resultado: dict[str, Any], esperado: Any) -> str:
+        self._esperar()
         mensajes = construir_mensajes(pregunta, resultado["answer"], esperado)
         respuesta = self._cliente.generar(
             mensajes, etiqueta=f"juez:{pregunta['id']}", max_tokens=TOKENS_JUEZ

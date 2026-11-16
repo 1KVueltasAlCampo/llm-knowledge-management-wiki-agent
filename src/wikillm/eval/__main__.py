@@ -439,7 +439,8 @@ def main() -> int:
         from wikillm.eval.modelos import crear_juez
 
         carpeta = Path(args.respuestas).parent
-        juez = Juez(crear_juez(carpeta / "llamadas_juez.jsonl"))
+        intervalo = float(os.environ.get("JUDGE_MIN_INTERVAL_SECONDS", "0") or 0)
+        juez = Juez(crear_juez(carpeta / "llamadas_juez.jsonl"), intervalo_s=intervalo)
     resultados = leer_resultados(Path(args.respuestas))
     evaluados = evaluar_resultados(resultados, {p["id"]: p for p in banco}, spans, orden, juez)
     carpeta = Path(args.respuestas).parent

@@ -561,3 +561,17 @@ corrida `oficial-1` no se tocaron: `oficial-1` se hizo con el conversor anterior
 **Banco.** `data/preguntas/banco_100.jsonl` tiene ahora 100 preguntas: las 60 acordadas más 20 de Juan
 Diego y 20 de Juan David (`data/ampliacion/preguntas_borde_40.json`). Estimación del arnés para la
 corrida `ampliado-1` (11 pasos, 2 brazos): 8,28 USD como cota alta (3,00 de ingesta y 5,28 de preguntas).
+
+### 2026-11-16 · tres cargas por fases y wiki reutilizable (Juan David, con Claude)
+
+**Orden.** El manifest de `corpus100` pasa a tener tres fases (33, 33 y 34 papers) con la cronología
+como base y 10 excepciones (`data/corpus100/fases.json`). El arnés pregunta en los pasos 0, 33, 66 y 100.
+Con ese orden se pueden contestar 19, 51 y 84 de las 84 preguntas con respuesta, y 32 de las 34 preguntas con
+varias fuentes las reciben en cargas distintas. Razones y límites en la decisión 0009.
+
+**Banco.** `ampliar-banco` recalculó `ingesta_minima` y los pasos de las T4 con el nuevo orden; el banco
+valida sin problemas y sus 138 evidencias coinciden con el Gold. Estimación: 100 preguntas × 4 pasos × 2
+brazos = 800 respuestas, 4,92 USD de cota alta (3,00 de ingesta y 1,92 de preguntas).
+
+**Wiki reutilizable.** `arnes correr --wiki-de <corrida>` copia el wiki ya construido (sus copias `paso-N`)
+y el brazo `wiki` lo recorre sin ingerir, para probar capas de consulta sin reconstruir el conocimiento.

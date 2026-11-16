@@ -1,7 +1,7 @@
 # 0008. Corpus de 100 papers en orden cronológico y banco de 80 preguntas
 
 **Fecha:** 16 de noviembre de 2026. **Estado:** propuesta (Juan Diego), pendiente de revisión de
-Juan David. **Complementa:** la decisión 0001 (modelo único) y el plan de ampliación del 11-nov.
+Juan David. **El orden y los pasos los cambia la decisión 0009; el banco pasa a tener 100 preguntas.** **Complementa:** la decisión 0001 (modelo único) y el plan de ampliación del 11-nov.
 
 ## Decisión
 

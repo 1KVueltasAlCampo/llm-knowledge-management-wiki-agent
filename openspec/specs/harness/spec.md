@@ -106,7 +106,7 @@ Si el modelo falla tras los reintentos del cliente o se alcanza el tope de gasto
 - **THEN** la corrida termina con código 1, las líneas ya escritas se conservan y la que falló no se escribe
 
 ### Requirement: Isolated run state
-Cada corrida SHALL usar su propia carpeta de wiki (`data/wiki/<corrida>`) y su propio índice vectorial (`data/chroma/<corrida>`), y SHALL NOT reutilizar el estado de otra corrida. Un nombre de corrida que ya tenga resultados SHALL tratarse como una reanudación.
+Cada corrida SHALL usar su propia carpeta de wiki (`data/wiki/<corrida>`) y su propio índice vectorial (`data/qdrant/<corrida>`), y SHALL NOT reutilizar el estado de otra corrida. Un nombre de corrida que ya tenga resultados SHALL tratarse como una reanudación.
 
 #### Scenario: Corridas distintas
 - **WHEN** se lanzan dos corridas con nombres distintos

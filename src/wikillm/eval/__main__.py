@@ -286,6 +286,18 @@ def _libro_cerrado(args: argparse.Namespace) -> int:
     return 0
 
 
+def _informe(args: argparse.Namespace) -> int:
+    from wikillm.eval.informe import escribir_informe
+
+    carpeta = Path(args.corrida)
+    if not (carpeta / "evaluados.jsonl").is_file():
+        print(f"No hay {carpeta / 'evaluados.jsonl'}: ejecuta antes `wikillm.eval metricas`.")
+        return 1
+    destino = escribir_informe(carpeta)
+    print(f"Informe en {destino}")
+    return 0
+
+
 def main() -> int:
     analizador = argparse.ArgumentParser(description="Banco de preguntas y métricas de calidad.")
     ordenes = analizador.add_subparsers(dest="orden", required=True)
@@ -335,6 +347,8 @@ def main() -> int:
     cerrado.add_argument("--paso", type=int, default=50, help="paso en que todo es respondible")
     cerrado.add_argument("--salida", default="results/libro_cerrado/respuestas.jsonl")
     cerrado.add_argument("--ejecutar", action="store_true")
+    informe = ordenes.add_parser("informe", help="tablas y figuras de una corrida evaluada")
+    informe.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
     acuerdo = ordenes.add_parser("acuerdo")
     acuerdo.add_argument("--a", required=True)
     acuerdo.add_argument("--b", required=True)

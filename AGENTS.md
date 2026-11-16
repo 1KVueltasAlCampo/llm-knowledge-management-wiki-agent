@@ -45,6 +45,7 @@ uv run python -m wikillm.corpus manifest|spans       # manifest y fragmentos
 uv run python -m wikillm.eval validar-banco          # valida el banco
 uv run python -m wikillm.eval borradores --autor A   # plan y costo (sin gastar)
 uv run python -m wikillm.eval metricas --respuestas results/<corrida>/respuestas.jsonl
+uv run python -m wikillm.eval informe --corrida results/<corrida>   # tablas y figuras SVG (sin gasto)
 ```
 
 ## Modelos y gasto

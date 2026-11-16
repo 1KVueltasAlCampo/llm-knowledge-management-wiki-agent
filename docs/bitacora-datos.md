@@ -542,3 +542,20 @@ T4 solo tiene 4 preguntas; el juez Gemini no se calibró contra etiquetas humana
 calificación (el mismo contenido que las 139 que resolvió); y el wiki no es determinista, así que una
 repetición podría dar otras cifras. El tope de salida del wiki se subió a 32.000 a mitad de la corrida
 (decisión 0007).
+
+## 2026-11-16 — Corrida `ampliado-1` (100 papers, 80 preguntas), preliminar
+
+- Corpus de 100 papers en orden cronológico (ADR 0008), banco de 80 preguntas (60 acordadas y 20
+  de borde de Juan Diego, sin revisión cruzada). La corrida no vale para el informe.
+- Dos fallos y una reanudación: (1) el índice del RAG comparaba contra el Gold de 50 papers
+  (corregido); (2) en el paso 30 el modelo nombró distinto la página del paper 2510.04618 y la
+  validación la rechazó; se repitió la misma orden y la ingesta pasó. Sin gasto perdido.
+- Costo total 4.52 USD (cota estimada 7.22). Juez Gemini sobre las indeterminadas del wiki.
+- Paso 100, pareado RAG frente a wiki (67 preguntas): cobertura 0.52 frente a 0.73, diferencia
+  +0.21 IC95 [0.07, 0.36], McNemar p=0.009. Por tipo: T2 +0.46 (p=0.031); T1, T3 y T4 sin
+  significancia con n pequeño.
+- Cada brazo consigo mismo (paso 50 de `oficial-1` frente a paso 100 de `ampliado-1`, 50
+  preguntas comunes): RAG 0.54 → 0.56, wiki 0.78 → 0.78, ninguna diferencia significativa. Las
+  17 preguntas nuevas respondibles: RAG 0.41, wiki 0.59 (p=0.45), preliminar.
+- Límites: orden y tamaño van mezclados, preguntas nuevas con un solo autor, wiki no
+  determinista, una sola ejecución. Archivos en `results/ampliado-1/` y `results/comparacion-50-100/`.

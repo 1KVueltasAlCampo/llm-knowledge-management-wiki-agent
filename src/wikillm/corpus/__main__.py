@@ -36,6 +36,12 @@ def main() -> int:
     candidatos.add_argument("--extra", nargs="*", default=[], help="ids adicionales")
     candidatos.add_argument("--salida", default=SALIDA_CANDIDATOS)
 
+    abs_meta = ordenes.add_parser(
+        "metadatos-abs", help="completar candidatos desde las páginas abs ya descargadas (sin API)"
+    )
+    abs_meta.add_argument("--ids", required=True)
+    abs_meta.add_argument("--datos", required=True, help="carpeta con raw/ (p. ej. data/corpus100)")
+
     manifest = ordenes.add_parser("manifest", help="construir el manifest del corpus")
     manifest.add_argument("--ids", default="data/corpus_ids.txt")
     manifest.add_argument("--candidatos", default=SALIDA_CANDIDATOS)
@@ -63,6 +69,12 @@ def main() -> int:
         filas = reunir(ClienteApi(), ids, consultas, argumentos.desde)
         escribir_jsonl(Path(argumentos.salida), filas)
         print(f"{len(filas)} candidatos en {argumentos.salida}", flush=True)
+    elif argumentos.orden == "metadatos-abs":
+        from wikillm.corpus.abs_meta import completar_candidatos
+
+        faltan = completar_candidatos(Path(argumentos.datos) / "raw", leer_ids(argumentos.ids))
+        print(f"sin metadatos: {faltan or 'ninguno'}")
+        return 1 if faltan else 0
     elif argumentos.orden == "manifest":
         datos = Path(argumentos.datos)
         por_id = {f["arxiv_id"]: f for f in leer_jsonl(Path(argumentos.candidatos))}

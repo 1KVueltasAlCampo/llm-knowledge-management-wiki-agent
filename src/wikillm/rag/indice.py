@@ -36,7 +36,7 @@ from wikillm.rag.fragmentos import (
 )
 
 RUTA_INDICE_POR_DEFECTO = Path("data/qdrant")
-RUTA_CORPUS_POR_DEFECTO = Path("data/gold/corpus.jsonl")
+CORPUS_DE_LA_CARPETA = "corpus.jsonl junto al Gold"  # valor por defecto: se busca en carpeta_gold
 RUTA_SPANS_POR_DEFECTO = Path("data/gold/spans.jsonl")
 NOMBRE_COLECCION = "gold_v2"
 CLAVE_METADATOS = "metadata"  # donde langchain-qdrant guarda los metadatos en el payload
@@ -143,7 +143,7 @@ class IndiceRag:
         modelo_embeddings: str,
         max_tokens: int = MAX_TOKENS_POR_DEFECTO,
         solapamiento: int = SOLAPAMIENTO_POR_DEFECTO,
-        corpus_jsonl: Path | str | None = RUTA_CORPUS_POR_DEFECTO,
+        corpus_jsonl: Path | str | None = CORPUS_DE_LA_CARPETA,
     ) -> None:
         self._carpeta = Path(carpeta_gold)
         self._medir = medir
@@ -152,6 +152,8 @@ class IndiceRag:
             "max_tokens": max_tokens,
             "solapamiento": solapamiento,
         }
+        if corpus_jsonl == CORPUS_DE_LA_CARPETA:
+            corpus_jsonl = self._carpeta / "corpus.jsonl"
         self._hashes = (
             _hashes_versionados(Path(corpus_jsonl))
             if corpus_jsonl is not None and Path(corpus_jsonl).exists()

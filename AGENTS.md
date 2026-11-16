@@ -49,6 +49,8 @@ uv run python -m wikillm.eval informe --corrida results/<corrida>   # tablas y f
 uv run python -m wikillm.eval auxiliar exportar|importar --corrida results/<corrida>   # 2.º juez (ADR 0006)
 uv run python -m wikillm.eval fallos --corrida results/<corrida>   # por qué falla cada brazo (sin gasto)
 uv run python -m wikillm.eval ampliar-banco --definiciones ... --manifest ... --spans ... --gold ... --salida ...   # banco de 100 papers
+uv run python -m wikillm.eval comparar-corridas --base results/<a> --ampliada results/<b> --paso-base N --paso-ampliada M --salida ...   # cada brazo entre dos corridas
+uv run python -m wikillm.corpus metadatos-abs ...    # metadatos desde páginas abs si la API de arXiv falla
 ```
 
 ## Modelos y gasto

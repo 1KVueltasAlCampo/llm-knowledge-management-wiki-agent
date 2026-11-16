@@ -325,6 +325,21 @@ def _ampliar_banco(args: argparse.Namespace) -> int:
     return 0
 
 
+def _comparar_corridas(args: argparse.Namespace) -> int:
+    from wikillm.eval.entre_corridas import escribir_comparacion
+
+    base, ampliada = Path(args.base), Path(args.ampliada)
+    for carpeta in (base, ampliada):
+        if not (carpeta / "evaluados.jsonl").is_file():
+            print(f"No hay {carpeta / 'evaluados.jsonl'}: ejecuta antes `wikillm.eval metricas`.")
+            return 1
+    destino = escribir_comparacion(
+        base, ampliada, args.paso_base, args.paso_ampliada, Path(args.salida)
+    )
+    print(f"Comparación en {destino}")
+    return 0
+
+
 def _fallos(args: argparse.Namespace) -> int:
     from wikillm.eval.fallos import escribir_fallos
 
@@ -420,6 +435,12 @@ def main() -> int:
     ampliar.add_argument("--spans", required=True)
     ampliar.add_argument("--gold", required=True, help="carpeta con los .md del Gold ampliado")
     ampliar.add_argument("--salida", required=True)
+    entre = ordenes.add_parser("comparar-corridas", help="cada brazo entre dos corridas")
+    entre.add_argument("--base", required=True, help="carpeta results/<corrida base>")
+    entre.add_argument("--ampliada", required=True, help="carpeta results/<corrida ampliada>")
+    entre.add_argument("--paso-base", type=int, required=True)
+    entre.add_argument("--paso-ampliada", type=int, required=True)
+    entre.add_argument("--salida", required=True)
     fallos = ordenes.add_parser("fallos", help="por qué falla cada brazo (categorías de fallo)")
     fallos.add_argument("--corrida", required=True, help="carpeta results/<corrida>")
     fallos.add_argument("--banco", default=BANCO)
@@ -449,6 +470,8 @@ def main() -> int:
         return _auxiliar(args)
     if args.orden == "fallos":
         return _fallos(args)
+    if args.orden == "comparar-corridas":
+        return _comparar_corridas(args)
     if args.orden == "ampliar-banco":
         return _ampliar_banco(args)
 

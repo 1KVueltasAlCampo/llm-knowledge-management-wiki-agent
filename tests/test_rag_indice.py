@@ -202,6 +202,23 @@ def test_el_hash_del_gold_debe_coincidir_con_el_versionado(gold, tmp_path):
     indice(gold, tmp_path, EmbeddingsFalsos(), corpus_jsonl=corpus).ingerir("2401.00001")
 
 
+def test_sin_corpus_explicito_se_lee_el_corpus_jsonl_de_la_carpeta_de_gold(gold, tmp_path):
+    """Un Gold distinto del de 50 papers (p. ej. el de 100) trae su propio corpus.jsonl."""
+    parametros = {
+        "embeddings": EmbeddingsFalsos(),
+        "medir": palabras,
+        "modelo_embeddings": "falso",
+        "max_tokens": 60,
+        "solapamiento": 5,
+    }
+    corpus = gold / "corpus.jsonl"
+    corpus.write_text(json.dumps({"arxiv_id": "2401.00001", "hash": "sha256:distinto"}) + "\n")
+    with pytest.raises(GoldDistinto, match="2401.00001"):
+        IndiceRag(gold, tmp_path / "indice", **parametros).ingerir("2401.00001")
+    corpus.write_text(json.dumps({"arxiv_id": "2401.00001", "hash": "sha256:aaa"}) + "\n")
+    IndiceRag(gold, tmp_path / "indice", **parametros).ingerir("2401.00001")
+
+
 def test_un_paper_que_no_figura_en_el_corpus_versionado_tambien_falla(gold, tmp_path):
     corpus = tmp_path / "corpus.jsonl"
     corpus.write_text(json.dumps({"arxiv_id": "9999.99999", "hash": "sha256:aaa"}) + "\n")

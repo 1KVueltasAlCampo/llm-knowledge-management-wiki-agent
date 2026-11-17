@@ -66,3 +66,30 @@ def test_manifest_con_senales_y_referencias(tmp_path):
     assert por_id["2606.1"]["estado_publicacion"] == "preprint"
     assert por_id["2607.1"]["html_available"] is False
     assert por_id["2607.1"]["en_gold"] is False
+
+
+def test_aplicar_fases_ordena_por_fase_y_luego_por_fecha():
+    from wikillm.corpus.manifest import aplicar_fases
+
+    filas = [
+        {"arxiv_id": "a", "fecha_publicacion": "2026-01-01", "orden_ingesta": 3},
+        {"arxiv_id": "b", "fecha_publicacion": "2024-01-01", "orden_ingesta": 1},
+        {"arxiv_id": "c", "fecha_publicacion": "2025-01-01", "orden_ingesta": 2},
+    ]
+    res = aplicar_fases(filas, {"a": 1, "b": 2, "c": 2})
+    assert [f["arxiv_id"] for f in res] == ["a", "b", "c"]
+    assert [f["orden_ingesta"] for f in res] == [1, 2, 3]
+    assert [f["fase"] for f in res] == [1, 2, 2]
+    assert filas[0]["orden_ingesta"] == 3  # no modifica la entrada
+
+
+def test_aplicar_fases_rechaza_ids_distintos_o_fases_invalidas():
+    import pytest
+
+    from wikillm.corpus.manifest import aplicar_fases
+
+    filas = [{"arxiv_id": "a", "fecha_publicacion": "2026-01-01", "orden_ingesta": 1}]
+    with pytest.raises(ValueError, match="no coinciden"):
+        aplicar_fases(filas, {"a": 1, "z": 2})
+    with pytest.raises(ValueError, match="entero desde 1"):
+        aplicar_fases(filas, {"a": 0})

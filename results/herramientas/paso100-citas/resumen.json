@@ -1,0 +1,35 @@
+[
+ {
+  "variante": "actual",
+  "n": 34,
+  "correctas": 11,
+  "llamadas": 3.59,
+  "tokens_entrada": 8617,
+  "tokens_contexto": 4294,
+  "tokens_salida": 322,
+  "usd": 0.000459,
+  "segundos": 6.2
+ },
+ {
+  "variante": "pipe_paginas",
+  "n": 34,
+  "correctas": 10,
+  "llamadas": 1.91,
+  "tokens_entrada": 15354,
+  "tokens_contexto": 7154,
+  "tokens_salida": 262,
+  "usd": 0.001227,
+  "segundos": 3.8
+ },
+ {
+  "variante": "pipe_paginas_citas",
+  "n": 34,
+  "correctas": 11,
+  "llamadas": 1.79,
+  "tokens_entrada": 15218,
+  "tokens_contexto": 7746,
+  "tokens_salida": 258,
+  "usd": 0.000966,
+  "segundos": 3.5
+ }
+]

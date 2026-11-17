@@ -35,11 +35,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import subprocess
 import sys
+import threading
 import time
+from collections import Counter, defaultdict
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -468,6 +471,397 @@ def herramienta_grafo(
     )
 
 
+PATRON_NODO = re.compile(r"^NODE (.+?) \[src=(\S+) loc=(L\d+)")
+MAXIMO_PAGINAS_GRAFO = 8
+
+
+def herramienta_grafo_enriquecida(
+    wiki: Wiki, grafo: Path, graphify: Path, presupuesto: int, profundidad: int
+) -> Herramienta:
+    """Consulta a graphify con el resultado reescrito: una línea por página con su título y su
+    resumen, y los encabezados que coincidieron. Sin las aristas ``contains`` ni el ``index``."""
+
+    def ejecutar(consulta: Any) -> tuple[str, str, bool]:
+        proceso = subprocess.run(
+            [
+                str(graphify),
+                "query",
+                str(consulta),
+                "--graph",
+                str(grafo),
+                "--budget",
+                str(presupuesto),
+                "--depth",
+                str(profundidad),
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+            env={**os.environ, "PYTHONUTF8": "1"},
+        )
+        inicio = re.search(r"Start: \[(.*?)\]", proceso.stdout)
+        etiquetas_de_inicio = (
+            set(re.findall(r"'((?:[^'\\]|\\.)*)'", inicio.group(1))) if inicio else set()
+        )
+        paginas: dict[str, list[str]] = {}
+        coinciden: set[str] = set()
+        for linea in proceso.stdout.splitlines():
+            nodo = PATRON_NODO.match(linea)
+            if not nodo:
+                continue
+            etiqueta, fuente, _ = nodo.groups()
+            pagina = re.match(r"^pages/(.+)\.md$", fuente)
+            if not pagina:
+                continue
+            slug = pagina.group(1)
+            encabezados = paginas.setdefault(slug, [])
+            if etiqueta in etiquetas_de_inicio:
+                coinciden.add(slug)
+            if not etiqueta.endswith(".md") and etiqueta not in encabezados:
+                encabezados.append(etiqueta)
+        slugs = [s for s in paginas if wiki.existe(s)]
+        if not slugs:
+            return "No node matches.", "no nodes", True
+        directas = [s for s in slugs if s in coinciden][:MAXIMO_PAGINAS_GRAFO]
+        vecinas = [s for s in slugs if s not in coinciden][
+            : max(MAXIMO_PAGINAS_GRAFO - len(directas), 3)
+        ]
+
+        def describir(slug: str) -> str:
+            pagina = wiki.leer(slug)
+            linea = f"- {slug} [{pagina.tipo}] {pagina.titulo}: {pagina.resumen}"
+            if paginas[slug]:
+                linea += "\n  matching sections: " + "; ".join(paginas[slug][:5])
+            return linea
+
+        lineas = [describir(s) for s in directas]
+        if vecinas:
+            lineas.append("Pages linked to those matches:")
+            lineas += [describir(s) for s in vecinas]
+        return "\n".join(lineas), f"{len(directas)} pages + {len(vecinas)} linked", False
+
+    return Herramienta(
+        "graph",
+        "query",
+        '{"action": "graph", "query": "keywords"} returns the wiki pages that match, best first, '
+        "followed by pages linked to them, each with its title and summary and the section "
+        "headings that matched (read a section with slug#Heading)",
+        ejecutar,
+    )
+
+
+# --- wiki con respaldo en el texto original de los papers -------------------------------------
+_BLOQUEO_RAG = threading.Lock()
+
+
+def abrir_indice_rag(args: argparse.Namespace) -> Any:
+    """Índice vectorial ya construido (el de una corrida terminada): ingerir es solo comprobar."""
+    from wikillm.rag.indice import IndiceRag, crear_embeddings, medidor_de_tokens
+
+    ajustes = load_settings()
+    indice = IndiceRag(
+        args.gold,
+        args.indice_rag,
+        embeddings=crear_embeddings(ajustes),
+        medir=medidor_de_tokens(ajustes.embedding_model),
+        modelo_embeddings=ajustes.embedding_model,
+    )
+    for linea in args.manifest.read_text("utf-8").splitlines():
+        if linea.strip():
+            indice.ingerir(json.loads(linea)["arxiv_id"])
+    return indice
+
+
+def _pasajes_crudos(indice: Any, consulta: str, k: int) -> list[Any]:
+    with _BLOQUEO_RAG:  # el almacén local de Qdrant no admite consultas simultáneas
+        return indice.recuperar(consulta, k)
+
+
+def herramienta_crudo(indice: Any, k: int = 5) -> Herramienta:
+    """Acción ``raw``: pasajes del texto original de los papers (no del wiki), con sus span_id."""
+
+    def ejecutar(consulta: Any) -> tuple[str, str, bool]:
+        pasajes = _pasajes_crudos(indice, str(consulta), k)
+        if not pasajes:
+            return "No passages found.", "no passages", True
+        texto = "\n\n".join(
+            f"Raw passage {i} (paper {p.fragmento.arxiv_id}):\n{p.fragmento.texto}"
+            for i, p in enumerate(pasajes, start=1)
+        )
+        return texto, f"{len(pasajes)} raw passages", False
+
+    return Herramienta(
+        "raw",
+        "query",
+        f'{{"action": "raw", "query": "keywords"}} returns up to {k} passages of the ORIGINAL '
+        "text of the papers (not the wiki), each with its span ids. The wiki pages are the main "
+        "source: read them first, and use raw only when they do not state the exact value or "
+        "detail the question asks for",
+        ejecutar,
+    )
+
+
+class PrecargaCruda:
+    """Pasajes originales más cercanos a la pregunta, añadidos junto a las páginas del wiki."""
+
+    def __init__(self, indice: Any, k: int = 3) -> None:
+        self._indice = indice
+        self._k = k
+
+    def __call__(self, pregunta: str) -> tuple[str, bool]:
+        pasajes = _pasajes_crudos(self._indice, pregunta, self._k)
+        cuerpo = "\n\n".join(
+            f"Raw passage {i} (paper {p.fragmento.arxiv_id}):\n{p.fragmento.texto}"
+            for i, p in enumerate(pasajes, start=1)
+        )
+        return (
+            "Original text of the papers closest to the question (the wiki pages may be less "
+            "exact; they are still the main source, so read them before answering):\n\n" + cuerpo,
+            False,
+        )
+
+
+# --- cadena del tutor: consulta del LLM -> texto completo -> grafo -> WikiLLM -------------------
+PARADAS_TEXTO = frozenset(
+    "a an the of in on for to and or is are was were be been what which who how many much does do "
+    "did has have had that this these those with by from as at it its into than then their there "
+    "about according reported report paper papers collection corpus".split()
+)
+_INDICES: dict[Any, Any] = {}
+_BLOQUEO_INDICES = threading.Lock()
+
+
+def _tokens(texto: str) -> list[str]:
+    return [
+        w for w in re.findall(r"[a-z0-9][a-z0-9\-\.\+\^]*", texto.lower()) if w not in PARADAS_TEXTO
+    ]
+
+
+def _grafo_de_citas(wiki: Wiki, manifest: Path) -> dict[str, Any]:
+    """Grafo de papers: nodos = papers del manifest y aristas = «a cita a b» (en el corpus)."""
+    clave = ("citas", str(manifest), str(wiki.carpeta))
+    with _BLOQUEO_INDICES:
+        if clave not in _INDICES:
+            filas = [json.loads(x) for x in manifest.read_text("utf-8").splitlines() if x.strip()]
+            cita: dict[str, set[str]] = defaultdict(set)
+            citado_por: dict[str, set[str]] = defaultdict(set)
+            for f in filas:
+                for r in f.get("referencias_en_corpus") or []:
+                    cita[f["arxiv_id"]].add(r)
+                    citado_por[r].add(f["arxiv_id"])
+            pagina: dict[str, str] = {}
+            for s in wiki.slugs():
+                p = wiki.leer(s)
+                if p.tipo == "paper":
+                    for i in p.fuentes:
+                        pagina.setdefault(i, s)
+            titulo = {f["arxiv_id"]: f["titulo"] for f in filas}
+            resumen = {i: wiki.leer(s).resumen for i, s in pagina.items()}
+            tok = lambda x: {  # noqa: E731
+                re.sub(r"[^a-z0-9]", "", w.lower())
+                for w in re.findall(r"[A-Za-z0-9][A-Za-z0-9\-\.\+\^]*", x)
+            }
+            tit = {i: tok(titulo[i]) for i in titulo}
+            res = {i: tok(resumen.get(i, "")) for i in titulo}
+            df_t = Counter(w for s in tit.values() for w in s)
+            df_r = Counter(w for s in res.values() for w in s)
+            _INDICES[clave] = {
+                "cita": cita,
+                "citado_por": citado_por,
+                "pagina": pagina,
+                "titulo": titulo,
+                "tit": tit,
+                "res": res,
+                "df_t": df_t,
+                "df_r": df_r,
+                "fecha": {f["arxiv_id"]: f["fecha_publicacion"] for f in filas},
+            }
+    return _INDICES[clave]
+
+
+class PrecargaPipeline:
+    """La cadena que describió el tutor, sin dejar al agente decidir si usarla.
+
+    Una consulta escrita por el LLM (entidades y palabras clave) busca en el texto completo de las
+    páginas (el papel de tgrep), el grafo de graphify añade páginas vecinas, y todo se entrega al
+    agente de la wiki como punto de partida; él decide qué leer y responde.
+    """
+
+    def __init__(
+        self,
+        wiki: Wiki,
+        consultas: dict[str, dict[str, list[str]]],
+        grafo: Path | None,
+        *,
+        paginas: int = 5,
+        vecinos: int = 0,
+        completas: int = 0,
+        ranking: str = "texto",
+        manifest: Path | None = None,
+        citas: int = 0,
+    ) -> None:
+        self._wiki = wiki
+        self._consultas = consultas
+        self._ranking = ranking
+        self._citas = citas
+        self._cit = _grafo_de_citas(wiki, manifest) if citas and manifest else None
+        self._paginas = paginas
+        self._vecinos = vecinos
+        self._completas = completas
+        clave = (str(wiki.carpeta), len(wiki.ingeridos), str(grafo))
+        with _BLOQUEO_INDICES:
+            if clave not in _INDICES:
+                docs = {s: Counter(_tokens(wiki.leer(s).a_texto())) for s in wiki.slugs()}
+                df: Counter[str] = Counter(w for c in docs.values() for w in c)
+                enlaces: dict[str, Counter[str]] = defaultdict(Counter)
+                if grafo is not None:
+                    datos = json.loads(grafo.read_text("utf-8"))
+                    archivo = {n["id"]: n.get("source_file", "") for n in datos["nodes"]}
+                    for arista in datos["links"]:
+                        if arista.get("relation") != "references":
+                            continue
+                        a = re.match(r"^pages/(.+)\.md$", archivo.get(arista["source"], ""))
+                        b = re.match(r"^pages/(.+)\.md$", archivo.get(arista["target"], ""))
+                        if a and b and a.group(1) != b.group(1):
+                            enlaces[a.group(1)][b.group(1)] += 1
+                            enlaces[b.group(1)][a.group(1)] += 1
+                _INDICES[clave] = (docs, df, enlaces)
+        self._docs, self._df, self._enlaces = _INDICES[clave]
+
+    def _ordenar(self, terminos: list[str]) -> list[str]:
+        n = len(self._docs)
+        unicos = list(dict.fromkeys(terminos))
+        puntos = {
+            s: sum((1 + math.log(c[w])) * math.log(1 + n / self._df[w]) for w in unicos if c.get(w))
+            for s, c in self._docs.items()
+        }
+        return [s for s in sorted(puntos, key=puntos.get, reverse=True) if puntos[s] > 0]  # type: ignore[arg-type]
+
+    def _por_citas(self, entidades: list[str], orden: list[str]) -> list[str]:
+        """Líneas de papers conectados por citas con los papers que nombra la pregunta."""
+        g = self._cit
+        if g is None:
+            return []
+        semillas: Counter[str] = Counter()
+        for e in entidades:
+            ne = re.sub(r"[^a-z0-9]", "", e.lower())
+            palabras = [
+                re.sub(r"[^a-z0-9]", "", w.lower())
+                for w in re.findall(r"[A-Za-z0-9][A-Za-z0-9\-\.\+\^]*", e)
+                if len(re.sub(r"[^a-z0-9]", "", w.lower())) >= 3
+            ]
+            if len(ne) < 3:
+                continue
+            for i in g["tit"]:
+                en_t = ne in g["tit"][i] or (palabras and all(w in g["tit"][i] for w in palabras))
+                en_r = ne in g["res"][i] or (palabras and all(w in g["res"][i] for w in palabras))
+                if en_t and g["df_t"].get(ne, 1) <= 3:
+                    semillas[i] += 1.0
+                elif en_r and g["df_r"].get(ne, 1) <= 3:
+                    semillas[i] += 0.4
+        candidatas: Counter[str] = Counter()
+        motivo: dict[str, str] = {}
+        for s, w in semillas.items():
+            candidatas[s] += w
+            for v in g["citado_por"][s]:  # v cita a s
+                candidatas[v] += w
+                motivo.setdefault(v, f"cites «{g['titulo'][s][:50]}»")
+            for v in g["cita"][s]:  # s cita a v
+                candidatas[v] += 0.5 * w
+                motivo.setdefault(v, f"is cited by «{g['titulo'][s][:50]}»")
+        posicion = {p: k for k, p in enumerate(orden)}
+        ya = set(orden[: self._paginas])
+        elegidas = sorted(
+            (i for i in candidatas if i in g["pagina"] and g["pagina"][i] not in ya),
+            key=lambda i: (
+                posicion.get(g["pagina"][i], 10**6)
+                > 60,  # primero los que además coinciden en texto
+                -candidatas[i],
+                posicion.get(g["pagina"][i], 10**6),
+            ),
+        )[: self._citas]
+        return [
+            f"- {g['pagina'][i]} [paper] {g['titulo'][i]} ({g['fecha'][i]}): "
+            f"{self._wiki.leer(g['pagina'][i]).resumen} [{motivo.get(i, 'named in the question')}]"
+            for i in elegidas
+        ]
+
+    def _linea(self, slug: str, terminos: set[str]) -> str:
+        pagina = self._wiki.leer(slug)
+        linea = f"- {slug} [{pagina.tipo}] {pagina.titulo}: {pagina.resumen}"
+        coinciden = [
+            titulo
+            for titulo, texto in _secciones(pagina.cuerpo)
+            if titulo and len(terminos & set(_tokens(f"{titulo} {texto}"))) >= min(2, len(terminos))
+        ]
+        if coinciden:
+            linea += "\n  matching sections: " + "; ".join(coinciden[:3])
+        return linea
+
+    def __call__(self, pregunta: str) -> tuple[str, bool]:
+        c = self._consultas.get(pregunta) or {
+            "entities": [],
+            "keywords": [pregunta],
+            "queries": [pregunta],
+        }
+        terminos = _tokens(" ".join(c["entities"] + c["keywords"])) or _tokens(pregunta)
+        if self._ranking == "busqueda":  # control: el orden lo da el search de la wiki base
+            consulta = (c.get("queries") or [pregunta])[0]
+            orden = [r.slug for r in wiki_search(self._wiki, consulta, 12)]
+        else:
+            orden = self._ordenar(terminos)
+        elegidas = orden[: self._paginas]
+        propios = set(terminos)
+        vecinas: list[str] = []
+        if self._vecinos:
+            puntos: Counter[str] = Counter()
+            for s in elegidas[:3]:
+                for v, n in self._enlaces[s].items():
+                    if v not in elegidas:
+                        puntos[v] += n
+            posicion = {p: i for i, p in enumerate(orden)}
+            vecinas = sorted(
+                puntos,
+                key=lambda p: (self._wiki.leer(p).tipo != "concepto", posicion.get(p, 10**6)),
+            )[: self._vecinos]
+        enlazadas = (
+            ["Pages linked to those matches:", *[self._linea(s, propios) for s in vecinas]]
+            if vecinas
+            else []
+        )
+        por_citas = self._por_citas(c["entities"], orden) if self._citas else []
+        if por_citas:
+            enlazadas += [
+                "Papers connected by citation to the papers the question names (from the "
+                "bibliographies):",
+                *por_citas,
+            ]
+        if self._completas:
+            bloques = [
+                f"=== Page {s} ===\n{self._wiki.leer(s).a_texto().strip()}"
+                for s in elegidas[: self._completas]
+            ]
+            resto = [self._linea(s, propios) for s in elegidas[self._completas :]]
+            texto = (
+                "Pages found by full-text search of the wiki with terms taken from the question "
+                "(best first):\n\n" + "\n\n".join(bloques)
+            )
+            if resto:
+                texto += "\n\nOther matching pages:\n" + "\n".join(resto)
+            if enlazadas:
+                texto += "\n\n" + "\n".join(enlazadas)
+            return texto, True
+        partes = [
+            "Pages that match the question's terms in their full text, best first:",
+            *[self._linea(s, propios) for s in elegidas],
+            *enlazadas,
+            "These are leads, not answers: read the pages that bear on the question before "
+            "answering.",
+        ]
+        return "\n".join(partes), False
+
+
 # --- agente con herramientas intercambiables --------------------------------------------------
 INTRODUCCION = (
     "You answer questions about a corpus of arXiv papers using a wiki of pages that summarize "
@@ -488,8 +882,10 @@ class AgenteGenerico:
         spans_validos: set[str] | None,
         max_acciones: int = 8,
         paciencia: int = 3,
+        precarga: Callable[[str], tuple[str, bool]] | None = None,
     ) -> None:
         self._modelo = modelo
+        self._precarga = precarga  # (texto que se añade a la pregunta, ¿cuenta como lectura?)
         self._herramientas = {h.nombre: h for h in herramientas}
         self._etiqueta = etiqueta
         self._spans = spans_validos
@@ -517,6 +913,20 @@ class AgenteGenerico:
         acciones = vacias = 0
         final_pedido = fallo = False
         lecturas = 0
+        if self._precarga is not None:
+            texto_previo, cuenta_como_lectura = self._precarga(pregunta)
+            mensajes[1]["content"] = f"Question: {pregunta}\n\n{texto_previo}"
+            salidas.append(texto_previo)
+            leido.update(PATRON_SPAN_ID.findall(texto_previo))
+            lecturas = 1 if cuenta_como_lectura else 0
+            detalle.append(
+                {
+                    "accion": "precarga",
+                    "argumento": "",
+                    "resultado": "full-text leads",
+                    "tokens_devueltos": aproximar_tokens(texto_previo),
+                }
+            )
         while True:
             if not final_pedido and (acciones >= self._max_acciones or vacias >= self._paciencia):
                 mensajes.append(
@@ -693,6 +1103,12 @@ def crear_agente(
 ):  # type: ignore[no-untyped-def]
     if variante == "actual":
         return ConsultaWiki(modelo, wiki, spans_validos=spans)
+    if variante == "produccion":  # la ruta real del brazo wiki_grafo (src/wikillm/wiki/capas.py)
+        from wikillm.wiki.capas import crear_capas
+
+        trabajo = args.trabajo / f"{os.getpid()}-{time.perf_counter_ns()}"
+        capas = crear_capas(wiki, args.graphify, trabajo)
+        return ConsultaWiki(modelo, wiki, spans_validos=spans, capas=capas)
     # perezoso: cada variante solo construye lo que necesita (el grafo, el binario de tgrep...)
     herramientas = {
         "generico": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
@@ -707,6 +1123,60 @@ def crear_agente(
                 args.grafo, args.graphify, args.presupuesto_grafo, args.profundidad_grafo
             ),
             herramienta_lectura_por_secciones(wiki),
+        ],
+        # --- cómo añadir graphify (ronda de 100 papers) ---
+        "g_busqueda": lambda: [  # el grafo se suma a la búsqueda en vez de sustituirla
+            herramienta_busqueda(wiki),
+            herramienta_grafo(
+                args.grafo, args.graphify, args.presupuesto_grafo, args.profundidad_grafo
+            ),
+            herramienta_lectura_por_secciones(wiki),
+        ],
+        "g_sin_indice": lambda: [  # grafo sin el nodo-hub index.md
+            herramienta_grafo(
+                args.grafo_sin_indice, args.graphify, args.presupuesto_grafo, args.profundidad_grafo
+            ),
+            herramienta_lectura_por_secciones(wiki),
+        ],
+        "g_rico": lambda: [  # resultado con título y resumen de cada página, sin índice
+            herramienta_grafo_enriquecida(
+                wiki,
+                args.grafo_sin_indice,
+                args.graphify,
+                args.presupuesto_grafo,
+                args.profundidad_grafo,
+            ),
+            herramienta_lectura_por_secciones(wiki),
+        ],
+        "g_rico_busqueda": lambda: [
+            herramienta_busqueda(wiki),
+            herramienta_grafo_enriquecida(
+                wiki,
+                args.grafo_sin_indice,
+                args.graphify,
+                args.presupuesto_grafo,
+                args.profundidad_grafo,
+            ),
+            herramienta_lectura_por_secciones(wiki),
+        ],
+        # base + graph: se quita nada, solo se añade la herramienta graph (lectura de página entera)
+        "base_mas_grafo": lambda: [
+            herramienta_busqueda(wiki),
+            herramienta_grafo(
+                args.grafo_sin_indice, args.graphify, args.presupuesto_grafo, args.profundidad_grafo
+            ),
+            herramienta_lectura(wiki),
+        ],
+        "base_mas_grafo_rico": lambda: [
+            herramienta_busqueda(wiki),
+            herramienta_grafo_enriquecida(
+                wiki,
+                args.grafo_sin_indice,
+                args.graphify,
+                args.presupuesto_grafo,
+                args.profundidad_grafo,
+            ),
+            herramienta_lectura(wiki),
         ],
         "grep_recortado": lambda: [
             herramienta_grep(wiki, args.tgrep_columnas),
@@ -743,8 +1213,39 @@ def crear_agente(
             herramienta_vecinos(wiki, args.grafo),
             herramienta_lectura(wiki),
         ],
+        "pipe_texto": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "pipe_texto_grafo": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "pipe_paginas": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "pipe_paginas_busqueda": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "pipe_paginas_grafo": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "pipe_paginas_citas": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "wiki_crudo_herramienta": lambda: [
+            herramienta_busqueda(wiki),
+            herramienta_lectura(wiki),
+            herramienta_crudo(args.indice_rag_abierto),
+        ],
+        "wiki_crudo_precarga": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
     }[variante]()
-    return AgenteGenerico(modelo, herramientas, etiqueta=variante, spans_validos=spans)
+    precarga = None
+    if variante == "wiki_crudo_precarga":
+        precarga = PrecargaCruda(args.indice_rag_abierto)
+    if variante.startswith("pipe_"):
+        con_grafo = variante in ("pipe_texto_grafo", "pipe_paginas_grafo")
+        paginas_completas = variante.startswith("pipe_paginas")
+        precarga = PrecargaPipeline(
+            wiki,
+            args.consultas_por_texto,
+            args.grafo_sin_indice if con_grafo else None,
+            paginas=3 if paginas_completas else 5,
+            vecinos=3 if con_grafo else 0,
+            completas=3 if paginas_completas else 0,
+            ranking="busqueda" if variante == "pipe_paginas_busqueda" else "texto",
+            manifest=args.manifest if variante == "pipe_paginas_citas" else None,
+            citas=4 if variante == "pipe_paginas_citas" else 0,
+        )
+    return AgenteGenerico(
+        modelo, herramientas, etiqueta=variante, spans_validos=spans, precarga=precarga
+    )
 
 
 def una_corrida(
@@ -759,7 +1260,7 @@ def una_corrida(
     agente = crear_agente(variante, modelo, wiki, args, spans)
     detalle: list[dict[str, Any]] = []
     try:
-        if variante == "actual":
+        if variante in ("actual", "produccion"):
             resultado = agente.responder(pregunta["texto"])
             detalle = list(agente.traza.detalle)
         else:
@@ -823,7 +1324,35 @@ def main() -> int:
     analizador.add_argument("--spans", type=Path, default=Path("data/gold/spans.jsonl"))
     analizador.add_argument("--salida", type=Path, default=Path("results/herramientas"))
     analizador.add_argument("--grafo", type=Path)
+    analizador.add_argument("--grafo-sin-indice", type=Path, help="graph.json sin index.md")
+    analizador.add_argument(
+        "--gold",
+        type=Path,
+        default=Path("data/corpus100/gold"),
+        help="Gold (variantes wiki_crudo*)",
+    )
+    analizador.add_argument(
+        "--indice-rag",
+        type=Path,
+        default=Path("data/qdrant/ampliado-fases-1"),
+        help="índice vectorial ya construido (variantes wiki_crudo*)",
+    )
+    analizador.add_argument(
+        "--manifest",
+        type=Path,
+        default=Path("data/corpus100/manifest.jsonl"),
+        help="manifest con las citas entre papers (variante pipe_paginas_citas)",
+    )
+    analizador.add_argument(
+        "--consultas",
+        type=Path,
+        help="JSON {id: {entities, keywords, queries}} con la consulta que escribió el LLM "
+        "(variantes pipe_*)",
+    )
     analizador.add_argument("--graphify", type=Path)
+    analizador.add_argument(
+        "--trabajo", type=Path, default=Path("data/grafo/comparar"), help="grafos de 'produccion'"
+    )
     analizador.add_argument("--tgrep", type=Path, help="tgrep.exe real (variante tgrep)")
     analizador.add_argument("--tgrep-indice", type=Path, help="carpeta del índice de tgrep")
     analizador.add_argument("--tgrep-columnas", type=int, default=300)
@@ -842,9 +1371,28 @@ def main() -> int:
     ):
         print("combinado necesita --grafo --graphify --tgrep --tgrep-indice", file=sys.stderr)
         return 1
+    if "produccion" in variantes and not args.graphify:
+        print("La variante produccion necesita --graphify", file=sys.stderr)
+        return 1
     if "graphify" in variantes and not (args.grafo and args.graphify):
         print("La variante graphify necesita --grafo y --graphify", file=sys.stderr)
         return 1
+    if any(
+        v in variantes
+        for v in (
+            "g_busqueda",
+            "g_sin_indice",
+            "g_rico",
+            "g_rico_busqueda",
+            "base_mas_grafo",
+            "base_mas_grafo_rico",
+        )
+    ):
+        if not (args.grafo and args.grafo_sin_indice and args.graphify):
+            print(
+                "Las variantes g_* necesitan --grafo --grafo-sin-indice --graphify", file=sys.stderr
+            )
+            return 1
     if "tgrep" in variantes and not (args.tgrep and args.tgrep_indice):
         print("La variante tgrep necesita --tgrep y --tgrep-indice", file=sys.stderr)
         return 1
@@ -852,6 +1400,22 @@ def main() -> int:
         print("La variante vecinos necesita --grafo", file=sys.stderr)
         return 1
     banco = {p["id"]: p for p in leer_banco(args.banco)}
+    if any(v.startswith("wiki_crudo") for v in variantes):
+        args.indice_rag_abierto = abrir_indice_rag(args)
+    args.consultas_por_texto = {}
+    if any(v.startswith("pipe_") for v in variantes):
+        if not args.consultas:
+            print("Las variantes pipe_* necesitan --consultas", file=sys.stderr)
+            return 1
+        if (
+            "pipe_texto_grafo" in variantes or "pipe_paginas_grafo" in variantes
+        ) and not args.grafo_sin_indice:
+            print("las variantes pipe_*_grafo necesitan --grafo-sin-indice", file=sys.stderr)
+            return 1
+        por_id = json.loads(args.consultas.read_text("utf-8"))
+        args.consultas_por_texto = {
+            p["texto"]: por_id[p["id"]] for p in banco.values() if p["id"] in por_id
+        }
     preguntas = [banco[i] for i in args.preguntas.split(",") if i]
     spans = {
         json.loads(x)["span_id"] for x in args.spans.read_text("utf-8").splitlines() if x.strip()
@@ -865,8 +1429,17 @@ def main() -> int:
         f"{len(trabajos)} corridas ({len(variantes)} variantes × {len(preguntas)} preguntas × "
         f"{args.repeticiones}); wiki con {papers} papers"
     )
+    parcial = args.salida / "corridas.parcial.jsonl"  # se guarda cada corrida al terminar
+    parcial.write_text("", encoding="utf-8")
+
+    def _y_guardar(trabajo: tuple[str, dict[str, Any], int]) -> dict[str, Any]:
+        fila = una_corrida(trabajo[0], trabajo[1], trabajo[2], args, spans)
+        with parcial.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(fila, ensure_ascii=False) + "\n")
+        return fila
+
     with ThreadPoolExecutor(max_workers=args.hilos) as pool:
-        filas = list(pool.map(lambda t: una_corrida(t[0], t[1], t[2], args, spans), trabajos))
+        filas = list(pool.map(_y_guardar, trabajos))
     destino = args.salida / "corridas.jsonl"
     destino.write_text(
         "\n".join(json.dumps(f, ensure_ascii=False) for f in filas) + "\n", encoding="utf-8"

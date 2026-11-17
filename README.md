@@ -195,6 +195,8 @@ uv run python -m wikillm.arnes comparar "<pregunta>" --wiki data/wiki/demo   # u
 uv run python -m wikillm.arnes correr --corrida <nombre> --estimar   # costo de la corrida
 uv run python -m wikillm.arnes correr --corrida <nombre>             # ejecuta ambos sistemas por pasos
 uv run python -m wikillm.arnes correr --corrida <nombre> --graphify <graphify> [--tgrep <tgrep>]   # añade el brazo wiki_grafo (mismo wiki, consulta con grafo)
+uv run python -m wikillm.arnes correr --corrida <nueva> --wiki-de <corrida construida> ...          # reutiliza un wiki ya construido (sin ingesta)
+uv run python -m wikillm.corpus fases --manifest data/corpus100/manifest.jsonl --fases data/corpus100/fases.json   # orden de las tres cargas (0009)
 uv run python -m wikillm.eval metricas --respuestas results/<nombre>/respuestas.jsonl
 uv run ruff check . && uv run ruff format --check . && uv run pytest
 ```

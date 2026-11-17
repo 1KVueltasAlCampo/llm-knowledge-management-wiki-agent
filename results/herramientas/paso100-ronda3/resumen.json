@@ -1,0 +1,46 @@
+[
+ {
+  "variante": "actual",
+  "n": 66,
+  "correctas": 26,
+  "llamadas": 3.91,
+  "tokens_entrada": 11259,
+  "tokens_contexto": 4623,
+  "tokens_salida": 451,
+  "usd": 0.000644,
+  "segundos": 7.0
+ },
+ {
+  "variante": "g_busqueda",
+  "n": 66,
+  "correctas": 23,
+  "llamadas": 3.8,
+  "tokens_entrada": 8503,
+  "tokens_contexto": 3923,
+  "tokens_salida": 305,
+  "usd": 0.000664,
+  "segundos": 6.4
+ },
+ {
+  "variante": "base_mas_grafo",
+  "n": 66,
+  "correctas": 24,
+  "llamadas": 3.62,
+  "tokens_entrada": 9651,
+  "tokens_contexto": 5012,
+  "tokens_salida": 316,
+  "usd": 0.000846,
+  "segundos": 6.3
+ },
+ {
+  "variante": "base_mas_grafo_rico",
+  "n": 66,
+  "correctas": 24,
+  "llamadas": 3.97,
+  "tokens_entrada": 11484,
+  "tokens_contexto": 5418,
+  "tokens_salida": 361,
+  "usd": 0.001016,
+  "segundos": 6.9
+ }
+]

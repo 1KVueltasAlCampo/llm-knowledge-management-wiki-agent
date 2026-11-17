@@ -86,7 +86,8 @@ Prioridad 1 = alimenta las preguntas núcleo; se mira primero. Prioridad 2 = fon
 ## 4. Las listas de preguntas
 Cada tabla trae las 40 candidatas del autor. En el Excel cada pregunta incluye además los papers donde mirar, la respuesta de la wiki, los fragmentos para Ctrl+F y una nota de Claude (por ejemplo, si las cifras cambian según el modelo base o si falta una tabla).
 
-### Lista de Juan David: escoge 20
+### Lista de Juan David
+Escogidas (20): JD-01, 02, 06, 08, 09, 10, 13, 15, 17, 19, 22, 23, 25, 27, 29, 31, 33, 35, 37 y 39. Están en `data/ampliacion/preguntas_borde_JD.json`.
 | # | Tipo | Pregunta |
 |---|---|---|
 | JD-01 | Antiguo frente a nuevo | What accuracy has been reported for Zep on the DMR benchmark? |

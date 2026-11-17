@@ -1,81 +1,81 @@
 ﻿arxiv_id,nombre,responsable,prioridad,enlace_html,que_buscar,tiene_la_informacion_o_esta_relacionado,donde,notas
 2310.08560,MemGPT,Juan David,1,https://ar5iv.labs.arxiv.org/html/2310.08560,"Caso de borde: Cita de segunda mano, vocabulario (el más citado del corpus).
 De qué habla: Trata la ventana de contexto como la memoria virtual de un sistema operativo: el modelo mueve información entre un contexto principal y un almacenamiento externo con llamadas a funciones.
-Relación con el corpus: lo citan 26 papers del corpus actual en su bibliografía y lo mencionan 19 en el texto (3 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 26 papers del corpus actual en su bibliografía y lo mencionan 19 en el texto (3 con cifras suyas en tablas).",Sí,Resumen; §3.1 MemGPT for conversational agents; §Resumen,3 tablas y 6 secciones en la conversión original. lo citan 26 papers del corpus actual en su bibliografía. paper antiguo: el HTML nativo de arXiv puede diferir del de ar5iv.
 2402.17753,LoCoMo,Juan David,1,https://arxiv.org/html/2402.17753,"Caso de borde: Contradicción en los datos del benchmark.
 De qué habla: Presenta LoCoMo, un conjunto de conversaciones muy largas (hasta 35 sesiones) con preguntas de cinco tipos; es la base de casi todos los papers de memoria.
-Relación con el corpus: lo citan 8 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto (9 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 8 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto (9 con cifras suyas en tablas).",Sí,Resumen; §Abstract; §1 Introduction; §B.1 Dataset Statistics,7 tablas y 9 secciones en la conversión original. lo citan 8 papers del corpus actual en su bibliografía.
 2410.10813,LongMemEval,Juan David,1,https://arxiv.org/html/2410.10813,"Caso de borde: Agregación.
 De qué habla: Presenta LongMemEval: 500 preguntas sobre cinco habilidades de memoria (extracción, varias sesiones, temporal, actualización y abstención) en historiales de chat largos.
-Relación con el corpus: lo citan 13 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto (9 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 13 papers del corpus actual en su bibliografía y lo mencionan 24 en el texto (9 con cifras suyas en tablas).",Sí,Resumen; §Abstract,13 tablas y 8 secciones en la conversión original. lo citan 13 papers del corpus actual en su bibliografía.
 2501.13956,Zep,Juan David,1,https://arxiv.org/html/2501.13956,"Caso de borde: Contradicción.
 De qué habla: Propone Zep, una memoria con grafo de conocimiento temporal, y la compara con MemGPT en DMR y con el contexto completo en LongMemEval.
-Relación con el corpus: lo citan 19 papers del corpus actual en su bibliografía y lo mencionan 14 en el texto (7 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 19 papers del corpus actual en su bibliografía y lo mencionan 14 en el texto (7 con cifras suyas en tablas).",Sí,Resumen; §Abstract; §4.2 Deep Memory Retrieval (DMR); §Resumen,3 tablas y 6 secciones en la conversión original. lo citan 19 papers del corpus actual en su bibliografía.
 2504.19413,Mem0,Juan David,1,https://arxiv.org/html/2504.19413,"Caso de borde: Cita de segunda mano, antiguo frente a nuevo, agregación.
 De qué habla: Propone Mem0, una memoria que extrae y actualiza hechos de las conversaciones, con una variante de grafo (Mem0g); mide exactitud, latencia y tokens en LoCoMo.
-Relación con el corpus: lo citan 25 papers del corpus actual en su bibliografía y lo mencionan 27 en el texto (10 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 25 papers del corpus actual en su bibliografía y lo mencionan 27 en el texto (10 con cifras suyas en tablas).",Sí,Resumen; §4.2 Cross-Category Analysis; §Resumen,2 tablas y 6 secciones en la conversión original. lo citan 25 papers del corpus actual en su bibliografía.
 2505.22101,MemOS (primer artículo),Juan David,1,https://arxiv.org/html/2505.22101,"Caso de borde: Distractor por mismo nombre, antiguo frente a nuevo.
 De qué habla: Versión corta de MemOS: un «sistema operativo de memoria» para modelos de lenguaje con la unidad MemCube; no trae experimentos.
 Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (4 con cifras suyas en tablas).
-OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",,,
+OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",Sí,Título y resumen,0 tablas y 5 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía. versión corta sin experimentos; hay dos artículos MemOS (2505.22101 y 2507.03724): citar siempre con el ID.
 2510.18866,LightMem,Juan David,1,https://arxiv.org/html/2510.18866,"Caso de borde: Contradicción, agregación.
 De qué habla: Propone LightMem: memoria en tres etapas inspirada en la memoria humana y una actualización «en sueño» para gastar menos tokens; se evalúa en LongMemEval y LoCoMo.
-Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (5 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (5 con cifras suyas en tablas).",Sí,Resumen; §4 Complexity analysis about LightMem,9 tablas y 7 secciones en la conversión original. lo citan 3 papers del corpus actual en su bibliografía.
 2305.10250,MemoryBank,Juan David,1,https://ar5iv.labs.arxiv.org/html/2305.10250,"Caso de borde: Vocabulario, antiguo frente a nuevo.
 De qué habla: Propone MemoryBank: una memoria para compañeros conversacionales que olvida y refuerza recuerdos según la curva del olvido de Ebbinghaus.
-Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 11 en el texto (3 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 11 en el texto (3 con cifras suyas en tablas).",Sí,Resumen; §Abstract,2 tablas y 6 secciones en la conversión original. lo citan 4 papers del corpus actual en su bibliografía. paper antiguo: el HTML nativo de arXiv puede diferir del de ar5iv.
 2502.12110,A-MEM,Juan David,1,https://arxiv.org/html/2502.12110,"Caso de borde: Vocabulario distinto.
 De qué habla: Propone A-MEM: una memoria de agentes que organiza notas enlazadas siguiendo el método Zettelkasten; se evalúa en LoCoMo y DialSim.
-Relación con el corpus: lo citan 10 papers del corpus actual en su bibliografía y lo mencionan 23 en el texto (13 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 10 papers del corpus actual en su bibliografía y lo mencionan 23 en el texto (13 con cifras suyas en tablas).",Sí,Resumen; §4.2 Implementation Details,8 tablas y 7 secciones en la conversión original. lo citan 10 papers del corpus actual en su bibliografía.
 2506.21605,MemBench,Juan David,1,https://arxiv.org/html/2506.21605,"Caso de borde: Vocabulario distinto.
 De qué habla: Presenta MemBench: un benchmark de memoria factual y reflexiva en escenarios de participación y de observación, con varios mecanismos de memoria.
-Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (6 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (6 con cifras suyas en tablas).",Sí,Resumen; §Resumen; §4 Benchmark,12 tablas y 8 secciones en la conversión original. lo citan 2 papers del corpus actual en su bibliografía.
 2510.27246,BEAM,Juan David,1,https://arxiv.org/html/2510.27246,"Caso de borde: Escala, marco temporal.
 De qué habla: Genera conversaciones de hasta 10 millones de tokens con preguntas de prueba (BEAM) y compara modelos y métodos de memoria.
-Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (4 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (4 con cifras suyas en tablas).",Sí,Resumen; §Abstract,6 tablas y 7 secciones en la conversión original. con el conversor corregido (span.ltx_tabular) gana tablas que antes se perdían. lo citan 4 papers del corpus actual en su bibliografía.
 2511.01448,LiCoMemory,Juan David,1,https://arxiv.org/html/2511.01448,"Caso de borde: Agregación.
 De qué habla: Propone LiCoMemory: una memoria con grafo ligero que reduce latencia y tokens; compara con Mem0, Zep, A-MEM y otros en LongMemEval y LoCoMo.
-Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 5 en el texto (3 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 4 papers del corpus actual en su bibliografía y lo mencionan 5 en el texto (3 con cifras suyas en tablas).",Sí,Resumen; §A.1 Dataset Details; §Resumen,3 tablas y 6 secciones en la conversión original. lo citan 4 papers del corpus actual en su bibliografía.
 2304.03442,Generative Agents,Juan David,1,https://ar5iv.labs.arxiv.org/html/2304.03442,"Caso de borde: Antiguo frente a nuevo, vocabulario.
 De qué habla: Simula 25 agentes en un pueblo virtual (Smallville) que tienen memoria, reflexionan y planifican su día.
 Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (1 con cifras suyas en tablas).
-OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",,,
+OJO: en nuestra conversión este paper sale sin tablas; mirar si en el original sí las tiene.",Sí,Resumen; §3.1. Agent Avatar and Communication; §2.3. Large Language Models and Human Behavior; §1. Introduction,0 tablas y 9 secciones en la conversión original. lo citan 3 papers del corpus actual en su bibliografía. paper antiguo: el HTML nativo de arXiv puede diferir del de ar5iv.
 2511.03506,HaluMem,Juan David,1,https://arxiv.org/html/2511.03506,"Caso de borde: Abstracción.
 De qué habla: Presenta HaluMem: un benchmark que mide las alucinaciones de un sistema de memoria al extraer, actualizar y responder.
-Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 4 en el texto (3 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 4 en el texto (3 con cifras suyas en tablas).",Sí,Resumen; §1 Introduction; §Resumen,6 tablas y 7 secciones en la conversión original. lo citan 5 papers del corpus actual en su bibliografía.
 2511.18423,General Agentic Memory,Juan David,1,https://arxiv.org/html/2511.18423,"Caso de borde: Vocabulario distinto.
 De qué habla: Propone GAM: un memorizador que guarda el historial y un investigador que busca en el momento de la consulta; se evalúa en HotpotQA, RULER, LoCoMo y NarrativeQA.
-Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 3 en el texto (2 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 3 papers del corpus actual en su bibliografía y lo mencionan 3 en el texto (2 con cifras suyas en tablas).",Sí,Título y resumen,5 tablas y 5 secciones en la conversión original. con el conversor corregido (span.ltx_tabular) gana tablas que antes se perdían. lo citan 3 papers del corpus actual en su bibliografía.
 2406.13805,WikiContradict,Juan David,2,https://arxiv.org/html/2406.13805,"Caso de borde: Contradicción.
 De qué habla: Presenta WikiContradict: preguntas con pasajes de Wikipedia que se contradicen, y cómo responden los modelos cuando el contexto no está de acuerdo consigo mismo.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",Sí,Título y resumen,5 tablas y 7 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2503.04338,In-depth Analysis of Graph-based RAG,Juan David,2,https://arxiv.org/html/2503.04338,"Caso de borde: Agregación, contradicción.
 De qué habla: Compara en las mismas condiciones el RAG normal y varios RAG con grafos; tiene 77 tablas, incluidas filas de HippoRAG.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",Sí,Resumen; §7.1. Setup,"77 tablas y 11 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía. 77 tablas, con filas de HippoRAG en otras métricas (no chocan con las preguntas de HippoRAG Recall@5)."
 2505.24226,E2GraphRAG,Juan David,2,https://arxiv.org/html/2505.24226,"Caso de borde: Cita de segunda mano, agregación.
 De qué habla: Propone E2GraphRAG: un GraphRAG más barato (árbol de resúmenes y grafo de entidades) que indexa mucho más rápido; se evalúa en NovelQA e InfiniteBench.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto (1 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto (1 con cifras suyas en tablas).",Sí,Resumen; §Datasets,3 tablas y 5 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2510.09720,Preference-Aware Memory Update,Juan David,2,https://arxiv.org/html/2510.09720,"Caso de borde: Antiguo frente a nuevo.
 De qué habla: Estudia cómo actualizar la memoria cuando las preferencias del usuario cambian y chocan con lo guardado antes.
-Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",Sí,Título y resumen,7 tablas y 6 secciones en la conversión original. lo citan 2 papers del corpus actual en su bibliografía.
 2510.13614,MemoTime,Juan David,2,https://arxiv.org/html/2510.13614,"Caso de borde: Marco temporal.
 De qué habla: Propone MemoTime: razonamiento temporal con memoria sobre grafos de conocimiento que cambian en el tiempo.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto.",Sí,Título y resumen,13 tablas y 6 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2511.10523,ConvoMem,Juan David,2,https://arxiv.org/html/2511.10523,"Caso de borde: Contradicción con la necesidad de RAG, marco temporal.
 De qué habla: Presenta ConvoMem, un benchmark de memoria conversacional; argumenta que las primeras 150 conversaciones no necesitan RAG.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (1 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (1 con cifras suyas en tablas).",Sí,Resumen; §Resumen,2 tablas y 5 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2511.13593,O-Mem,Juan David,2,https://arxiv.org/html/2511.13593,"Caso de borde: Vocabulario, marco temporal.
 De qué habla: Propone O-Mem: una memoria con perfil de usuario para personalización; se compara con Zep, MemOS y otros en LoCoMo y más.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (1 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 7 en el texto (1 con cifras suyas en tablas).",Sí,Título y resumen,7 tablas y 8 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2312.06648,Dense X Retrieval,Juan David,2,https://arxiv.org/html/2312.06648,"Caso de borde: Vocabulario distinto, distractor.
 De qué habla: Estudia con qué granularidad recuperar (documento, párrafo, frase) y propone usar «proposiciones» como unidad de recuperación.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 0 en el texto.",Sí,Título y resumen,9 tablas y 11 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2510.01353,MEMTRACK,Juan David,2,https://arxiv.org/html/2510.01353,"Caso de borde: Marco temporal, agregación.
 De qué habla: Presenta MEMTRACK: un benchmark de memoria y seguimiento de estado en entornos de trabajo con varias plataformas.
-Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (1 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 2 papers del corpus actual en su bibliografía y lo mencionan 2 en el texto (1 con cifras suyas en tablas).",Sí,Resumen; §Resumen,7 tablas y 6 secciones en la conversión original. lo citan 2 papers del corpus actual en su bibliografía.
 2511.20857,Evo-Memory,Juan David,2,https://arxiv.org/html/2511.20857,"Caso de borde: Agregación.
 De qué habla: Presenta Evo-Memory: mide si los agentes aprenden de la experiencia con una memoria que evoluciona mientras se les prueba.
-Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto (1 con cifras suyas en tablas).",,,
+Relación con el corpus: lo citan 1 papers del corpus actual en su bibliografía y lo mencionan 1 en el texto (1 con cifras suyas en tablas).",Sí,Título y resumen,6 tablas y 5 secciones en la conversión original. lo citan 1 papers del corpus actual en su bibliografía.
 2507.03724,MemOS (artículo largo),Juan Diego,1,https://arxiv.org/html/2507.03724,"Caso de borde: Distractor por nombre parecido.
 De qué habla: Versión larga de MemOS: la unidad MemCube y la programación de memoria; compara con Mem0, Zep, Memobase y otros en LoCoMo y LongMemEval.
 Relación con el corpus: lo citan 5 papers del corpus actual en su bibliografía y lo mencionan 8 en el texto (4 con cifras suyas en tablas).",Sí,"Resumen/Fig. 1 (MemCube, scheduling); Tabla 3 (LoCoMo) y Tabla 4 (LongMemEval)","Cifras comprobadas: Mem0 64.57 / Zep 59.22 / MemOS-1031 75.80 overall en LoCoMo; single-hop 81.09 / 73.33 / 66.23; LongMemEval Mem0 66.4, Zep 63.8. Descripción verificada en el paper; los conteos de citas/menciones del corpus no se pudieron verificar (no tengo los 100 textos)."

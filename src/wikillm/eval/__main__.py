@@ -299,7 +299,12 @@ def _informe(args: argparse.Namespace) -> int:
 
 
 def _ampliar_banco(args: argparse.Namespace) -> int:
-    from wikillm.eval.ampliacion import CitaNoEncontrada, construir_preguntas, reordenar_banco
+    from wikillm.eval.ampliacion import (
+        CitaNoEncontrada,
+        acordar_por_decision,
+        construir_preguntas,
+        reordenar_banco,
+    )
 
     orden = _orden(args.manifest)
     definiciones = json.loads(Path(args.definiciones).read_text(encoding="utf-8"))
@@ -307,6 +312,8 @@ def _ampliar_banco(args: argparse.Namespace) -> int:
         nuevas = construir_preguntas(
             definiciones, leer_jsonl(Path(args.spans)), Path(args.gold), args.definiciones
         )
+        if args.acordar_por:
+            nuevas = acordar_por_decision(nuevas, decision=args.acordar_por, fecha=args.fecha)
         banco = reordenar_banco([*leer_banco(Path(args.banco)), *nuevas], orden)
     except (CitaNoEncontrada, KeyError) as error:
         print(f"Error: {error}")
@@ -435,6 +442,12 @@ def main() -> int:
     ampliar.add_argument("--spans", required=True)
     ampliar.add_argument("--gold", required=True, help="carpeta con los .md del Gold ampliado")
     ampliar.add_argument("--salida", required=True)
+    ampliar.add_argument(
+        "--acordar-por",
+        metavar="DECISION",
+        help="pasa las preguntas nuevas a «acordado» por una decisión de los autores (p. ej. 0010)",
+    )
+    ampliar.add_argument("--fecha", default="2026-11-16", help="fecha de la decisión")
     entre = ordenes.add_parser("comparar-corridas", help="cada brazo entre dos corridas")
     entre.add_argument("--base", required=True, help="carpeta results/<corrida base>")
     entre.add_argument("--ampliada", required=True, help="carpeta results/<corrida ampliada>")

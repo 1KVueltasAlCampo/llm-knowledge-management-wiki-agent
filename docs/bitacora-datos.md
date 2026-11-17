@@ -543,6 +543,47 @@ calificación (el mismo contenido que las 139 que resolvió); y el wiki no es de
 repetición podría dar otras cifras. El tope de salida del wiki se subió a 32.000 a mitad de la corrida
 (decisión 0007).
 
+## 2026-11-16 (Juan David): tablas escaladas y Gold de 100 papers reconstruido
+
+**Hallazgo.** LaTeXML dibuja una tabla escalada con `\resizebox` como `<span class="ltx_tabular">` y el
+conversor solo leía `<table class="ltx_tabular">`: esas tablas no llegaban al Gold. Al reconvertir el
+Bronze, cambian cuatro papers y los otros 96 salen idénticos byte a byte: Hindsight (`2512.12818`, pasa de
+0 a 4 tablas), BEAM (`2510.27246`, +7), GAM (`2511.18423`, +2) y una tabla de ablación de `2608.12888`.
+
+**Qué se hizo.** `src/wikillm/ingest/markdown.py` reconoce filas y celdas en `<span>` (cambio
+`2026-11-16-tablas-escaladas`, con prueba). El Gold de 100 papers se reconstruyó en `data/corpus100/`
+con la ingesta normal, respetando los 15 s entre peticiones (una caída de conexión afectó a 15
+papers y se reintentó). `spans.jsonl` de los otros 96 papers coincide con el que había.
+Solo cambian los fragmentos de esos cuatro (+14 fragmentos) y los `tokens` de su fila del manifest.
+Las 138 evidencias del banco de 100 resuelven a un fragmento con la misma huella. El Gold de 50 y la
+corrida `oficial-1` no se tocaron: `oficial-1` se hizo con el conversor anterior.
+
+**Banco.** `data/preguntas/banco_100.jsonl` tiene ahora 100 preguntas: las 60 acordadas más 20 de Juan
+Diego y 20 de Juan David (`data/ampliacion/preguntas_borde_40.json`). Estimación del arnés para la
+corrida `ampliado-1` (11 pasos, 2 brazos): 8,28 USD como cota alta (3,00 de ingesta y 5,28 de preguntas).
+
+### 2026-11-16 · tres cargas por fases y wiki reutilizable (Juan David, con Claude)
+
+**Orden.** El manifest de `corpus100` pasa a tener tres fases (33, 33 y 34 papers) con la cronología
+como base y 10 excepciones (`data/corpus100/fases.json`). El arnés pregunta en los pasos 0, 33, 66 y 100.
+Con ese orden se pueden contestar 19, 51 y 84 de las 84 preguntas con respuesta, y 32 de las 34 preguntas con
+varias fuentes las reciben en cargas distintas. Razones y límites en la decisión 0009.
+
+**Banco.** `ampliar-banco` recalculó `ingesta_minima` y los pasos de las T4 con el nuevo orden; el banco
+valida sin problemas y sus 138 evidencias coinciden con el Gold. Estimación: 100 preguntas × 4 pasos × 2
+brazos = 800 respuestas, 4,92 USD de cota alta (3,00 de ingesta y 1,92 de preguntas).
+
+**Wiki reutilizable.** `arnes correr --wiki-de <corrida>` copia el wiki ya construido (sus copias `paso-N`)
+y el brazo `wiki` lo recorre sin ingerir, para probar capas de consulta sin reconstruir el conocimiento.
+
+### 2026-11-17 · dos corridas con el nombre `ampliado-1` (Juan David)
+
+Al fusionar con la rama de Juan Diego aparecieron dos corridas con el mismo nombre. **`ampliado-1`** es la de él
+(11 pasos, 80 preguntas, wiki propio) y conserva su carpeta tal cual. La nuestra (100 preguntas, pasos 33, 66 y 100,
+conocimiento reutilizado de `construccion-1`) pasó a **`results/ampliado-fases-1`**, con el nombre actualizado dentro
+de sus archivos; las carpetas locales `data/wiki` y `data/qdrant` se renombraron igual. Son experimentos distintos y
+no se comparan como una sola corrida.
+
 ## 2026-11-16 — Corrida `ampliado-1` (100 papers, 80 preguntas), preliminar
 
 - Corpus de 100 papers en orden cronológico (ADR 0008), banco de 80 preguntas (60 acordadas y 20

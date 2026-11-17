@@ -97,3 +97,42 @@ def test_slug_de_un_titulo_es_seguro_y_legible():
     assert slug_de("HippoRAG 2: From RAG to Memory") == "hipporag-2-from-rag-to-memory"
     assert slug_de("Recuperación & Memoria") == "recuperacion-memoria"
     assert slug_de("¿¿??") == "pagina"
+
+
+def _wiki_con_tres_pasos(carpeta):
+    wiki = Wiki(carpeta)
+    for paso, arxiv_id in enumerate(["2405.14831", "2502.14802", "2504.19413"], start=1):
+        wiki.escribir(pagina(slug=f"p{paso}", fuentes=[arxiv_id], actualizada_en_paso=paso))
+        wiki.marcar_ingerido(arxiv_id)
+        wiki.regenerar_indice()
+        wiki.guardar_copia(paso, f"ingest {paso}")
+    return wiki
+
+
+def test_un_wiki_clonado_recorre_los_pasos_sin_tocar_el_original(tmp_path):
+    origen = _wiki_con_tres_pasos(tmp_path / "origen")
+    copia = Wiki.clonar_desde(origen.carpeta, tmp_path / "copia")
+    assert copia.slugs() == [] and copia.ingeridos == []
+    copia.situar_en_paso(2)
+    assert copia.slugs() == ["p1", "p2"] and copia.ingeridos == ["2405.14831", "2502.14802"]
+    copia.situar_en_paso(3)
+    assert copia.slugs() == ["p1", "p2", "p3"]
+    copia.situar_en_paso(1)  # también hacia atrás
+    assert copia.slugs() == ["p1"] and copia.paso == 1
+    copia.situar_en_paso(0)
+    assert copia.slugs() == [] and copia.ingeridos == []
+    assert origen.slugs() == ["p1", "p2", "p3"] and origen.paso == 3
+
+
+def test_validar_prestamo_exige_los_mismos_papers_en_el_mismo_orden(tmp_path):
+    from wikillm.wiki.almacen import validar_prestamo
+
+    origen = _wiki_con_tres_pasos(tmp_path / "origen")
+    orden = ["2405.14831", "2502.14802", "2504.19413"]
+    validar_prestamo(origen.carpeta, orden, [0, 2, 3])
+    with pytest.raises(ErrorDeAlmacen, match="otro orden"):
+        validar_prestamo(origen.carpeta, ["2502.14802", "2405.14831", "2504.19413"], [2])
+    with pytest.raises(ErrorDeAlmacen, match="paso-9"):
+        validar_prestamo(origen.carpeta, orden, [9])
+    with pytest.raises(ErrorDeAlmacen, match="no es un wiki versionado"):
+        Wiki.clonar_desde(tmp_path / "no-existe", tmp_path / "x")

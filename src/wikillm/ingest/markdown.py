@@ -38,6 +38,28 @@ def _clases(nodo: Tag) -> set[str]:
     return set(nodo.get("class") or [])
 
 
+def _es_tabla(nodo: Tag) -> bool:
+    return nodo.name == "table" or "ltx_tabular" in _clases(nodo)
+
+
+def _es_fila(nodo: Tag) -> bool:
+    return nodo.name == "tr" or "ltx_tr" in _clases(nodo)
+
+
+def _es_celda(nodo: Tag) -> bool:
+    return nodo.name in ("td", "th") or bool(_clases(nodo) & {"ltx_td", "ltx_th"})
+
+
+def _colspan(celda: Tag) -> int:
+    if celda.get("colspan"):
+        return int(celda["colspan"] or 1)
+    for clase in _clases(celda):
+        encontrado = re.fullmatch(r"ltx_colspan_(\d+)", clase)
+        if encontrado:
+            return int(encontrado.group(1))
+    return 1
+
+
 def _espacios(texto: str) -> str:
     return re.sub(r"\s+", " ", texto)
 
@@ -188,8 +210,9 @@ class _Conversor:
             texto = _espacios(self._hijos(pie)).strip()
             if texto:
                 salida.append(f"**{texto}**" if es_tabla else f"*{texto}*")
-        for tabla in nodo.select("table.ltx_tabular"):
-            if tabla.find_parent("table", class_="ltx_tabular") is None:
+        # LaTeXML dibuja la tabla con <table> o, si se escaló con \resizebox, con <span>.
+        for tabla in nodo.select(".ltx_tabular"):
+            if tabla.find_parent(class_="ltx_tabular") is None:
                 salida.extend(self._tabla(tabla))
         return salida
 
@@ -197,14 +220,14 @@ class _Conversor:
         if "ltx_tabular" not in _clases(nodo):
             return self.bloques(nodo)
         filas: list[list[str]] = []
-        for fila in nodo.find_all("tr"):
-            if fila.find_parent("table") is not nodo:
+        for fila in nodo.find_all(_es_fila):
+            if fila.find_parent(_es_tabla) is not nodo:
                 continue
             celdas: list[str] = []
-            for celda in fila.find_all(["td", "th"], recursive=False):
+            for celda in (h for h in fila.children if isinstance(h, Tag) and _es_celda(h)):
                 texto = _espacios(self._hijos(celda)).strip().replace("|", "\\|")
                 celdas.append(texto)
-                celdas.extend([""] * (int(celda.get("colspan", 1) or 1) - 1))
+                celdas.extend([""] * (_colspan(celda) - 1))
             if any(celdas):
                 filas.append(celdas)
         if not filas:

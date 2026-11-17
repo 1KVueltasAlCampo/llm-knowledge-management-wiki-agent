@@ -78,3 +78,24 @@ def test_cuenta_secciones_y_extrae_referencias_de_arxiv(resultado):
 def test_un_html_que_no_es_de_arxiv_se_rechaza():
     with pytest.raises(ValueError, match="article.ltx_document"):
         html_a_markdown("<html><body><p>hola</p></body></html>")
+
+
+HTML_TABLA_ESCALADA = """<html><body><article class="ltx_document">
+<h1 class="ltx_title ltx_title_document">Paper</h1>
+<section class="ltx_section"><h2 class="ltx_title ltx_title_section">1 Results</h2>
+<figure class="ltx_table"><figcaption>Table 3: Results on LongMemEval.</figcaption>
+<div class="ltx_inline-block ltx_transformed_outer"><span class="ltx_transformed_inner">
+<span class="ltx_tabular ltx_align_middle">
+<span class="ltx_tr"><span class="ltx_td">Type</span><span class="ltx_td">Acc</span></span>
+<span class="ltx_tr"><span class="ltx_td">Full</span><span class="ltx_td">39.0</span></span>
+<span class="ltx_tr"><span class="ltx_td ltx_colspan ltx_colspan_2">Merged</span></span>
+</span></span></div></figure></section></article></body></html>"""
+
+
+def test_tabla_dibujada_con_span_escalado_se_convierte():
+    r = html_a_markdown(HTML_TABLA_ESCALADA)
+    assert r.tablas == 1
+    assert "| Type | Acc |" in r.markdown
+    assert "| Full | 39.0 |" in r.markdown
+    assert "| Merged |  |" in r.markdown
+    assert "**Table 3: Results on LongMemEval.**" in r.markdown

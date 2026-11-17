@@ -45,6 +45,25 @@ def reordenar_banco(banco: list[dict[str, Any]], orden: dict[str, int]) -> list[
     return resultado
 
 
+def acordar_por_decision(
+    preguntas: list[dict[str, Any]], *, decision: str, fecha: str
+) -> list[dict[str, Any]]:
+    """Copia con las preguntas en «acordado» por una decisión de los autores, sin revisión cruzada.
+
+    Es una persona quien decide (la decisión queda en `docs/decisiones/`); el código solo lo anota.
+    El registro deja claro que ninguna otra persona revisó la pregunta.
+    """
+    resultado = copy.deepcopy(preguntas)
+    for p in resultado:
+        p["estado_verificacion"] = "acordado"
+        p.setdefault("revision", {})["acordado"] = {
+            "fecha": fecha,
+            "por_decision": decision,
+            "revision_cruzada": False,
+        }
+    return resultado
+
+
 def _resolver(
     pid: str,
     paper: str,

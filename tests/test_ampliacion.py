@@ -179,3 +179,18 @@ def test_comando_con_cita_inexistente_da_codigo_1_y_no_escribe(
     monkeypatch.setattr(sys, "argv", _armar(tmp_path, malo))
     assert cli.main() == 1
     assert not (tmp_path / "banco_100.jsonl").exists()
+
+
+def test_acordar_por_decision_anota_que_no_hubo_revision_cruzada_y_no_muta_la_entrada():
+    from wikillm.eval.ampliacion import acordar_por_decision
+
+    entrada = [{"id": "X1", "estado_verificacion": "verificado_b", "revision": {"origen": "x"}}]
+    salida = acordar_por_decision(entrada, decision="0010", fecha="2026-11-16")
+    assert salida[0]["estado_verificacion"] == "acordado"
+    assert salida[0]["revision"]["origen"] == "x"
+    assert salida[0]["revision"]["acordado"] == {
+        "fecha": "2026-11-16",
+        "por_decision": "0010",
+        "revision_cruzada": False,
+    }
+    assert entrada[0]["estado_verificacion"] == "verificado_b"

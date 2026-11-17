@@ -185,3 +185,30 @@ def test_la_traza_esta_vacia_antes_de_preguntar_y_describe_la_ultima_pregunta(en
     assert brazo.traza()["acciones"] == 1 and brazo.traza()["busquedas"] == 0
     assert [paso["accion"] for paso in brazo.traza()["detalle"]] == ["read", "answer"]
     assert brazo.ingeridos == [P1]
+
+
+def test_el_brazo_prestado_sigue_el_wiki_construido_y_no_cuesta_ingesta(tmp_path):
+    from wikillm.wiki.almacen import Pagina, Wiki
+    from wikillm.wiki.brazo import BrazoWikiPrestado
+
+    origen = Wiki(tmp_path / "origen")
+    orden = ["2405.14831", "2502.14802"]
+    for paso, arxiv_id in enumerate(orden, start=1):
+        origen.escribir(
+            Pagina(f"p{paso}", "T", "paper", "r", [arxiv_id], paso, f"- dato [{arxiv_id}#s1.p1]")
+        )
+        origen.marcar_ingerido(arxiv_id)
+        origen.regenerar_indice()
+        origen.guardar_copia(paso, f"ingest {paso}")
+    copia = Wiki.clonar_desde(origen.carpeta, tmp_path / "copia")
+    brazo = BrazoWikiPrestado(None, copia)  # type: ignore[arg-type]
+
+    primero = brazo.ingerir("2405.14831")
+    assert primero.usd == 0 and primero.llamadas == 0
+    assert brazo.ingeridos == ["2405.14831"]
+    brazo.ingerir("2502.14802")
+    assert brazo.ingeridos == orden
+    with pytest.raises(ValueError, match="no contiene"):
+        BrazoWikiPrestado(None, Wiki.clonar_desde(origen.carpeta, tmp_path / "otra")).ingerir(
+            "2609.99999"
+        )

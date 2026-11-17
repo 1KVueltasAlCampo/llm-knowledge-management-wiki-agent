@@ -197,3 +197,67 @@ class Wiki:
     def etiquetas(self) -> list[str]:
         salida = self._git("tag", "--list", "paso-*")
         return sorted(salida.splitlines(), key=lambda e: int(e.split("-")[1]))
+
+    # --- reutilizar un wiki ya construido ---------------------------------------------------
+    @classmethod
+    def clonar_desde(cls, origen: Path | str, destino: Path | str) -> Wiki:
+        """Copia del wiki `origen` (con todas sus etiquetas `paso-N`) en `destino`, en el paso 0.
+
+        El origen no se modifica: solo se lee. El destino queda vacío y se avanza con
+        `situar_en_paso`.
+        """
+        origen, destino = Path(origen), Path(destino)
+        if not (origen / ".git").exists():
+            raise ErrorDeAlmacen(f"{origen} no es un wiki versionado (falta .git)")
+        if destino.exists() and any(destino.iterdir()):
+            raise ErrorDeAlmacen(f"{destino} ya existe y no está vacío")
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        resultado = subprocess.run(
+            ["git", "clone", "-q", "--no-checkout", str(origen), str(destino)],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        if resultado.returncode != 0:
+            raise ErrorDeAlmacen(f"git clone {origen}: {resultado.stderr.strip()}")
+        wiki = cls(destino)
+        wiki.situar_en_paso(0)
+        return wiki
+
+    def situar_en_paso(self, paso: int) -> None:
+        """Deja el wiki tal como estaba tras ingerir `paso` papers (0 es el wiki vacío)."""
+        if paso == 0:
+            for ruta in self._paginas.glob("*.md"):
+                ruta.unlink()
+            self._ruta_estado.unlink(missing_ok=True)
+            (self.carpeta / "index.md").write_text(INDICE_VACIO, encoding="utf-8")
+            (self.carpeta / "log.md").write_text(REGISTRO_INICIAL, encoding="utf-8")
+            return
+        self._git("checkout", "-q", "-f", f"paso-{paso}")
+
+    def ingeridos_en_paso(self, paso: int) -> list[str]:
+        """Papers ingeridos cuando se guardó la copia `paso-N` (sin cambiar el wiki)."""
+        if paso == 0:
+            return []
+        texto = self._git("show", f"paso-{paso}:estado.json")
+        return list(json.loads(texto)["ingeridos"])
+
+
+def validar_prestamo(
+    origen: Path | str, orden: list[str] | tuple[str, ...], pasos: list[int]
+) -> None:
+    """Comprueba que el wiki `origen` sirve para esta corrida: misma ingesta en cada paso."""
+    origen = Path(origen)
+    if not (origen / ".git").exists():
+        raise ErrorDeAlmacen(f"No hay un wiki versionado en {origen}")
+    wiki = Wiki(origen)
+    etiquetas = set(wiki.etiquetas())
+    for paso in pasos:
+        if paso and f"paso-{paso}" not in etiquetas:
+            raise ErrorDeAlmacen(f"El wiki {origen} no tiene la copia paso-{paso}")
+        if wiki.ingeridos_en_paso(paso) != list(orden[:paso]):
+            raise ErrorDeAlmacen(
+                f"El wiki {origen} se construyó con otro orden de papers en el paso {paso}: "
+                "usa el mismo manifest con el que se hizo"
+            )

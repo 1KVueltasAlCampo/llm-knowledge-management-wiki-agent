@@ -52,6 +52,8 @@ uv run python -m wikillm.eval ampliar-banco --definiciones ... --manifest ... --
 uv run python -m wikillm.corpus fases --manifest ... --fases data/corpus100/fases.json   # tres cargas del corpus de 100 (0009)
 uv run python -m wikillm.arnes correr --corrida <nueva> --wiki-de <corrida>   # reutiliza el wiki ya construido de otra corrida
 uv run python -m wikillm.arnes correr --corrida <nueva> --brazos rag --k 10   # solo esos brazos (rag, wiki, wiki_grafo)
+uv run python -m wikillm.eval comparar-corridas --base results/<a> --ampliada results/<b> --paso-base N --paso-ampliada M --salida ...   # cada brazo entre dos corridas
+uv run python -m wikillm.corpus metadatos-abs ...    # metadatos desde páginas abs si la API de arXiv falla
 ```
 
 ## Modelos y gasto

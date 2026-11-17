@@ -1334,7 +1334,7 @@ def main() -> int:
     analizador.add_argument(
         "--indice-rag",
         type=Path,
-        default=Path("data/qdrant/ampliado-1"),
+        default=Path("data/qdrant/ampliado-fases-1"),
         help="índice vectorial ya construido (variantes wiki_crudo*)",
     )
     analizador.add_argument(

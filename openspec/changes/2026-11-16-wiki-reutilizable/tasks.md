@@ -6,4 +6,4 @@
 - [x] 1.3 `--wiki-de` en el arnés, con validación previa y estimación sin ingesta. Verificación: `uv run pytest tests/test_arnes_cli.py`.
 
 ## 2. Uso
-- [ ] 2.1 Primera corrida real con `--wiki-de` (capas con grafo) cuando existan `ampliado-1` y las herramientas investigadas.
+- [x] 2.1 Primera corrida real con `--wiki-de`: `ampliado-fases-1` (RAG y wiki) sobre el conocimiento construido en `construccion-1`. La del brazo con grafo sigue pendiente; ver `docs/evaluacion-grafo-100-papers.md`.

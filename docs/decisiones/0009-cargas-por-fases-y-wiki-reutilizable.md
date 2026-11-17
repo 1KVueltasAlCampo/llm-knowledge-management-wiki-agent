@@ -5,7 +5,7 @@ revisión de Juan Diego. **Cambia:** el orden y los pasos de la decisión 0008. 
 
 ## Decisión
 
-1. **Cuatro puntos de consulta, tres cargas.** La corrida `ampliado-1` pregunta en los pasos 0, 33, 66 y
+1. **Cuatro puntos de consulta, tres cargas.** La corrida `ampliado-fases-1` pregunta en los pasos 0, 33, 66 y
    100, y no en 11 pasos. Los pasos de 10 en 10 de la 0008 contienen estos mismos cortes, pero cuestan
    más respuestas sin aportar otra comparación (800 respuestas en vez de 2.200; unos 4,9 USD de cota
    y no 8,3).
@@ -79,8 +79,10 @@ los cortes dejan responder 19 (paso 33), 51 (paso 66) y 84 (paso 100) preguntas.
 
 ```bash
 uv run python -m wikillm.corpus fases --manifest data/corpus100/manifest.jsonl --fases data/corpus100/fases.json
-uv run python -m wikillm.arnes correr --corrida ampliado-1 --pasos 0,33,66,100 --banco data/preguntas/banco_100.jsonl --manifest data/corpus100/manifest.jsonl --gold data/corpus100/gold --spans data/corpus100/gold/spans.jsonl --confirmo-usd 5
-uv run python -m wikillm.arnes correr --corrida grafo-1 --wiki-de ampliado-1 --graphify <graphify> --pasos 0,33,66,100 ...
+uv run python -m wikillm.arnes correr --corrida ampliado-fases-1 --pasos 0,33,66,100 --banco data/preguntas/banco_100.jsonl --manifest data/corpus100/manifest.jsonl --gold data/corpus100/gold --spans data/corpus100/gold/spans.jsonl --confirmo-usd 5
+uv run python -m wikillm.arnes correr --corrida grafo-1 --wiki-de ampliado-fases-1 --graphify <graphify> --pasos 0,33,66,100 ...
 ```
 
-`data/wiki/ampliado-1` es el conocimiento construido: no se borra ni se edita a mano.
+`data/wiki/ampliado-fases-1` es el conocimiento construido: no se borra ni se edita a mano.
+
+**Nota del 17 de noviembre.** El nombre `ampliado-1` ya lo usaba la corrida de 11 pasos de la decisión 0008 (Juan Diego, 80 preguntas), así que esta corrida se guardó como `ampliado-fases-1`. En la práctica el conocimiento se construyó aparte en `data/wiki/construccion-1` (≈ 1,60 USD) y la corrida pregunta en los pasos 33, 66 y 100, sin el paso 0.

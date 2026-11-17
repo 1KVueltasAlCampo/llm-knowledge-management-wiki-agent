@@ -1,6 +1,6 @@
 # Sensibilidad del RAG al `k` y deriva del wiki entre cargas
 
-Dos análisis complementarios del experimento base (corrida `ampliado-1`: 100 papers, 100 preguntas,
+Dos análisis complementarios del experimento base (corrida `ampliado-fases-1`: 100 papers, 100 preguntas,
 pasos 33, 66 y 100, `deepseek-flash`). Se hicieron el 17 de noviembre de 2026. Gasto: ≈ 0,5 USD
 (≈ 0,22 las tres corridas RAG, 0,26 la prueba con texto original y centavos del juez); el análisis de
 deriva no gasta.
@@ -10,7 +10,7 @@ deriva no gasta.
 La corrida oficial usa `k = 5` (decisión 0008). Para ver si «el wiki gana» se debe a un RAG con poco
 contexto, se repitió **solo el brazo RAG** con `k = 10` y `k = 20` (opción nueva `--brazos`, cambio
 OpenSpec `2026-11-17-brazos-seleccionables`), con las mismas preguntas y pasos, y se comparó cada una
-contra el wiki de `ampliado-1` con la comparación pareada del proyecto (`scripts/sensibilidad_rag.py`).
+contra el wiki de `ampliado-fases-1` con la comparación pareada del proyecto (`scripts/sensibilidad_rag.py`).
 Cobertura = fracción de respondibles con veredicto correcto (juez de Gemini solo para lo indeterminado).
 
 | k | Paso | RAG | Wiki | Diferencia (IC 95 %) | Solo RAG | Solo wiki | p (McNemar) |
@@ -87,14 +87,14 @@ asigna cada cifra a un paper solo si la línea cita uno; es una aproximación. E
 
 ## 3. ¿Ayuda dar al wiki acceso al texto original de los papers?
 
-El wiki resume, y una parte de sus fallos son detalles que el resumen perdió. En `ampliado-1`, al paso 100,
+El wiki resume, y una parte de sus fallos son detalles que el resumen perdió. En `ampliado-fases-1`, al paso 100,
 el wiki acierta 59 de 84 respondibles, el RAG con `k = 5` acierta 40 y un enrutador perfecto entre los dos
 acertaría 66: el RAG solo añade 7 preguntas (+8 puntos) sobre el wiki, y el wiki añade 26 sobre el RAG.
 
 Se probó, con `scripts/comparar_herramientas.py`, el wiki en el paso 100 con respaldo en el texto original
-(el índice vectorial de `ampliado-1`, recuperación de 5 o 3 pasajes), sobre **las 100 preguntas** y con la
+(el índice vectorial de `ampliado-fases-1`, recuperación de 5 o 3 pasajes), sobre **las 100 preguntas** y con la
 base en la misma sesión (una repetición; acierto por presencia de claves, no por el juez, así que las
-cifras no son comparables con las del juez de `ampliado-1`):
+cifras no son comparables con las del juez de `ampliado-fases-1`):
 
 | Variante | Respondibles (84) | T5 (16) | Total (100) | Llamadas | Tokens de entrada |
 |---|--:|--:|--:|--:|--:|

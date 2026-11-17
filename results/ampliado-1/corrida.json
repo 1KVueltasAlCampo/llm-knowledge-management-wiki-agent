@@ -1,8 +1,8 @@
 {
   "corrida": "ampliado-1",
-  "inicio": "2026-11-16T21:49:12Z",
-  "commit": "97ef896df888649e756520fd76558790e6aef0ee",
-  "arbol_con_cambios": false,
+  "inicio": "2026-11-16T05:15:14Z",
+  "commit": "947dfc47577b8422ab4b128ce99e80c4634c0a21",
+  "arbol_con_cambios": true,
   "modelo": "deepseek-flash",
   "temperatura": 0.0,
   "razonamiento": "disabled",
@@ -11,10 +11,18 @@
     "entrada_con_cache": 0.003,
     "salida": 0.6
   },
-  "max_usd_por_run": 5.0,
+  "max_usd_por_run": 9.0,
   "pasos": [
-    33,
-    66,
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
     100
   ],
   "brazos": {
@@ -23,14 +31,13 @@
       "base_vectorial": "qdrant"
     },
     "wiki": {
-      "max_acciones": 8,
-      "reutiliza_wiki_de": "construccion-1"
+      "max_acciones": 8
     }
   },
   "banco": {
-    "ruta": "data\\preguntas\\banco_100.jsonl",
-    "sha256": "4e867e2801c2ebb12870041e4ba6250b01dc131a28d2f126e72d3f63810bfdf0",
-    "estado_minimo": "acordado",
+    "ruta": "data/preguntas/banco_100.jsonl",
+    "sha256": "f087d6bb78020046ac0f5e18e3b4c9b0a21d1ef6263eff45e4dff3faf14fa59e",
+    "estado_minimo": "verificado_a",
     "preguntas": [
       "A001-T1-01",
       "A002-T1-01",
@@ -92,26 +99,6 @@
       "BT5-T5-07",
       "BT5-T5-08",
       "BT5-T5-12",
-      "JD-01",
-      "JD-02",
-      "JD-06",
-      "JD-08",
-      "JD-09",
-      "JD-10",
-      "JD-13",
-      "JD-15",
-      "JD-17",
-      "JD-19",
-      "JD-22",
-      "JD-23",
-      "JD-25",
-      "JD-27",
-      "JD-29",
-      "JD-31",
-      "JD-33",
-      "JD-35",
-      "JD-37",
-      "JD-39",
       "JDi-01",
       "JDi-02",
       "JDi-05",
@@ -134,19 +121,16 @@
       "JDi-39"
     ],
     "por_estado": {
-      "acordado": 100
+      "acordado": 60,
+      "verificado_a": 20
     }
   },
-  "valida_para_informe": true,
-  "estimacion_usd": 1.44,
+  "valida_para_informe": false,
+  "estimacion_usd": 7.224,
   "reanudaciones": [
-    "2026-11-16T21:52:39Z",
-    "2026-11-16T22:08:28Z",
-    "2026-11-16T22:10:31Z",
-    "2026-11-16T22:12:36Z",
-    "2026-11-16T22:14:39Z",
-    "2026-11-16T22:19:14Z"
+    "2026-11-16T05:19:47Z",
+    "2026-11-16T06:40:19Z"
   ],
-  "fin": "2026-11-16T22:52:59Z",
-  "gasto_usd": 0.357919
+  "fin": "2026-11-16T09:11:55Z",
+  "gasto_usd": 4.520643
 }

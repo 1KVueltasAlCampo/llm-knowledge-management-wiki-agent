@@ -1,9 +1,10 @@
 """Sensibilidad del RAG al número de fragmentos (k) frente al wiki de la corrida base.
 
-Une las respuestas del RAG de cada corrida `--brazos rag --k K` con las del wiki de `ampliado-1`
+Une las respuestas del RAG de cada corrida `--brazos rag --k K` con las del wiki de
+`ampliado-fases-1`
 (mismas preguntas y pasos) y calcula, con la comparación pareada del proyecto, si el wiki sigue
 ganando. Uso:
-  python scripts/sensibilidad_rag.py ampliado-1:5 ampliado-rag-k10:10 ampliado-rag-k20:20
+  python scripts/sensibilidad_rag.py ampliado-fases-1:5 ampliado-rag-k10:10 ampliado-rag-k20:20
 """
 
 from __future__ import annotations
@@ -22,11 +23,11 @@ def leer(corrida: str) -> list[dict]:
 
 def main() -> None:
     corridas = [a.split(":") for a in sys.argv[1:]] or [
-        ["ampliado-1", "5"],
+        ["ampliado-fases-1", "5"],
         ["ampliado-rag-k10", "10"],
         ["ampliado-rag-k20", "20"],
     ]
-    wiki = [e for e in leer("ampliado-1") if e["system"] == "wiki"]
+    wiki = [e for e in leer("ampliado-fases-1") if e["system"] == "wiki"]
     print(
         f"{'k':>3} {'paso':>5} {'RAG':>6} {'wiki':>6} {'dif.':>7} {'IC95':>17} "
         f"{'solo RAG':>9} {'solo wiki':>10} {'p':>7}"

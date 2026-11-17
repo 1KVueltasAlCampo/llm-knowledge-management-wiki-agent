@@ -7,27 +7,51 @@
 <line x1="64" y1="304.0" x2="616" y2="304.0" stroke="#dddddd"/>
 <text x="58" y="308.0" text-anchor="end">0</text>
 <line x1="64" y1="238.0" x2="616" y2="238.0" stroke="#dddddd"/>
-<text x="58" y="242.0" text-anchor="end">0.0757</text>
+<text x="58" y="242.0" text-anchor="end">0.369</text>
 <line x1="64" y1="172.0" x2="616" y2="172.0" stroke="#dddddd"/>
-<text x="58" y="176.0" text-anchor="end">0.151</text>
+<text x="58" y="176.0" text-anchor="end">0.739</text>
 <line x1="64" y1="106.0" x2="616" y2="106.0" stroke="#dddddd"/>
-<text x="58" y="110.0" text-anchor="end">0.227</text>
+<text x="58" y="110.0" text-anchor="end">1.11</text>
 <line x1="64" y1="40.0" x2="616" y2="40.0" stroke="#dddddd"/>
-<text x="58" y="44.0" text-anchor="end">0.303</text>
-<text x="64.0" y="320" text-anchor="middle">33</text>
-<text x="335.9" y="320" text-anchor="middle">66</text>
+<text x="58" y="44.0" text-anchor="end">1.48</text>
+<text x="64.0" y="320" text-anchor="middle">0</text>
+<text x="119.2" y="320" text-anchor="middle">10</text>
+<text x="174.4" y="320" text-anchor="middle">20</text>
+<text x="229.6" y="320" text-anchor="middle">30</text>
+<text x="284.8" y="320" text-anchor="middle">40</text>
+<text x="340.0" y="320" text-anchor="middle">50</text>
+<text x="395.2" y="320" text-anchor="middle">60</text>
+<text x="450.4" y="320" text-anchor="middle">70</text>
+<text x="505.6" y="320" text-anchor="middle">80</text>
+<text x="560.8" y="320" text-anchor="middle">90</text>
 <text x="616.0" y="320" text-anchor="middle">100</text>
 <text x="340.0" y="338" text-anchor="middle">Paso de ingesta (papers ingeridos)</text>
 <text x="16" y="172.0" text-anchor="middle" transform="rotate(-90 16 172.0)">USD acumulados</text>
-<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,284.3 335.9,267.6 616.0,255.8"/>
-<circle cx="64.0" cy="284.3" r="3" fill="#1f77b4"/>
-<circle cx="335.9" cy="267.6" r="3" fill="#1f77b4"/>
-<circle cx="616.0" cy="255.8" r="3" fill="#1f77b4"/>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2" points="64.0,303.6 119.2,300.5 174.4,297.5 229.6,293.6 284.8,289.6 340.0,286.6 395.2,284.2 450.4,282.2 505.6,280.3 560.8,278.3 616.0,275.9"/>
+<circle cx="64.0" cy="303.6" r="3" fill="#1f77b4"/>
+<circle cx="119.2" cy="300.5" r="3" fill="#1f77b4"/>
+<circle cx="174.4" cy="297.5" r="3" fill="#1f77b4"/>
+<circle cx="229.6" cy="293.6" r="3" fill="#1f77b4"/>
+<circle cx="284.8" cy="289.6" r="3" fill="#1f77b4"/>
+<circle cx="340.0" cy="286.6" r="3" fill="#1f77b4"/>
+<circle cx="395.2" cy="284.2" r="3" fill="#1f77b4"/>
+<circle cx="450.4" cy="282.2" r="3" fill="#1f77b4"/>
+<circle cx="505.6" cy="280.3" r="3" fill="#1f77b4"/>
+<circle cx="560.8" cy="278.3" r="3" fill="#1f77b4"/>
+<circle cx="616.0" cy="275.9" r="3" fill="#1f77b4"/>
 <rect x="76" y="46" width="12" height="12" fill="#1f77b4"/>
 <text x="94" y="56">rag</text>
-<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,214.1 335.9,123.9 616.0,40.0"/>
-<circle cx="64.0" cy="214.1" r="3" fill="#d62728"/>
-<circle cx="335.9" cy="123.9" r="3" fill="#d62728"/>
+<polyline fill="none" stroke="#d62728" stroke-width="2" points="64.0,303.6 119.2,291.4 174.4,274.3 229.6,242.6 284.8,209.9 340.0,176.9 395.2,146.9 450.4,120.3 505.6,94.0 560.8,69.1 616.0,40.0"/>
+<circle cx="64.0" cy="303.6" r="3" fill="#d62728"/>
+<circle cx="119.2" cy="291.4" r="3" fill="#d62728"/>
+<circle cx="174.4" cy="274.3" r="3" fill="#d62728"/>
+<circle cx="229.6" cy="242.6" r="3" fill="#d62728"/>
+<circle cx="284.8" cy="209.9" r="3" fill="#d62728"/>
+<circle cx="340.0" cy="176.9" r="3" fill="#d62728"/>
+<circle cx="395.2" cy="146.9" r="3" fill="#d62728"/>
+<circle cx="450.4" cy="120.3" r="3" fill="#d62728"/>
+<circle cx="505.6" cy="94.0" r="3" fill="#d62728"/>
+<circle cx="560.8" cy="69.1" r="3" fill="#d62728"/>
 <circle cx="616.0" cy="40.0" r="3" fill="#d62728"/>
 <rect x="166" y="46" width="12" height="12" fill="#d62728"/>
 <text x="184" y="56">wiki</text>

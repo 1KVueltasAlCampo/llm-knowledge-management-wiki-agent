@@ -1,0 +1,727 @@
+{
+ "por_paso": [
+  {
+   "paso": 2,
+   "paginas": 9,
+   "nuevas": 4,
+   "modificadas": 2,
+   "lineas_perdidas": 0.025
+  },
+  {
+   "paso": 3,
+   "paginas": 13,
+   "nuevas": 4,
+   "modificadas": 2,
+   "lineas_perdidas": 0.0375
+  },
+  {
+   "paso": 4,
+   "paginas": 16,
+   "nuevas": 3,
+   "modificadas": 4,
+   "lineas_perdidas": 0.05785123966942149
+  },
+  {
+   "paso": 5,
+   "paginas": 19,
+   "nuevas": 3,
+   "modificadas": 5,
+   "lineas_perdidas": 0.16363636363636364
+  },
+  {
+   "paso": 6,
+   "paginas": 23,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.20657276995305165
+  },
+  {
+   "paso": 7,
+   "paginas": 25,
+   "nuevas": 2,
+   "modificadas": 4,
+   "lineas_perdidas": 0.011450381679389313
+  },
+  {
+   "paso": 8,
+   "paginas": 30,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.01384083044982699
+  },
+  {
+   "paso": 9,
+   "paginas": 33,
+   "nuevas": 3,
+   "modificadas": 6,
+   "lineas_perdidas": 0.043227665706051875
+  },
+  {
+   "paso": 10,
+   "paginas": 36,
+   "nuevas": 3,
+   "modificadas": 5,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 11,
+   "paginas": 40,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.05581395348837209
+  },
+  {
+   "paso": 12,
+   "paginas": 44,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.004201680672268907
+  },
+  {
+   "paso": 13,
+   "paginas": 49,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.013232514177693762
+  },
+  {
+   "paso": 14,
+   "paginas": 52,
+   "nuevas": 3,
+   "modificadas": 5,
+   "lineas_perdidas": 0.011784511784511785
+  },
+  {
+   "paso": 15,
+   "paginas": 56,
+   "nuevas": 4,
+   "modificadas": 4,
+   "lineas_perdidas": 0.006259780907668232
+  },
+  {
+   "paso": 16,
+   "paginas": 60,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.004392386530014641
+  },
+  {
+   "paso": 17,
+   "paginas": 64,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.04435483870967742
+  },
+  {
+   "paso": 18,
+   "paginas": 68,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0075
+  },
+  {
+   "paso": 19,
+   "paginas": 73,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.008284023668639054
+  },
+  {
+   "paso": 20,
+   "paginas": 76,
+   "nuevas": 3,
+   "modificadas": 6,
+   "lineas_perdidas": 0.006493506493506494
+  },
+  {
+   "paso": 21,
+   "paginas": 81,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.011351909184726523
+  },
+  {
+   "paso": 22,
+   "paginas": 85,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.018536585365853658
+  },
+  {
+   "paso": 23,
+   "paginas": 89,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.008356545961002786
+  },
+  {
+   "paso": 24,
+   "paginas": 92,
+   "nuevas": 3,
+   "modificadas": 4,
+   "lineas_perdidas": 0.01873327386262266
+  },
+  {
+   "paso": 25,
+   "paginas": 97,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.03732638888888889
+  },
+  {
+   "paso": 26,
+   "paginas": 102,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.007401315789473684
+  },
+  {
+   "paso": 27,
+   "paginas": 107,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.018838304552590265
+  },
+  {
+   "paso": 28,
+   "paginas": 111,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0067618332081141996
+  },
+  {
+   "paso": 29,
+   "paginas": 116,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.009406657018813314
+  },
+  {
+   "paso": 30,
+   "paginas": 120,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.005544005544005544
+  },
+  {
+   "paso": 31,
+   "paginas": 125,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.016150740242261104
+  },
+  {
+   "paso": 32,
+   "paginas": 129,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.001941747572815534
+  },
+  {
+   "paso": 33,
+   "paginas": 134,
+   "nuevas": 5,
+   "modificadas": 5,
+   "lineas_perdidas": 0.0018796992481203006
+  },
+  {
+   "paso": 34,
+   "paginas": 139,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0030284675953967293
+  },
+  {
+   "paso": 35,
+   "paginas": 144,
+   "nuevas": 5,
+   "modificadas": 5,
+   "lineas_perdidas": 0.002880184331797235
+  },
+  {
+   "paso": 36,
+   "paginas": 149,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.007825600894354388
+  },
+  {
+   "paso": 37,
+   "paginas": 154,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0032485110990795887
+  },
+  {
+   "paso": 38,
+   "paginas": 159,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0005175983436853002
+  },
+  {
+   "paso": 39,
+   "paginas": 164,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0024826216484607746
+  },
+  {
+   "paso": 40,
+   "paginas": 169,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0004816955684007707
+  },
+  {
+   "paso": 41,
+   "paginas": 174,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 42,
+   "paginas": 179,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0004478280340349306
+  },
+  {
+   "paso": 43,
+   "paginas": 183,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.005642361111111111
+  },
+  {
+   "paso": 44,
+   "paginas": 188,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.024203821656050957
+  },
+  {
+   "paso": 45,
+   "paginas": 192,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0012417218543046358
+  },
+  {
+   "paso": 46,
+   "paginas": 196,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.001219016659894352
+  },
+  {
+   "paso": 47,
+   "paginas": 201,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 48,
+   "paginas": 206,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 49,
+   "paginas": 211,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.008666164280331574
+  },
+  {
+   "paso": 50,
+   "paginas": 215,
+   "nuevas": 4,
+   "modificadas": 5,
+   "lineas_perdidas": 0.0007363770250368188
+  },
+  {
+   "paso": 51,
+   "paginas": 220,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.009038322487346349
+  },
+  {
+   "paso": 52,
+   "paginas": 225,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0007079646017699115
+  },
+  {
+   "paso": 53,
+   "paginas": 230,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.020436439210252857
+  },
+  {
+   "paso": 54,
+   "paginas": 235,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 55,
+   "paginas": 240,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0016545334215751159
+  },
+  {
+   "paso": 56,
+   "paginas": 244,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.018812844631852094
+  },
+  {
+   "paso": 57,
+   "paginas": 249,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.001601024655779699
+  },
+  {
+   "paso": 58,
+   "paginas": 254,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.012800499531689042
+  },
+  {
+   "paso": 59,
+   "paginas": 259,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0009177118384827164
+  },
+  {
+   "paso": 60,
+   "paginas": 264,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 61,
+   "paginas": 269,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0029154518950437317
+  },
+  {
+   "paso": 62,
+   "paginas": 274,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.006588370094528788
+  },
+  {
+   "paso": 63,
+   "paginas": 279,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0013966480446927375
+  },
+  {
+   "paso": 64,
+   "paginas": 284,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0030170049369171695
+  },
+  {
+   "paso": 65,
+   "paginas": 289,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0045662100456621
+  },
+  {
+   "paso": 66,
+   "paginas": 294,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 67,
+   "paginas": 299,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0005196154845414394
+  },
+  {
+   "paso": 68,
+   "paginas": 304,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0010264305876315114
+  },
+  {
+   "paso": 69,
+   "paginas": 309,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.004019090680733484
+  },
+  {
+   "paso": 70,
+   "paginas": 313,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 71,
+   "paginas": 318,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.00048355899419729207
+  },
+  {
+   "paso": 72,
+   "paginas": 323,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0030886196246139226
+  },
+  {
+   "paso": 73,
+   "paginas": 328,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.00023424689622862497
+  },
+  {
+   "paso": 74,
+   "paginas": 333,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0006931608133086876
+  },
+  {
+   "paso": 75,
+   "paginas": 338,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.00022727272727272727
+  },
+  {
+   "paso": 76,
+   "paginas": 343,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0013395847287340924
+  },
+  {
+   "paso": 77,
+   "paginas": 348,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0015381234893430016
+  },
+  {
+   "paso": 78,
+   "paginas": 353,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.004559270516717325
+  },
+  {
+   "paso": 79,
+   "paginas": 358,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.002142704092564817
+  },
+  {
+   "paso": 80,
+   "paginas": 363,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 81,
+   "paginas": 368,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.00394272670678564
+  },
+  {
+   "paso": 82,
+   "paginas": 373,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0016349887594522788
+  },
+  {
+   "paso": 83,
+   "paginas": 378,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0006041079339508659
+  },
+  {
+   "paso": 84,
+   "paginas": 383,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0005964214711729623
+  },
+  {
+   "paso": 85,
+   "paginas": 388,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.008818342151675485
+  },
+  {
+   "paso": 86,
+   "paginas": 392,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 87,
+   "paginas": 397,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 88,
+   "paginas": 402,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0009391435011269722
+  },
+  {
+   "paso": 89,
+   "paginas": 407,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.000371540033438603
+  },
+  {
+   "paso": 90,
+   "paginas": 412,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.000366905155017428
+  },
+  {
+   "paso": 91,
+   "paginas": 417,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 92,
+   "paginas": 422,
+   "nuevas": 5,
+   "modificadas": 5,
+   "lineas_perdidas": 0.004091070793311989
+  },
+  {
+   "paso": 93,
+   "paginas": 427,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.007561104272903112
+  },
+  {
+   "paso": 94,
+   "paginas": 432,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0006962576153176675
+  },
+  {
+   "paso": 95,
+   "paginas": 436,
+   "nuevas": 4,
+   "modificadas": 6,
+   "lineas_perdidas": 0.00807698917339749
+  },
+  {
+   "paso": 96,
+   "paginas": 441,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0
+  },
+  {
+   "paso": 97,
+   "paginas": 446,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.001009421265141319
+  },
+  {
+   "paso": 98,
+   "paginas": 451,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.012140362547813071
+  },
+  {
+   "paso": 99,
+   "paginas": 456,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.0004965243296921549
+  },
+  {
+   "paso": 100,
+   "paginas": 461,
+   "nuevas": 5,
+   "modificadas": 6,
+   "lineas_perdidas": 0.007699868938401048
+  }
+ ],
+ "supervivencia_lineas": {
+  "33->66": 0.8746214415505754,
+  "33->100": 0.8588734100545125,
+  "66->100": 0.9457001818654196
+ },
+ "retencion_cifras": {
+  "papers 1-33 en corte 66": 0.9730483271375465,
+  "papers 1-33 en corte 100": 0.9693308550185874,
+  "papers 34-66 en corte 100": 0.9930340557275542
+ },
+ "banco": {
+  "33->66": {
+   "presentes": 12,
+   "siguen": 12,
+   "perdidas": [],
+   "aparecen": 1
+  },
+  "33->100": {
+   "presentes": 12,
+   "siguen": 12,
+   "perdidas": [],
+   "aparecen": 1
+  },
+  "66->100": {
+   "presentes": 41,
+   "siguen": 41,
+   "perdidas": [],
+   "aparecen": 0
+  }
+ }
+}

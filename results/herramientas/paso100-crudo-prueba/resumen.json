@@ -1,0 +1,24 @@
+[
+ {
+  "variante": "wiki_crudo_herramienta",
+  "n": 2,
+  "correctas": 1,
+  "llamadas": 4.0,
+  "tokens_entrada": 12168,
+  "tokens_contexto": 4410,
+  "tokens_salida": 190,
+  "usd": 0.000989,
+  "segundos": 5.8
+ },
+ {
+  "variante": "wiki_crudo_precarga",
+  "n": 2,
+  "correctas": 1,
+  "llamadas": 3.0,
+  "tokens_entrada": 6002,
+  "tokens_contexto": 2773,
+  "tokens_salida": 134,
+  "usd": 0.000567,
+  "segundos": 4.3
+ }
+]

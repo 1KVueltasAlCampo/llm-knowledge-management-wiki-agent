@@ -1,0 +1,4 @@
+system,ingest_step,n,n_respondibles,cobertura,indeterminadas,abstencion_correcta,n_t4_actualizadas,obsoletas,tasa_obsoleta,fundamentacion_media,context_tokens_media,context_tokens_mediana,tokens_por_correcta,costo_usd_total
+rag,33,100,19,0.631578947368421,0,0.9012345679012346,0,0,,1.0,2486.64,2441.0,20722.0,0.024711858
+rag,66,100,51,0.47058823529411764,0,0.8775510204081632,2,0,0.0,1.0,2585.45,2569.5,10772.708333333334,0.023515575
+rag,100,100,84,0.5476190476190477,0,1.0,4,0,0.0,1.0,2524.68,2504.0,5488.434782608696,0.019621187999999998

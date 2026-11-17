@@ -1,0 +1,24 @@
+[
+ {
+  "variante": "actual",
+  "n": 63,
+  "correctas": 51,
+  "llamadas": 4.73,
+  "tokens_entrada": 11713,
+  "tokens_contexto": 4663,
+  "tokens_salida": 165,
+  "usd": 0.00057,
+  "segundos": 7.6
+ },
+ {
+  "variante": "pipe_paginas",
+  "n": 63,
+  "correctas": 53,
+  "llamadas": 2.02,
+  "tokens_entrada": 16336,
+  "tokens_contexto": 5915,
+  "tokens_salida": 113,
+  "usd": 0.000969,
+  "segundos": 3.6
+ }
+]

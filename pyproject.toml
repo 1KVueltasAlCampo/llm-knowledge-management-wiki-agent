@@ -40,6 +40,10 @@ src = ["src", "tests"]
 # E/W: estilo, F: errores, I: orden de imports, UP: sintaxis moderna, B: errores comunes
 select = ["E", "W", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+# Scripts de análisis de una sola vez (docs/evaluacion-grafo-100-papers.md): no son código del producto.
+"scripts/exploracion_grafo/*" = ["E501", "B023", "E741", "B007", "F841", "B905"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

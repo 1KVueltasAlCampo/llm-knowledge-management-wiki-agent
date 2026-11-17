@@ -1,0 +1,13 @@
+[
+ {
+  "variante": "produccion",
+  "n": 42,
+  "correctas": 26,
+  "llamadas": 4.74,
+  "tokens_entrada": 10048,
+  "tokens_contexto": 3532,
+  "tokens_salida": 191,
+  "usd": 0.000408,
+  "segundos": 10.1
+ }
+]

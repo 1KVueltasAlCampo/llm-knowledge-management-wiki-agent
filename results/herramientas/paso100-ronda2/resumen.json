@@ -1,0 +1,68 @@
+[
+ {
+  "variante": "actual",
+  "n": 42,
+  "correctas": 25,
+  "llamadas": 4.5,
+  "tokens_entrada": 12334,
+  "tokens_contexto": 5261,
+  "tokens_salida": 212,
+  "usd": 0.000668,
+  "segundos": 7.0
+ },
+ {
+  "variante": "graphify",
+  "n": 42,
+  "correctas": 23,
+  "llamadas": 4.86,
+  "tokens_entrada": 13143,
+  "tokens_contexto": 3764,
+  "tokens_salida": 188,
+  "usd": 0.000735,
+  "segundos": 8.4
+ },
+ {
+  "variante": "g_busqueda",
+  "n": 42,
+  "correctas": 25,
+  "llamadas": 4.74,
+  "tokens_entrada": 10462,
+  "tokens_contexto": 3473,
+  "tokens_salida": 190,
+  "usd": 0.000642,
+  "segundos": 7.3
+ },
+ {
+  "variante": "g_sin_indice",
+  "n": 42,
+  "correctas": 24,
+  "llamadas": 4.93,
+  "tokens_entrada": 12856,
+  "tokens_contexto": 3572,
+  "tokens_salida": 184,
+  "usd": 0.000687,
+  "segundos": 8.6
+ },
+ {
+  "variante": "g_rico",
+  "n": 42,
+  "correctas": 20,
+  "llamadas": 5.5,
+  "tokens_entrada": 9809,
+  "tokens_contexto": 2874,
+  "tokens_salida": 200,
+  "usd": 0.000631,
+  "segundos": 9.8
+ },
+ {
+  "variante": "g_rico_busqueda",
+  "n": 42,
+  "correctas": 24,
+  "llamadas": 5.05,
+  "tokens_entrada": 10847,
+  "tokens_contexto": 3598,
+  "tokens_salida": 203,
+  "usd": 0.000675,
+  "segundos": 7.8
+ }
+]

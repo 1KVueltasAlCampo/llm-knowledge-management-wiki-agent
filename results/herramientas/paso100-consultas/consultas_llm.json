@@ -1,0 +1,1567 @@
+{
+ "A001-T1-01": {
+  "entities": [
+   "HippoRAG",
+   "tau"
+  ],
+  "keywords": [
+   "synonymy threshold",
+   "default value",
+   "hyperparameter"
+  ],
+  "queries": [
+   "HippoRAG synonymy threshold tau default",
+   "HippoRAG default hyperparameters",
+   "synonymy threshold tau value"
+  ]
+ },
+ "A002-T1-01": {
+  "entities": [
+   "systematic literature review",
+   "survey"
+  ],
+  "keywords": [
+   "key articles",
+   "selected articles",
+   "publication period",
+   "inclusion criteria",
+   "literature collection"
+  ],
+  "queries": [
+   "key articles selected systematic literature review",
+   "survey article selection publication period",
+   "systematic literature collection final selection"
+  ]
+ },
+ "A002-T1-02": {
+  "entities": [
+   "Memory-R1",
+   "memory manager agent"
+  ],
+  "keywords": [
+   "discrete editing actions",
+   "memory operations",
+   "memory editing",
+   "agent actions"
+  ],
+  "queries": [
+   "Memory-R1 memory manager editing actions",
+   "Memory-R1 four discrete memory operations",
+   "Memory-R1 memory manager agent actions"
+  ]
+ },
+ "A003-T2-01": {
+  "entities": [
+   "HippoRAG",
+   "knowledge graphs",
+   "agent memory",
+   "survey"
+  ],
+  "keywords": [
+   "memory systems",
+   "graph algorithm",
+   "conceptualization",
+   "role of knowledge graphs"
+  ],
+  "queries": [
+   "HippoRAG knowledge graph memory algorithm",
+   "survey agent memory knowledge graphs",
+   "HippoRAG graph algorithm memory"
+  ]
+ },
+ "A003-T3-02": {
+  "entities": [
+   "2WikiMultiHopQA",
+   "HippoRAG",
+   "ColBERTv2",
+   "Recall@5"
+  ],
+  "keywords": [
+   "multi-hop retrieval",
+   "single-step retrieval baseline",
+   "percentage points",
+   "static benchmark",
+   "context-limited benchmark",
+   "limitation",
+   "survey"
+  ],
+  "queries": [
+   "HippoRAG 2WikiMultiHopQA Recall@5 ColBERTv2",
+   "HippoRAG multi-hop retrieval improvement percentage points",
+   "static context-limited benchmark limitation survey"
+  ]
+ },
+ "A004-T1-01": {
+  "entities": [
+   "SSGM",
+   "append-only memory structure",
+   "reversible reconciliation"
+  ],
+  "keywords": [
+   "operational source of truth",
+   "memory structure",
+   "framework"
+  ],
+  "queries": [
+   "SSGM append-only memory structure",
+   "SSGM reversible reconciliation source of truth",
+   "SSGM framework memory structure name"
+  ]
+ },
+ "A006-T1-02": {
+  "entities": [
+   "NornicDB",
+   "three-tier cognitive decay model",
+   "semantic memories",
+   "half-life"
+  ],
+  "keywords": [
+   "cognitive decay",
+   "memory half-life",
+   "semantic memory",
+   "retention",
+   "tier"
+  ],
+  "queries": [
+   "NornicDB three-tier cognitive decay model",
+   "semantic memory half-life NornicDB",
+   "NornicDB cognitive decay half-life"
+  ]
+ },
+ "A008-T2-01": {
+  "entities": [
+   "CUPMem"
+  ],
+  "keywords": [
+   "older memories",
+   "new evidence",
+   "memory update",
+   "conflict resolution",
+   "memory management"
+  ],
+  "queries": [
+   "CUPMem older memories new evidence",
+   "CUPMem memory update conflict",
+   "CUPMem handling outdated memories"
+  ]
+ },
+ "A016-T2-01": {
+  "entities": [
+   "HippoRAG 2",
+   "LLM-Wiki"
+  ],
+  "keywords": [
+   "knowledge retrieval",
+   "structural artifact",
+   "knowledge graph",
+   "wiki pages",
+   "retrieval interface",
+   "exposure of knowledge"
+  ],
+  "queries": [
+   "HippoRAG 2 knowledge graph retrieval",
+   "LLM-Wiki structural artifact retrieval",
+   "HippoRAG 2 vs LLM-Wiki knowledge exposure"
+  ]
+ },
+ "A016-T3-02": {
+  "entities": [
+   "LLM-Wiki",
+   "HippoRAG 2",
+   "MuSiQue",
+   "F1"
+  ],
+  "keywords": [
+   "main results",
+   "higher F1",
+   "F1 points",
+   "comparison"
+  ],
+  "queries": [
+   "LLM-Wiki HippoRAG 2 MuSiQue F1",
+   "MuSiQue F1 comparison LLM-Wiki",
+   "LLM-Wiki main results MuSiQue"
+  ]
+ },
+ "A017-T1-01": {
+  "entities": [
+   "AUROC",
+   "finance test set",
+   "abnormal stock volatility",
+   "classification head"
+  ],
+  "keywords": [
+   "held-out test set",
+   "stock volatility prediction",
+   "classification performance",
+   "financial forecasting"
+  ],
+  "queries": [
+   "AUROC finance test set stock volatility",
+   "classification head abnormal stock volatility",
+   "predicting abnormal stock volatility AUROC"
+  ]
+ },
+ "A018-T3-02": {
+  "entities": [
+   "Streaming Knowledge Compilation",
+   "post-training facts",
+   "compiled knowledge systems"
+  ],
+  "keywords": [
+   "evaluation approach",
+   "confounded",
+   "metric",
+   "knowledge compilation",
+   "post-training knowledge"
+  ],
+  "queries": [
+   "Streaming Knowledge Compilation evaluation confounded post-training facts",
+   "Streaming Knowledge Compilation proposed metric compiled knowledge",
+   "knowledge compilation post-training facts evaluation metric"
+  ]
+ },
+ "A018-T4-03": {
+  "entities": [
+   "WiCER",
+   "Online WiCER",
+   "17 topics",
+   "173 matched finance pairs"
+  ],
+  "keywords": [
+   "blind compilation",
+   "quality recovery",
+   "cumulative regret",
+   "average",
+   "share"
+  ],
+  "queries": [
+   "WiCER blind compilation quality recovery",
+   "Online WiCER cumulative regret finance pairs",
+   "WiCER 17 topics average quality"
+  ]
+ },
+ "A019-T1-01": {
+  "entities": [
+   "356"
+  ],
+  "keywords": [
+   "preliminary study",
+   "repositories",
+   "stale code element reference",
+   "analyzed"
+  ],
+  "queries": [
+   "preliminary study stale code references",
+   "repositories with stale code elements",
+   "356 repositories stale references"
+  ]
+ },
+ "A025-T2-01": {
+  "entities": [
+   "HippoRAG 2",
+   "WikiLoop"
+  ],
+  "keywords": [
+   "downstream feedback",
+   "structured knowledge bases",
+   "knowledge base improvement",
+   "retrieval-augmented generation",
+   "feedback loop"
+  ],
+  "queries": [
+   "HippoRAG 2 downstream feedback knowledge base",
+   "WikiLoop downstream feedback structured knowledge",
+   "HippoRAG 2 WikiLoop knowledge base improvement"
+  ]
+ },
+ "A026-T3-02": {
+  "entities": [
+   "AuthTrace",
+   "All AC",
+   "WikiLoop",
+   "LLM-Wiki base"
+  ],
+  "keywords": [
+   "higher",
+   "points",
+   "difference",
+   "comparison"
+  ],
+  "queries": [
+   "AuthTrace All AC WikiLoop LLM-Wiki",
+   "AuthTrace benchmark results All AC",
+   "WikiLoop LLM-Wiki base All AC comparison"
+  ]
+ },
+ "A027-T1-01": {
+  "entities": [
+   "LoCoMo",
+   "ChronoMem",
+   "Recall@1"
+  ],
+  "keywords": [
+   "semantic version selection",
+   "memory",
+   "retrieval",
+   "percentage"
+  ],
+  "queries": [
+   "ChronoMem LoCoMo Recall@1 semantic version selection",
+   "ChronoMem LoCoMo benchmark results",
+   "semantic version selection Recall@1 LoCoMo"
+  ]
+ },
+ "A044-T3-02": {
+  "entities": [
+   "MemoryAgentBench",
+   "SH-6k",
+   "single-hop conflict-resolution",
+   "substring exact match",
+   "TEPA-Rev"
+  ],
+  "keywords": [
+   "benchmark",
+   "conflict resolution",
+   "substring exact match score",
+   "method comparison"
+  ],
+  "queries": [
+   "MemoryAgentBench SH-6k substring exact match",
+   "TEPA-Rev SH-6k conflict resolution score",
+   "single-hop conflict-resolution benchmark substring exact match"
+  ]
+ },
+ "A047-T1-01": {
+  "entities": [
+   "PACMI",
+   "A-MEM-style",
+   "McNemar p-value",
+   "final accuracy",
+   "300 queries"
+  ],
+  "keywords": [
+   "paired comparison",
+   "statistical significance",
+   "McNemar test",
+   "accuracy"
+  ],
+  "queries": [
+   "PACMI A-MEM-style McNemar final accuracy",
+   "PACMI vs A-MEM-style 300 queries",
+   "McNemar p-value paired comparison accuracy"
+  ]
+ },
+ "A053-T2-01": {
+  "entities": [
+   "ReFind",
+   "Raw-RAG"
+  ],
+  "keywords": [
+   "raw chat history",
+   "evidence retrieval",
+   "architecture",
+   "retrieval pipeline",
+   "chunking"
+  ],
+  "queries": [
+   "ReFind Raw-RAG evidence retrieval architecture",
+   "ReFind retrieval from raw chat history",
+   "Raw-RAG raw chat history retrieval"
+  ]
+ },
+ "A054-T2-01": {
+  "entities": [
+   "Agent Zero Memory",
+   "Raw-RAG",
+   "superseded facts",
+   "knowledge updates"
+  ],
+  "keywords": [
+   "memory architecture",
+   "retrieval-augmented generation",
+   "fact updating",
+   "design principles",
+   "knowledge management"
+  ],
+  "queries": [
+   "Agent Zero Memory knowledge updates superseded facts",
+   "Raw-RAG superseded facts design principle",
+   "Agent Zero Memory vs Raw-RAG approach"
+  ]
+ },
+ "A039-T4-03": {
+  "entities": [
+   "Recall@5",
+   "MuSiQue",
+   "HippoRAG 2"
+  ],
+  "keywords": [
+   "retrieval",
+   "multi-hop question answering",
+   "passage retrieval",
+   "benchmark"
+  ],
+  "queries": [
+   "HippoRAG 2 MuSiQue Recall@5",
+   "HippoRAG 2 passage retrieval MuSiQue",
+   "MuSiQue Recall@5 HippoRAG"
+  ]
+ },
+ "A016-T4-03": {
+  "entities": [
+   "HippoRAG 2",
+   "2WikiMultiHopQA",
+   "F1"
+  ],
+  "keywords": [
+   "multi-hop question answering",
+   "retrieval-augmented generation",
+   "benchmark performance",
+   "reported score"
+  ],
+  "queries": [
+   "HippoRAG 2 2WikiMultiHopQA F1",
+   "HippoRAG 2 multi-hop QA results",
+   "2WikiMultiHopQA F1 HippoRAG"
+  ]
+ },
+ "A013-T3-02": {
+  "entities": [
+   "LLM-compiled wiki",
+   "RAG",
+   "answer quality"
+  ],
+  "keywords": [
+   "headline results",
+   "conflict",
+   "key factor",
+   "disagreement",
+   "retrieval-augmented generation",
+   "wiki compilation"
+  ],
+  "queries": [
+   "LLM-compiled wiki vs RAG answer quality",
+   "wiki outperforms RAG headline results",
+   "key factor explaining disagreement RAG wiki"
+  ]
+ },
+ "A018-T2-01": {
+  "entities": [
+   "Streaming Knowledge Compilation",
+   "WiCER",
+   "CEGAR",
+   "counterexample"
+  ],
+  "keywords": [
+   "refinement loop",
+   "reactive",
+   "proactive",
+   "conceptual shift",
+   "knowledge compilation",
+   "counterexample definition"
+  ],
+  "queries": [
+   "Streaming Knowledge Compilation WiCER refinement",
+   "WiCER CEGAR counterexample refinement loop",
+   "proactive counterexample knowledge compilation"
+  ]
+ },
+ "B002-T3-02": {
+  "entities": [
+   "MuSiQue",
+   "HippoRAG 2",
+   "HippoRAG",
+   "passage recall@5"
+  ],
+  "keywords": [
+   "passage retrieval",
+   "recall",
+   "comparison",
+   "starred row",
+   "reported results"
+  ],
+  "queries": [
+   "HippoRAG 2 MuSiQue passage recall@5",
+   "HippoRAG MuSiQue recall@5 starred",
+   "MuSiQue passage retrieval HippoRAG comparison"
+  ]
+ },
+ "B013-T3-05": {
+  "entities": [
+   "Diagnosing Retrieval vs. Utilization Bottlenecks",
+   "MERIT",
+   "When Does Memory Help?",
+   "LLM",
+   "write-time summarization"
+  ],
+  "keywords": [
+   "memory summarization",
+   "write strategy",
+   "retrieval bottleneck",
+   "utilization bottleneck",
+   "memory benchmark",
+   "write-time processing",
+   "memory construction"
+  ],
+  "queries": [
+   "Diagnosing Retrieval Utilization Bottlenecks write strategy",
+   "MERIT benchmark When Does Memory Help",
+   "LLM write-time memory summarization payoff"
+  ]
+ },
+ "B020-T3-05": {
+  "entities": [
+   "GC-Mem",
+   "deepseek-v3",
+   "Large split",
+   "timestamp re-ranking",
+   "standard RAG",
+   "conflict-resolution accuracy"
+  ],
+  "keywords": [
+   "conflict resolution",
+   "re-ranking",
+   "RAG",
+   "accuracy comparison",
+   "percentage points"
+  ],
+  "queries": [
+   "GC-Mem Large split deepseek-v3 conflict resolution",
+   "timestamp re-ranking vs standard RAG accuracy",
+   "GC-Mem conflict-resolution accuracy points difference"
+  ]
+ },
+ "B017-T3-05": {
+  "entities": [
+   "GPT-5-mini",
+   "ReFind",
+   "HippoRAG 2",
+   "LongMemEval-S"
+  ],
+  "keywords": [
+   "points",
+   "lead",
+   "difference",
+   "margin",
+   "performance comparison"
+  ],
+  "queries": [
+   "ReFind HippoRAG 2 LongMemEval-S GPT-5-mini",
+   "ReFind vs HippoRAG 2 LongMemEval-S points",
+   "GPT-5-mini LongMemEval-S ReFind margin"
+  ]
+ },
+ "B011-T3-05": {
+  "entities": [
+   "MemStrata",
+   "standard RAG",
+   "four evolving-knowledge benchmarks"
+  ],
+  "keywords": [
+   "accuracy range",
+   "evolving knowledge",
+   "benchmarks",
+   "comparison",
+   "retrieval-augmented generation"
+  ],
+  "queries": [
+   "MemStrata evolving knowledge benchmarks accuracy",
+   "MemStrata vs standard RAG accuracy",
+   "MemStrata four benchmarks results"
+  ]
+ },
+ "B001-T4-05": {
+  "entities": [
+   "HippoRAG",
+   "HippoRAG 2",
+   "MuSiQue",
+   "Recall@5",
+   "IRCoT"
+  ],
+  "keywords": [
+   "single-step retrieval",
+   "passage retrieval",
+   "iterative retrieval",
+   "corpus",
+   "highest recall"
+  ],
+  "queries": [
+   "HippoRAG MuSiQue Recall@5 single-step",
+   "HippoRAG passage retrieval MuSiQue results",
+   "MuSiQue HippoRAG IRCoT comparison"
+  ]
+ },
+ "B001-T4-06": {
+  "entities": [
+   "HippoRAG",
+   "HippoRAG 2",
+   "2WikiMultiHopQA",
+   "Recall@5",
+   "IRCoT"
+  ],
+  "keywords": [
+   "single-step retrieval",
+   "passage retrieval",
+   "multi-hop QA",
+   "iterative retrieval",
+   "corpus"
+  ],
+  "queries": [
+   "HippoRAG 2WikiMultiHopQA Recall@5",
+   "HippoRAG single-step passage retrieval results",
+   "HippoRAG 2WikiMultiHopQA without IRCoT"
+  ]
+ },
+ "B023-T2-01": {
+  "entities": [
+   "HippoRAG",
+   "TrajWiki",
+   "knowledge graphs",
+   "wiki pages"
+  ],
+  "keywords": [
+   "long-term memory",
+   "retrieved information",
+   "organization",
+   "retrieval",
+   "memory structure"
+  ],
+  "queries": [
+   "HippoRAG knowledge graph long-term memory",
+   "TrajWiki wiki pages memory organization",
+   "HippoRAG TrajWiki retrieval comparison"
+  ]
+ },
+ "B012-T2-01": {
+  "entities": [
+   "HippoRAG",
+   "TOKI",
+   "LLM-agent memory"
+  ],
+  "keywords": [
+   "associative memory",
+   "contradiction resolution",
+   "knowledge graph",
+   "personalized PageRank",
+   "memory consolidation",
+   "passage association"
+  ],
+  "queries": [
+   "HippoRAG associative memory mechanism passages",
+   "TOKI contradiction resolution agent memory",
+   "HippoRAG vs TOKI memory mechanism"
+  ]
+ },
+ "B014-T2-01": {
+  "entities": [
+   "The Missing Knowledge Layer in Cognitive Architectures for AI Agents",
+   "TOKI",
+   "LLM-agent memory",
+   "contradiction resolution",
+   "persistence semantics"
+  ],
+  "keywords": [
+   "cognitive architectures",
+   "knowledge layer",
+   "memory",
+   "contradiction",
+   "persistence",
+   "AI agents"
+  ],
+  "queries": [
+   "Missing Knowledge Layer cognitive architectures contradiction",
+   "TOKI paper memory persistence semantics",
+   "LLM-agent memory contradiction resolution persistence"
+  ]
+ },
+ "B034-T2-01": {
+  "entities": [
+   "HippoRAG",
+   "GC-Mem"
+  ],
+  "keywords": [
+   "memory",
+   "new information",
+   "conflicting information",
+   "memory update",
+   "knowledge conflict",
+   "memory management"
+  ],
+  "queries": [
+   "HippoRAG memory update conflicting information",
+   "GC-Mem memory handling new information",
+   "HippoRAG GC-Mem memory conflict comparison"
+  ]
+ },
+ "B031-T2-02": {
+  "entities": [
+   "foundation agent memory",
+   "Harness the Memory",
+   "memory substrate"
+  ],
+  "keywords": [
+   "survey",
+   "evaluation",
+   "agent memory",
+   "dominance",
+   "agreement"
+  ],
+  "queries": [
+   "foundation agent memory survey",
+   "Harness the Memory evaluation",
+   "single memory substrate dominates"
+  ]
+ },
+ "B001-T1-01": {
+  "entities": [
+   "HippoRAG 2",
+   "passage nodes",
+   "reset probability",
+   "weight factor"
+  ],
+  "keywords": [
+   "default value",
+   "node reset",
+   "Personalized PageRank",
+   "graph search",
+   "hyperparameters"
+  ],
+  "queries": [
+   "HippoRAG 2 passage node reset probability",
+   "HippoRAG 2 default weight factor",
+   "HippoRAG 2 reset probability hyperparameter"
+  ]
+ },
+ "B003-T1-01": {
+  "entities": [
+   "Diagnosing Retrieval vs. Utilization Bottlenecks in LLM Agent Memory",
+   "Basic RAG",
+   "hybrid reranking",
+   "3x3 study"
+  ],
+  "keywords": [
+   "accuracy",
+   "retrieval",
+   "utilization",
+   "bottleneck",
+   "agent memory"
+  ],
+  "queries": [
+   "Basic RAG hybrid reranking accuracy",
+   "3x3 study Basic RAG accuracy",
+   "LLM agent memory retrieval utilization bottlenecks"
+  ]
+ },
+ "B004-T1-01": {
+  "entities": [
+   "BeliefShift",
+   "sessions"
+  ],
+  "keywords": [
+   "dataset",
+   "total number",
+   "count",
+   "size"
+  ],
+  "queries": [
+   "BeliefShift dataset number of sessions",
+   "BeliefShift dataset size statistics",
+   "BeliefShift total sessions"
+  ]
+ },
+ "B006-T1-01": {
+  "entities": [
+   "TTFT",
+   "time-to-first-token",
+   "Q4K",
+   "Q4V",
+   "Policygenius",
+   "full-context"
+  ],
+  "keywords": [
+   "median",
+   "quantization",
+   "corpus",
+   "latency",
+   "full-context configuration"
+  ],
+  "queries": [
+   "Policygenius full-context TTFT Q4K Q4V",
+   "median time-to-first-token Q4K Q4V quantization",
+   "Policygenius corpus full-context latency median"
+  ]
+ },
+ "B007-T1-01": {
+  "entities": [
+   "NeuSymMS",
+   "approximate string matching",
+   "contradiction detection",
+   "similarity threshold"
+  ],
+  "keywords": [
+   "production deployment",
+   "fixed threshold",
+   "string similarity",
+   "contradiction"
+  ],
+  "queries": [
+   "NeuSymMS production contradiction detection threshold",
+   "NeuSymMS approximate string matching similarity",
+   "NeuSymMS contradiction detection deployment"
+  ]
+ },
+ "B008-T1-02": {
+  "entities": [
+   "MemConflict",
+   "Answer Accuracy",
+   "AA",
+   "black-box evaluation"
+  ],
+  "keywords": [
+   "memory system",
+   "average accuracy",
+   "evaluation",
+   "benchmark"
+  ],
+  "queries": [
+   "MemConflict black-box Answer Accuracy",
+   "memory system highest average AA",
+   "MemConflict benchmark evaluation results"
+  ]
+ },
+ "B010-T1-02": {
+  "entities": [
+   "Project R",
+   "cross-linked pages",
+   "body cross-references"
+  ],
+  "keywords": [
+   "wiki",
+   "count",
+   "statistics",
+   "internal links"
+  ],
+  "queries": [
+   "Project R wiki cross-linked pages",
+   "Project R body cross-references count",
+   "wiki statistics cross-linked pages"
+  ]
+ },
+ "B011-T1-01": {
+  "entities": [
+   "Toki",
+   "N1",
+   "N2",
+   "N3",
+   "verdict matrix",
+   "write-time anomalies",
+   "judge",
+   "write path"
+  ],
+  "keywords": [
+   "engine-layer comparator",
+   "eight systems",
+   "excludes anomalies",
+   "off the write path"
+  ],
+  "queries": [
+   "Toki verdict matrix eight systems",
+   "Toki write-time anomalies N1 N2 N3",
+   "Toki engine-layer comparator judge write path"
+  ]
+ },
+ "B016-T1-01": {
+  "entities": [
+   "ConstraintRot",
+   "seven models",
+   "single compaction step",
+   "0%",
+   "control condition"
+  ],
+  "keywords": [
+   "pooled violation rate",
+   "compaction",
+   "benchmark",
+   "violation rate"
+  ],
+  "queries": [
+   "ConstraintRot pooled violation rate compaction",
+   "ConstraintRot seven models single compaction",
+   "ConstraintRot control condition 0%"
+  ]
+ },
+ "B018-T1-02": {
+  "entities": [
+   "offload",
+   "progressive-disclosure ablation study",
+   "markdown pages"
+  ],
+  "keywords": [
+   "knowledge base",
+   "ablation",
+   "page count",
+   "progressive disclosure"
+  ],
+  "queries": [
+   "progressive-disclosure ablation study offload knowledge base",
+   "offload knowledge base markdown pages count",
+   "offload KB number of markdown pages"
+  ]
+ },
+ "B020-T1-02": {
+  "entities": [
+   "TSR",
+   "embedding retrieval",
+   "C2",
+   "full grid",
+   "seeds"
+  ],
+  "keywords": [
+   "maximum pairwise gap",
+   "seed variance",
+   "cell",
+   "retrieval performance"
+  ],
+  "queries": [
+   "maximum pairwise TSR gap seeds embedding retrieval",
+   "C2 embedding retrieval full grid seed gap",
+   "TSR gap between seeds cell"
+  ]
+ },
+ "B021-T1-01": {
+  "entities": [
+   "three-chain protocol",
+   "skill setting",
+   "Episode log memory",
+   "gpt-4.1",
+   "task success rate"
+  ],
+  "keywords": [
+   "memory variant",
+   "execution agent",
+   "success rate",
+   "three-chain",
+   "skill"
+  ],
+  "queries": [
+   "three-chain protocol skill setting Episode log",
+   "Episode log memory gpt-4.1 success rate",
+   "three-chain skill execution agent gpt-4.1"
+  ]
+ },
+ "B022-T1-01": {
+  "entities": [
+   "TrajWiki",
+   "Full TrajWiki",
+   "32K context budget",
+   "gold source-reference coverage",
+   "offline counterfactual ablation"
+  ],
+  "keywords": [
+   "counterfactual ablation",
+   "context budget",
+   "source-reference coverage",
+   "offline evaluation"
+  ],
+  "queries": [
+   "TrajWiki offline counterfactual ablation 32K",
+   "Full TrajWiki gold source-reference coverage",
+   "TrajWiki 32K context budget ablation"
+  ]
+ },
+ "JDi-01": {
+  "entities": [
+   "RAPTOR",
+   "QuALITY",
+   "GPT-4"
+  ],
+  "keywords": [
+   "accuracy",
+   "question answering",
+   "long-document QA",
+   "retrieval"
+  ],
+  "queries": [
+   "RAPTOR QuALITY GPT-4 accuracy",
+   "RAPTOR QuALITY results",
+   "RAPTOR GPT-4 long document QA"
+  ]
+ },
+ "JDi-02": {
+  "entities": [
+   "Hindsight",
+   "LongMemEval"
+  ],
+  "keywords": [
+   "accuracy",
+   "reported",
+   "benchmark",
+   "evaluation"
+  ],
+  "queries": [
+   "Hindsight LongMemEval accuracy",
+   "Hindsight LongMemEval results",
+   "LongMemEval Hindsight reported performance"
+  ]
+ },
+ "JDi-05": {
+  "entities": [
+   "LightRAG",
+   "Agriculture",
+   "naive retrieval baseline"
+  ],
+  "keywords": [
+   "win rate",
+   "overall",
+   "dataset",
+   "retrieval baseline"
+  ],
+  "queries": [
+   "LightRAG win rate Agriculture dataset",
+   "LightRAG naive retrieval baseline comparison",
+   "LightRAG Agriculture overall win rate"
+  ]
+ },
+ "JDi-07": {
+  "entities": [
+   "RAPTOR",
+   "recursive summarisation",
+   "tree-structured retrieval"
+  ],
+  "keywords": [
+   "hierarchical summarisation",
+   "clustering",
+   "multi-level retrieval",
+   "question answering",
+   "text chunks"
+  ],
+  "queries": [
+   "recursive clustering summarisation tree retrieval",
+   "hierarchical tree summarising text groups",
+   "multi-level question answering summarisation tree"
+  ]
+ },
+ "JDi-08": {
+  "entities": [
+   "query-focused summarization",
+   "multi-document summarization",
+   "entity clusters",
+   "collection-level summarization"
+  ],
+  "keywords": [
+   "broad questions",
+   "whole collection of texts",
+   "summarising groups",
+   "closely connected entities",
+   "hierarchical summarization"
+  ],
+  "queries": [
+   "summarize entity groups answer broad questions",
+   "collection-level question answering summarization entities",
+   "multi-document summarization connected entities clusters"
+  ]
+ },
+ "JDi-10": {
+  "entities": [
+   "knowledge base",
+   "precomputed state",
+   "retrieval"
+  ],
+  "keywords": [
+   "skip retrieval",
+   "load entire knowledge base",
+   "model state",
+   "no retrieval"
+  ],
+  "queries": [
+   "load whole knowledge base into model state",
+   "skip retrieval precomputed state",
+   "knowledge base loaded into model"
+  ]
+ },
+ "JDi-19": {
+  "entities": [
+   "LoCoMo"
+  ],
+  "keywords": [
+   "conversation",
+   "turns",
+   "long-term dialogue",
+   "dialogue length"
+  ],
+  "queries": [
+   "LoCoMo conversation number of turns",
+   "LoCoMo long-term dialogue dataset length",
+   "LoCoMo benchmark conversation turns"
+  ]
+ },
+ "JDi-20": {
+  "entities": [
+   "Zep",
+   "LoCoMo"
+  ],
+  "keywords": [
+   "accuracy",
+   "benchmark",
+   "evaluation"
+  ],
+  "queries": [
+   "Zep LoCoMo accuracy",
+   "Zep LoCoMo benchmark results",
+   "LoCoMo accuracy evaluation"
+  ]
+ },
+ "JDi-21": {
+  "entities": [
+   "Zep",
+   "Mem0",
+   "LongMemEval"
+  ],
+  "keywords": [
+   "agreement",
+   "benchmark scores",
+   "comparison",
+   "memory systems"
+  ],
+  "queries": [
+   "Zep Mem0 LongMemEval comparison",
+   "LongMemEval benchmark scores Zep Mem0",
+   "Zep vs Mem0 memory evaluation"
+  ]
+ },
+ "JDi-24": {
+  "entities": [
+   "UltraDomain"
+  ],
+  "keywords": [
+   "dataset",
+   "benchmark",
+   "corpus",
+   "mention"
+  ],
+  "queries": [
+   "UltraDomain dataset",
+   "UltraDomain benchmark",
+   "papers mentioning UltraDomain"
+  ]
+ },
+ "JDi-25": {
+  "entities": [
+   "LoCoMo",
+   "Mem0"
+  ],
+  "keywords": [
+   "overall score",
+   "benchmark",
+   "later paper",
+   "comparison",
+   "reported result"
+  ],
+  "queries": [
+   "Mem0 LoCoMo overall score",
+   "LoCoMo benchmark Mem0 results",
+   "later paper Mem0 LoCoMo comparison"
+  ]
+ },
+ "JDi-26": {
+  "entities": [
+   "GraphRAG (local)",
+   "LightRAG",
+   "NovelQA",
+   "Qwen2.5-7B-Instruct",
+   "E2GraphRAG"
+  ],
+  "keywords": [
+   "accuracy",
+   "graph-based RAG",
+   "retrieval-augmented generation",
+   "benchmark results"
+  ],
+  "queries": [
+   "E2GraphRAG NovelQA Qwen2.5-7B-Instruct accuracy",
+   "GraphRAG local LightRAG NovelQA results",
+   "E2GraphRAG GraphRAG LightRAG comparison"
+  ]
+ },
+ "JDi-31": {
+  "entities": [
+   "RULER",
+   "128K"
+  ],
+  "keywords": [
+   "best score",
+   "long-context benchmark",
+   "context length",
+   "reported performance"
+  ],
+  "queries": [
+   "RULER 128K best score",
+   "RULER benchmark 128K results",
+   "RULER long context evaluation scores"
+  ]
+ },
+ "JDi-32": {
+  "entities": [
+   "MemoryAgentBench",
+   "main table",
+   "overall score"
+  ],
+  "keywords": [
+   "agent",
+   "benchmark",
+   "highest score",
+   "leaderboard",
+   "evaluation"
+  ],
+  "queries": [
+   "MemoryAgentBench main results table",
+   "MemoryAgentBench overall score agents",
+   "MemoryAgentBench benchmark agent comparison"
+  ]
+ },
+ "JDi-33": {
+  "entities": [
+   "Agriculture",
+   "LightRAG"
+  ],
+  "keywords": [
+   "documents",
+   "tokens",
+   "dataset size",
+   "corpus statistics"
+  ],
+  "queries": [
+   "LightRAG Agriculture dataset documents tokens",
+   "Agriculture dataset size LightRAG",
+   "LightRAG dataset statistics documents tokens"
+  ]
+ },
+ "JDi-37": {
+  "entities": [
+   "FactConsolidation"
+  ],
+  "keywords": [
+   "benchmark",
+   "introduction",
+   "paper"
+  ],
+  "queries": [
+   "FactConsolidation benchmark paper",
+   "introduces FactConsolidation benchmark",
+   "FactConsolidation benchmark dataset"
+  ]
+ },
+ "JDi-39": {
+  "entities": [
+   "MemoryAgentBench"
+  ],
+  "keywords": [
+   "benchmark",
+   "abilities",
+   "evaluation",
+   "memory agents"
+  ],
+  "queries": [
+   "MemoryAgentBench four abilities",
+   "MemoryAgentBench benchmark evaluation",
+   "MemoryAgentBench tested abilities"
+  ]
+ },
+ "JD-01": {
+  "entities": [
+   "Zep",
+   "DMR"
+  ],
+  "keywords": [
+   "accuracy",
+   "benchmark",
+   "reported results"
+  ],
+  "queries": [
+   "Zep DMR benchmark accuracy",
+   "Zep DMR results",
+   "DMR benchmark accuracy Zep"
+  ]
+ },
+ "JD-02": {
+  "entities": [
+   "Mem0",
+   "LoCoMo",
+   "gpt-4o-mini",
+   "J score"
+  ],
+  "keywords": [
+   "overall J score",
+   "memory evaluation",
+   "long-term conversation memory",
+   "benchmark results"
+  ],
+  "queries": [
+   "Mem0 LoCoMo gpt-4o-mini J score",
+   "Mem0 LoCoMo overall J",
+   "LoCoMo benchmark Mem0 gpt-4o-mini results"
+  ]
+ },
+ "JD-06": {
+  "entities": [
+   "MemOS",
+   "LoCoMo",
+   "single-hop",
+   "LLM-judge"
+  ],
+  "keywords": [
+   "memory operating system",
+   "long-term memory",
+   "evaluation score",
+   "question answering"
+  ],
+  "queries": [
+   "MemOS LoCoMo single-hop LLM-judge score",
+   "MemOS LoCoMo evaluation results",
+   "LoCoMo single-hop LLM judge"
+  ]
+ },
+ "JD-08": {
+  "entities": [
+   "Zettelkasten",
+   "Niklas Luhmann"
+  ],
+  "keywords": [
+   "note-taking method",
+   "agent notes",
+   "linked notes",
+   "German sociologist",
+   "knowledge management"
+  ],
+  "queries": [
+   "Zettelkasten agent linked notes",
+   "note-taking method German sociologist agent",
+   "Luhmann Zettelkasten agent notes"
+  ]
+ },
+ "JD-09": {
+  "entities": [
+   "human sleep stages",
+   "short-term storage",
+   "long-term storage",
+   "tokens",
+   "memory system"
+  ],
+  "keywords": [
+   "sleep-inspired memory",
+   "token reduction",
+   "memory consolidation",
+   "short-term memory",
+   "long-term memory",
+   "LLM memory"
+  ],
+  "queries": [
+   "sleep stages short-term long-term memory tokens",
+   "human sleep memory consolidation token reduction",
+   "memory system copies sleep stages storage"
+  ]
+ },
+ "JD-10": {
+  "entities": [
+   "memory system",
+   "false facts",
+   "benchmark"
+  ],
+  "keywords": [
+   "hallucination",
+   "factual consistency",
+   "memory storage",
+   "memory update",
+   "question answering",
+   "fabrication"
+  ],
+  "queries": [
+   "memory system hallucination benchmark",
+   "benchmark false facts memory update",
+   "memory QA factual consistency benchmark"
+  ]
+ },
+ "JD-19": {
+  "entities": [
+   "LoCoMo"
+  ],
+  "keywords": [
+   "conversations",
+   "dataset size",
+   "long-term conversation"
+  ],
+  "queries": [
+   "LoCoMo dataset number of conversations",
+   "LoCoMo long-term conversation dataset",
+   "LoCoMo conversations count"
+  ]
+ },
+ "JD-22": {
+  "entities": [
+   "Mem0",
+   "LongMemEval"
+  ],
+  "keywords": [
+   "accuracy",
+   "benchmark",
+   "memory",
+   "evaluation"
+  ],
+  "queries": [
+   "Mem0 LongMemEval accuracy",
+   "Mem0 LongMemEval benchmark results",
+   "LongMemEval Mem0 performance"
+  ]
+ },
+ "JD-23": {
+  "entities": [
+   "MEMTRACK"
+  ],
+  "keywords": [
+   "memory tracking",
+   "benchmark",
+   "dataset",
+   "evaluation"
+  ],
+  "queries": [
+   "MEMTRACK benchmark",
+   "MEMTRACK memory tracking",
+   "papers mentioning MEMTRACK"
+  ]
+ },
+ "JD-25": {
+  "entities": [
+   "REALTALK"
+  ],
+  "keywords": [
+   "mention",
+   "papers",
+   "collection"
+  ],
+  "queries": [
+   "REALTALK",
+   "papers mentioning REALTALK",
+   "REALTALK dataset"
+  ]
+ },
+ "JD-27": {
+  "entities": [
+   "Zep",
+   "LongMemEval"
+  ],
+  "keywords": [
+   "accuracy",
+   "benchmark",
+   "reported results",
+   "later papers",
+   "evaluation"
+  ],
+  "queries": [
+   "Zep LongMemEval accuracy",
+   "Zep paper LongMemEval results",
+   "LongMemEval Zep reported accuracy"
+  ]
+ },
+ "JD-29": {
+  "entities": [
+   "A-MEM",
+   "LongMemEval"
+  ],
+  "keywords": [
+   "accuracy",
+   "reported results",
+   "memory system",
+   "benchmark"
+  ],
+  "queries": [
+   "A-MEM LongMemEval accuracy",
+   "A-MEM LongMemEval results",
+   "A-MEM memory benchmark accuracy"
+  ]
+ },
+ "JD-31": {
+  "entities": [
+   "LoCoMo"
+  ],
+  "keywords": [
+   "benchmark",
+   "questions",
+   "size",
+   "dataset statistics"
+  ],
+  "queries": [
+   "LoCoMo benchmark number of questions",
+   "LoCoMo dataset question count",
+   "LoCoMo benchmark statistics"
+  ]
+ },
+ "JD-33": {
+  "entities": [
+   "Mem0",
+   "Mem0 graph variant",
+   "Zep",
+   "memory tokens"
+  ],
+  "keywords": [
+   "per conversation",
+   "token usage",
+   "memory footprint",
+   "Mem0 paper"
+  ],
+  "queries": [
+   "Mem0 Zep memory tokens per conversation",
+   "Mem0 graph variant token usage",
+   "Mem0 paper memory token comparison"
+  ]
+ },
+ "JD-35": {
+  "entities": [
+   "A-MEM",
+   "10,000 memories"
+  ],
+  "keywords": [
+   "memory usage",
+   "retrieval time",
+   "agent memory",
+   "scalability"
+  ],
+  "queries": [
+   "A-MEM memory usage 10000 memories",
+   "A-MEM retrieval time 10000",
+   "A-MEM scalability memory retrieval"
+  ]
+ },
+ "JD-37": {
+  "entities": [
+   "InfiniteChoice"
+  ],
+  "keywords": [
+   "dataset",
+   "paper",
+   "uses"
+  ],
+  "queries": [
+   "InfiniteChoice dataset",
+   "papers using InfiniteChoice",
+   "InfiniteChoice benchmark"
+  ]
+ },
+ "JD-39": {
+  "entities": [
+   "LongMemEval"
+  ],
+  "keywords": [
+   "benchmark",
+   "abilities",
+   "evaluation",
+   "long-term memory",
+   "tasks"
+  ],
+  "queries": [
+   "LongMemEval benchmark five abilities",
+   "LongMemEval evaluation tasks",
+   "LongMemEval long-term memory abilities"
+  ]
+ }
+}

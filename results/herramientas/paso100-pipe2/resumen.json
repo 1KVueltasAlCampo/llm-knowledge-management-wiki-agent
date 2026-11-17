@@ -1,0 +1,24 @@
+[
+ {
+  "variante": "pipe_paginas_busqueda",
+  "n": 21,
+  "correctas": 12,
+  "llamadas": 2.76,
+  "tokens_entrada": 16937,
+  "tokens_contexto": 6224,
+  "tokens_salida": 174,
+  "usd": 0.00107,
+  "segundos": 5.9
+ },
+ {
+  "variante": "pipe_paginas_grafo",
+  "n": 21,
+  "correctas": 14,
+  "llamadas": 1.57,
+  "tokens_entrada": 12459,
+  "tokens_contexto": 6967,
+  "tokens_salida": 139,
+  "usd": 0.00042,
+  "segundos": 2.8
+ }
+]

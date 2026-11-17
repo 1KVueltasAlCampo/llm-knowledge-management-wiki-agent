@@ -51,6 +51,7 @@ uv run python -m wikillm.eval fallos --corrida results/<corrida>   # por qué fa
 uv run python -m wikillm.eval ampliar-banco --definiciones ... --manifest ... --spans ... --gold ... --salida ...   # banco de 100 papers
 uv run python -m wikillm.corpus fases --manifest ... --fases data/corpus100/fases.json   # tres cargas del corpus de 100 (0009)
 uv run python -m wikillm.arnes correr --corrida <nueva> --wiki-de <corrida>   # reutiliza el wiki ya construido de otra corrida
+uv run python -m wikillm.arnes correr --corrida <nueva> --brazos rag --k 10   # solo esos brazos (rag, wiki, wiki_grafo)
 ```
 
 ## Modelos y gasto

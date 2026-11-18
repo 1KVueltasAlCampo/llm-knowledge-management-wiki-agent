@@ -1,6 +1,6 @@
 # Guía para agentes (Claude Code, Codex, Gemini y otros)
 
-Experimento de maestría: RAG frente a WikiLLM sobre 50 preprints de arXiv, con el **mismo
+Experimento de maestría: RAG frente a WikiLLM sobre 100 preprints de arXiv, con el **mismo
 modelo** en ambos sistemas. Las reglas que no se negocian están en
 [CONSTITUTION.md](CONSTITUTION.md); este archivo dice cómo trabajar en el repo.
 
@@ -16,7 +16,7 @@ modelo** en ambos sistemas. Las reglas que no se negocian están en
 | Ruta | Qué hay | Dueño |
 |---|---|---|
 | `src/wikillm/ingest/` | Bronze → Silver → Gold desde arXiv | Juan David (base), Juan Diego |
-| `src/wikillm/corpus/` | Selección de los 50, manifest y fragmentos citables | Juan Diego |
+| `src/wikillm/corpus/` | Selección del corpus (50 iniciales, 100 con la ampliación), manifest y fragmentos citables | Juan Diego |
 | `src/wikillm/eval/` | Banco de preguntas, métricas, juez, acuerdo | Juan Diego |
 | `src/wikillm/rag/`, `src/wikillm/wiki/` | RAG simple y agente de la wiki | Juan David |
 | `src/wikillm/common/` | Configuración, cliente de modelo y costo | Juan David |

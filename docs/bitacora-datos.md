@@ -584,6 +584,14 @@ conocimiento reutilizado de `construccion-1`) pasó a **`results/ampliado-fases-
 de sus archivos; las carpetas locales `data/wiki` y `data/qdrant` se renombraron igual. Son experimentos distintos y
 no se comparan como una sola corrida.
 
+### 2026-11-17 · verificación humana de las 40 preguntas de borde (Juan David)
+
+Los dos autores confirman que verificaron, como personas, las 40 preguntas de borde contra los papers el 16 de
+noviembre. La decisión 0010 («sin revisión cruzada») queda superada y las 100 preguntas del banco cuentan con
+verificación humana de ambos. **No se calculó kappa** para esas 40 (solo existe para las 60 originales). El banco lo
+registra en `revision.cruzada` y `revision.acordado.revision_cruzada: true`, y se quitó `revision.preliminar`; sigue
+validando (100 preguntas, 0 problemas). La entrada sobre `ampliado-1` describe el estado de entonces.
+
 ## 2026-11-16 — Corrida `ampliado-1` (100 papers, 80 preguntas), preliminar
 
 - Corpus de 100 papers en orden cronológico (ADR 0008), banco de 80 preguntas (60 acordadas y 20

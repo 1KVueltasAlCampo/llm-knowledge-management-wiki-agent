@@ -204,8 +204,8 @@ def escribir_comparacion(
     nuevas = r["nuevas"]
     if nuevas["n"]:
         seccion_nuevas = (
-            f"Son {nuevas['n']} preguntas que solo están en `{ampliada.name}`, sin revisión "
-            "cruzada del otro autor, así que sus resultados son preliminares.\n\n"
+            f"Son {nuevas['n']} preguntas que solo están en `{ampliada.name}`; con pocas "
+            "preguntas por tipo y una sola ejecución, sus resultados son preliminares.\n\n"
             f"{_tabla([nuevas], COLUMNAS_NUEVAS)}"
         )
     else:

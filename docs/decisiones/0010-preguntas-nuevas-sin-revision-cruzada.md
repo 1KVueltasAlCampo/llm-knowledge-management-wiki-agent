@@ -1,6 +1,7 @@
 # 0010. Las 40 preguntas nuevas cuentan sin revisión cruzada
 
-**Fecha:** 16 de noviembre de 2026. **Estado:** aceptada por los dos autores. Juan Diego lo propuso en un
+**Fecha:** 16 de noviembre de 2026. **Estado:** aceptada por los dos autores y **superada el 17 de noviembre**
+(ver «Actualización» al final). Juan Diego lo propuso en un
 mensaje de voz y Juan David lo resumió y lo aceptó; esta decisión deja constancia de ese resumen, no del audio.
 **Rompe:** la regla 11 de la constitución («una pregunta solo cuenta cuando los dos autores la verificaron»).
 
@@ -25,3 +26,15 @@ dos personas que firman las preguntas las comprobaron contra el paper (cada auto
 - Los resultados se presentan por separado para las 60 con revisión cruzada y para las 40 sin ella, además del
   total (`comparar-corridas` ya separa las nuevas).
 - Una pregunta mal clavada penaliza igual a los dos brazos, pero puede torcer una categoría pequeña.
+
+## Actualización (17 de noviembre de 2026)
+
+Los dos autores (Juan Diego y Juan David) confirmaron que verificaron, como personas, las 40 preguntas de borde
+contra los papers, con fecha **16 de noviembre de 2026**. Esta decisión queda **superada**: el informe **no**
+debe decir que 40 preguntas carecen de segunda lectura ni que solo las revisó una IA. Las 100 preguntas cuentan
+con verificación humana de los dos autores.
+
+**No se calculó kappa** para esas 40: el kappa y el porcentaje de acuerdo solo existen para las 60 originales, y
+el informe lo debe decir así. El banco lo registra en cada una de las 40 (`revision.cruzada` con la fecha, los
+dos verificadores y `kappa: null`; `revision.acordado.revision_cruzada: true`; se quitó `revision.preliminar`).
+Se conserva `revision.acordado.por_decision: "0010"` como rastro de cómo pasaron a `acordado`.

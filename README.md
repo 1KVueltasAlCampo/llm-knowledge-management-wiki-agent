@@ -1,5 +1,7 @@
 # llm-knowledge-management-wiki-agent
 
+[![CI](https://github.com/1KVueltasAlCampo/llm-knowledge-management-wiki-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/1KVueltasAlCampo/llm-knowledge-management-wiki-agent/actions/workflows/ci.yml)
+
 Proyecto de maestría en Inteligencia Artificial Aplicada. Compara experimentalmente dos formas de poner conocimiento a disposición de un modelo de lenguaje: **recuperarlo en cada consulta (RAG)** o **compilarlo por adelantado en un wiki de páginas enlazadas que un agente mantiene de forma incremental (WikiLLM)**. La comparación se hace con el mismo modelo, el mismo corpus y las mismas preguntas; lo único que varía es la arquitectura.
 
 ## Problema
@@ -16,20 +18,22 @@ La literatura disponible no converge: los estudios que comparan ambos enfoques u
 
 La formulación es abierta: cualquier resultado, incluido uno desfavorable al WikiLLM, es válido y se reporta. Las conclusiones se expresan como un **conjunto de métricas ordenadas por importancia**, no como una cifra única.
 
-## Estado (10 de noviembre de 2026)
+## Estado (17 de noviembre de 2026)
 
-Fase de preparación del experimento: los dos sistemas y el arnés de comparación están construidos y probados; resta ejecutar la corrida completa.
+La corrida base (RAG simple frente a WikiLLM) sobre 100 papers y 100 preguntas está hecha y analizada. Resta cerrar el informe y la sustentación (exposición el 20 de noviembre y cierre el 27).
 
 | Componente | Estado |
 |---|---|
-| Corpus de 50 papers (Bronze → Silver → Gold, manifest y fragmentos citables) | Listo. Ver [docs/corpus.md](docs/corpus.md). |
+| Corpus de 100 papers (Bronze → Silver → Gold, manifest, fragmentos citables y tres cargas) | Listo: los 50 iniciales más 50 que añaden los papers anteriores a los que citaban y casos de borde ([decisión 0008](docs/decisiones/0008-corpus-de-100-papers-y-banco-de-80-preguntas.md) y [0009](docs/decisiones/0009-cargas-por-fases-y-wiki-reutilizable.md)). El corpus inicial de 50 está en [docs/corpus.md](docs/corpus.md). |
 | RAG simple (LangChain y Qdrant local) | Listo, con citas verificadas contra el corpus. |
-| WikiLLM (ingesta controlada y consulta por agente) | Listo. |
-| Arnés de comparación (reanudable, con control de costo) y comparación puntual de una pregunta | Listo; ejecutado en un piloto que no se usa en el informe. |
-| Métricas (correctitud, fundamentación, cobertura, abstención, respuestas obsoletas, acuerdo) | Listas y probadas con resultados sintéticos. |
-| Banco de 60 preguntas | 60 verificadas por su autor (30 de la mitad A y 30 de la mitad B, esta última por consenso de revisión). Falta la verificación cruzada y el acuerdo entre autores (kappa). |
-| Banco de 60 preguntas | Cerrado: las 60 están `acordadas`, revisadas por los dos autores (acuerdo inicial: A 69,2 % con kappa 0,40; B 60,0 % con kappa 0,15, antes de aplicar las correcciones cruzadas; ver [bitácora](docs/bitacora-datos.md)). |
-| Corrida completa, análisis, informe y demostración | Pendientes. |
+| WikiLLM (ingesta controlada y consulta por agente) | Listo. El conocimiento de los 100 papers se construyó aparte (461 páginas, unos 1,60 USD) y la corrida lo reutiliza (`--wiki-de`). |
+| Arnés de comparación | Listo: reanudable, con control de costo, wiki reutilizable (`--wiki-de`) y brazos seleccionables (`--brazos`). |
+| Métricas (correctitud, fundamentación, cobertura, abstención, respuestas obsoletas, acuerdo) | Listas; un juez de otro modelo solo ve lo indeterminado. |
+| Banco de 100 preguntas | Cerrado: las 60 originales (acuerdo inicial: A 69,2 % con kappa 0,40; B 60,0 % con kappa 0,15, antes de aplicar las correcciones cruzadas; ver [bitácora](docs/bitacora-datos.md)) y 40 casos de borde (20 por autor). Los dos autores verificaron las 100 contra los papers (las 40 de borde el 16 de noviembre; para ellas no se calculó kappa). |
+| Corrida base `ampliado-fases-1` (pasos 33, 66 y 100) | Hecha. Cobertura del wiki frente al RAG con `k = 5`: 0,68 / 0,53, 0,61 / 0,47 y 0,70 / 0,48; al paso 100 la diferencia es +0,23 (IC 95 % [+0,11, +0,35], p = 0,001). Resultados en `results/ampliado-fases-1/`. |
+| Corrida de 11 pasos `ampliado-1` (Juan Diego) | Hecha con 80 preguntas; ver la [bitácora](docs/bitacora-datos.md). |
+| Análisis complementarios | RAG con `k` = 10, 15 y 20 (la ventaja del wiki baja a +0,06 y deja de ser significativa con `k = 20`), deriva del wiki entre cargas y wiki con acceso al texto original: [docs/sensibilidad-rag-y-deriva-del-wiki.md](docs/sensibilidad-rag-y-deriva-del-wiki.md). Graphify y tgrep: [docs/evaluacion-grafo-100-papers.md](docs/evaluacion-grafo-100-papers.md). |
+| Informe final, diapositivas y demostración | En preparación con las cifras anteriores. |
 
 ## Diseño experimental
 
@@ -44,14 +48,14 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
                      │                                     │
                      └──────────► MISMO MODELO ◄───────────┘
                                         │
-        mismas preguntas en los pasos de ingesta 0, 5, 10, …, 50
+        mismas preguntas en los pasos de ingesta 33, 66 y 100
                                         │
               respuestas + citas + tokens + tiempo + costo
                                         │
                          métricas comunes y ranking
 ```
 
-**Corpus.** 50 preprints de arXiv sobre memoria de agentes, RAG y wikis de LLM, casi todos de 2026, es decir, posteriores al corte de entrenamiento del modelo, para que no responda de memoria. Las dos semillas anteriores (HippoRAG y HippoRAG 2) se marcan y se reportan aparte. Los textos se obtienen de la versión HTML de arXiv y se procesan en tres capas: *Bronze* (crudo, inmutable), *Silver* (texto útil) y *Gold* (Markdown con encabezado de metadatos y huella de contenido). Un único Gold alimenta a los dos sistemas.
+**Corpus.** 100 preprints de arXiv sobre memoria de agentes, RAG y wikis de LLM, casi todos de 2026, es decir, posteriores al corte de entrenamiento del modelo, para que no responda de memoria. Los 50 iniciales se ampliaron con papers anteriores a los que ellos citan, para que la información antigua y la reciente compitan por similitud semántica (sugerencia del tutor). Las semillas anteriores (HippoRAG y HippoRAG 2) se marcan y se reportan aparte. Los textos se obtienen de la versión HTML de arXiv y se procesan en tres capas: *Bronze* (crudo, inmutable), *Silver* (texto útil) y *Gold* (Markdown con encabezado de metadatos y huella de contenido). Un único Gold alimenta a los dos sistemas.
 
 **Fragmentos citables.** Cada párrafo, tabla, ecuación o pie de figura del Gold tiene un identificador (`span_id`, por ejemplo `2405.14831#s11.p1`) y su huella. Las citas de ambos sistemas solo valen si resuelven a un fragmento real del corpus.
 
@@ -61,11 +65,11 @@ Fase de preparación del experimento: los dos sistemas y el arnés de comparaci�
 
 **Misma variable.** Ambos sistemas comparten el modelo (`deepseek-flash`), el corpus, las preguntas, el idioma de las respuestas, la frase de abstención y la extracción de citas. El wiki dispone de un presupuesto de consulta mayor que el RAG de una sola ronda; es una diferencia de arquitectura que el experimento mide a través de tokens, latencia y costo por respuesta.
 
-**Evolución en el tiempo.** Los papers se ingieren de uno en uno en orden de publicación. Tras los pasos 0, 5, 10, …, 50 se formulan las mismas preguntas a los dos sistemas, de modo que se observa cómo evoluciona cada uno al crecer el corpus.
+**Evolución en el tiempo.** Los 100 papers se ingieren de uno en uno, en tres cargas de 33, 33 y 34 papers con la cronología como base y diez excepciones que ordenan los papers según las preguntas que dependen de ellos ([decisión 0009](docs/decisiones/0009-cargas-por-fases-y-wiki-reutilizable.md)). Tras los pasos 33, 66 y 100 se formulan las mismas preguntas a los dos sistemas, de modo que se observa cómo evoluciona cada uno al crecer el corpus; con ese orden se pueden contestar 19, 51 y 84 preguntas en cada corte.
 
 ## Banco de preguntas
 
-El banco tiene **60 preguntas** (30 por autor), redactadas en inglés. Las respuestas correctas salen **del corpus**, no del mundo: si un paper afirma algo, el sistema debe repetirlo con su fuente.
+El banco tiene **100 preguntas** (47 T1, 15 T2, 18 T3, 4 T4 y 16 T5), redactadas en inglés: las 60 originales (30 por autor) y 40 casos de borde (20 por autor) añadidos al ampliar el corpus. Las respuestas correctas salen **del corpus**, no del mundo: si un paper afirma algo, el sistema debe repetirlo con su fuente.
 
 | Tipo | Qué pregunta | Qué mide | Ejemplo |
 |---|---|---|---|
@@ -77,7 +81,7 @@ El banco tiene **60 preguntas** (30 por autor), redactadas en inglés. Las respu
 
 Cualquier pregunta se comporta como T5 **antes de su `ingesta_minima`** (el primer paso en que todas sus fuentes ya están ingeridas): en esos pasos lo correcto es abstenerse, de modo que la abstención se mide durante todo el experimento.
 
-**Respuestas fijadas por humanos.** El código genera borradores con la evidencia anclada a fragmentos reales; solo una persona cambia su estado (`borrador` → `verificado_a` / `verificado_b` → `acordado`). Una pregunta cuenta en el experimento cuando los dos autores la verificaron por separado contra el paper, y se reporta su acuerdo (kappa de Cohen). Por diseño, al menos 20 de las 30 preguntas de cada autor son respondibles en las primeras 30 ingestas.
+**Respuestas fijadas por humanos.** El código genera borradores con la evidencia anclada a fragmentos reales; solo una persona cambia su estado (`borrador` → `verificado_a` / `verificado_b` → `acordado`). Una pregunta cuenta en el experimento cuando los dos autores la verificaron contra el paper, y se reporta su acuerdo (kappa de Cohen) en las 60 originales. Las 40 preguntas de borde partieron de borradores generados con ayuda de un modelo y las verificaron los dos autores contra los papers antes de contar para el informe (sin kappa para esas 40).
 
 ## Métricas
 
@@ -110,16 +114,18 @@ No son resultados del experimento; sirven para dimensionar su costo. Detalle en 
 
 | Medición | Valor |
 |---|---|
-| Indexación del RAG con los 50 papers (5.430 fragmentos, GPU) | 159 s |
-| Ingesta del wiki con 5 papers | 0,028 USD y 198 s |
-| Costo por pregunta con 5 papers ingeridos | RAG ≈ 0,0003–0,0004 USD; wiki ≈ 0,0008 USD |
-| Piloto del arnés (17 preguntas, pasos 0 y 5, 68 respuestas) | 0,056 USD |
+| Construcción del conocimiento (100 papers, 461 páginas) | ≈ 1,60 USD |
+| Corrida base `ampliado-fases-1` (100 preguntas × 3 pasos × 2 brazos) | 0,36 USD: RAG 0,055 y wiki 0,30 |
+| Contexto medio por respuesta (`k = 5`) | RAG ≈ 1.300 tokens; wiki ≈ 4.800 tokens |
+| RAG con `k` = 10, 15 y 20 (300 respuestas cada uno) | 0,07, 0,02 y 0,13 USD (el caché de DeepSeek altera el costo entre ellos) |
 
-La corrida completa se estima entre 1 y 2,5 USD; la cota alta que calcula el arnés (`--estimar`) es de 4,67 USD (1,50 de ingesta y 3,17 de preguntas).
+El costo por respuesta del wiki es unas cinco veces el del RAG con `k = 5`, y además hay que pagar la construcción, así que compilar por adelantado no se compensa en dólares: lo que se mide es la mejora de calidad. Detalle en la [bitácora](docs/bitacora-datos.md) y en [docs/sensibilidad-rag-y-deriva-del-wiki.md](docs/sensibilidad-rag-y-deriva-del-wiki.md).
+
 
 ## Alcance y límites
 
 - Se evalúa **una variante de wiki** sobre **un corpus**. Quedan fuera la revisión automática periódica del wiki (*lint*), la aprobación humana de los cambios, las ablaciones sobre ambas y el uso de Obsidian como visor.
+- Graphify y tgrep se evaluaron como capas de consulta y no mejoran los aciertos (ver [docs/evaluacion-grafo-100-papers.md](docs/evaluacion-grafo-100-papers.md)); quedan como capa opcional apagada.
 - El wiki dispone de un presupuesto de consulta mayor que el del RAG de una ronda.
 - El corpus procede de un único dominio (memoria de agentes y wikis de LLM) y el modelo es uno solo; la extrapolación a otros dominios o modelos queda como trabajo futuro.
 - Con temperatura 0 el proveedor no garantiza respuestas idénticas entre ejecuciones: una sola corrida por pregunta contiene ruido, y los resultados deben reportarse con esa salvedad.
@@ -148,23 +154,26 @@ Desarrollo guiado por especificaciones con [OpenSpec](https://github.com/Fission
 | Documento | Contenido |
 |---|---|
 | [Demostración](docs/demo.md) | Recorrido de punta a punta con la evidencia que produce. |
-| [tgrep y graphify](docs/evaluacion-tgrep-graphify.md) | Evaluación de dos herramientas para reducir los tokens de la consulta del wiki. Están integradas como capa opcional (`src/wikillm/wiki/capas.py`, brazo `wiki_grafo`), apagada por defecto. |
+| [tgrep y graphify](docs/evaluacion-tgrep-graphify.md), [a 100 papers](docs/evaluacion-grafo-100-papers.md) y [revisión independiente](docs/informe-graphify-independiente.md) | Evaluación de las dos herramientas: con 15 papers y con 100, con el binario real de tgrep y con ocho formas de usar Graphify. Están integradas como capa opcional (`src/wikillm/wiki/capas.py`, brazo `wiki_grafo`), apagada por defecto. |
+| [Segundo juez](docs/evaluacion-auxiliar-ampliado-fases-1.md) | Evaluación auxiliar a ciegas de 115 respuestas de la corrida base: acuerdo de 94,8 % con el juez principal (kappa 0,893). |
+| [Sensibilidad del RAG y deriva del wiki](docs/sensibilidad-rag-y-deriva-del-wiki.md) | El RAG con distintos `k`, qué conserva el wiki al ingerir más papers y el wiki con acceso al texto original. |
 | [Estado del arte](docs/estado-del-arte.md) | Revisión de literatura, implementaciones existentes, vacíos y encuadre. |
-| [Selección del corpus](docs/corpus.md) | Criterios, fuentes de candidatos y resultado de la selección de los 50 papers. |
+| [Selección del corpus](docs/corpus.md) | Criterios, fuentes de candidatos y resultado de la selección de los 50 papers iniciales; la ampliación a 100 está en las decisiones 0008 y 0009. |
 | [Bitácora](docs/bitacora-datos.md) | Qué se hizo, qué se decidió y qué falta, con las mediciones de cada etapa. |
 | [Nota de traspaso](docs/traspaso-datos.md) | Cómo leer el Gold, el manifest y los fragmentos. |
 | [Decisiones](docs/decisiones/) | Registro de decisiones de diseño. |
 | [Contratos](specs/) | Formato Gold, interfaz de los brazos y contrato de resultados. |
-| [Definición del problema](definicion_problema.md), [cronograma](cronograma.md), [cumplimiento de la rúbrica](cumplimiento_rubrica.md) | Documentos de planeación correspondientes a la formulación inicial; se actualizan con el diseño descrito en este archivo. |
+| [Definición del problema](definicion_problema.md), [cronograma](cronograma.md), [cumplimiento de la rúbrica](cumplimiento_rubrica.md) | Documentos de planeación; la definición del problema y el cumplimiento de la rúbrica están alineados con el diseño final (17 de noviembre). |
 | [Entrega final](docs/entrega/) | Informe y anteproyecto en LaTeX, con el cronograma como diagrama de Gantt. |
 
 ## Hitos
 
 | Fecha | Hito |
 |---|---|
-| 23–27 de noviembre | Corrida completa sobre el banco acordado |
-| 30 de noviembre – 4 de diciembre | Análisis, ranking con sensibilidad, informe y guion de demostración; congelamiento el 4 de diciembre |
-| 7–11 de diciembre | Entrega y sustentación |
+| 16–17 de noviembre | Corrida base y análisis complementarios (hechos) |
+| 20 de noviembre | Exposición |
+| 27 de noviembre | Cierre: informe final y documentación de reproducción |
+
 
 ## Demostración
 
@@ -184,7 +193,7 @@ Requiere [uv](https://docs.astral.sh/uv/) y un archivo `.env` creado a partir de
 ```bash
 uv sync
 uv run python -m wikillm.corpus candidatos    # metadatos verificados con la API de arXiv
-uv run python -m wikillm.corpus seleccionar   # elige los 50 papers → data/corpus_ids.txt
+uv run python -m wikillm.corpus seleccionar   # elige los 50 papers iniciales → data/corpus_ids.txt
 uv run python -m wikillm.ingest               # Bronze → Silver → Gold (respeta el ritmo de arXiv)
 uv run python -m wikillm.corpus manifest      # data/manifest_corpus.jsonl
 uv run python -m wikillm.corpus spans         # data/gold/spans.jsonl
@@ -200,6 +209,21 @@ uv run python -m wikillm.corpus fases --manifest data/corpus100/manifest.jsonl -
 uv run python -m wikillm.eval metricas --respuestas results/<nombre>/respuestas.jsonl
 uv run ruff check . && uv run ruff format --check . && uv run pytest
 ```
+
+Para el corpus de 100 papers y el banco de 100 preguntas (`data/corpus100/`, `data/preguntas/banco_100.jsonl`):
+
+```bash
+uv run python -m wikillm.corpus fases --manifest data/corpus100/manifest.jsonl --fases data/corpus100/fases.json
+uv run python -m wikillm.wiki ingerir --wiki data/wiki/construccion-1 --gold data/corpus100/gold \
+    --spans data/corpus100/gold/spans.jsonl --manifest data/corpus100/manifest.jsonl --paso 100   # construye el conocimiento (≈ 1,6 USD)
+uv run python -m wikillm.arnes correr --corrida ampliado-fases-1 --pasos 33,66,100 \
+    --banco data/preguntas/banco_100.jsonl --manifest data/corpus100/manifest.jsonl \
+    --gold data/corpus100/gold --spans data/corpus100/gold/spans.jsonl --wiki-de construccion-1
+uv run python -m wikillm.eval metricas --respuestas results/ampliado-fases-1/respuestas.jsonl --juez \
+    --banco data/preguntas/banco_100.jsonl --manifest data/corpus100/manifest.jsonl \
+    --spans data/corpus100/gold/spans.jsonl
+```
+
 
 Los textos de arXiv no se versionan (regla 8 de la [constitución](CONSTITUTION.md)); se regeneran con estos comandos.
 

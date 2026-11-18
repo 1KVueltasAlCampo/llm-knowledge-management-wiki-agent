@@ -35,11 +35,11 @@ El proyecto diseña e implementa un **pipeline MLOps que construye y mantiene un
 
 Cuatro decisiones delimitan el alcance:
 
-**Corpus acotado y con verdad verificable.** Una subárea de IA con *leaderboards* activos, entre 30 y 50 fuentes, y una ventana temporal **posterior al corte de entrenamiento del modelo evaluado**. Las afirmaciones sobre resultados en benchmarks son numéricas, fechadas y objetivamente superables, lo que da un criterio de verdad sin juicio subjetivo; la ventana posterior al corte impide que el modelo responda de memoria en lugar de leer el wiki.
+**Corpus acotado y con verdad verificable.** Una subárea de IA con *leaderboards* activos, 100 fuentes (los 50 papers iniciales y 50 más, entre ellos los anteriores a los que ellos citan), y una ventana temporal **posterior al corte de entrenamiento del modelo evaluado**. Las afirmaciones sobre resultados en benchmarks son numéricas, fechadas y objetivamente superables, lo que da un criterio de verdad sin juicio subjetivo; la ventana posterior al corte impide que el modelo responda de memoria en lugar de leer el wiki.
 
 **La procedencia es un metadato de primera clase.** Cada afirmación conserva su fuente y sus señales de respaldo: código disponible, experimentos propios, estado de publicación y versión del preprint. La calidad de la evidencia no se disuelve en la prosa.
 
-**Human-in-the-loop verificable.** El agente no escribe sobre la base en producción: propone los cambios como *Pull Request* en Git. Un revisor humano los evalúa en Obsidian —donde el grafo de enlaces muestra qué páginas toca cada cambio— y aprueba o corrige. La revisión queda versionada, lo que convierte la gobernanza en un dato medible: cuántos errores intercepta el humano y a qué costo en tiempo.
+**Escritura controlada y verdad fijada por humanos.** El agente escribe el wiki mediante un proceso controlado: el código valida su salida (descarta las citas que no resuelven a un fragmento real del corpus, deja como texto los enlaces sin destino y cuenta las afirmaciones numéricas sin cita) y cada paso de ingesta queda guardado como una copia versionada en Git. La intervención humana está en la verdad de referencia: los dos autores fijaron y verificaron contra los papers la respuesta correcta de las 100 preguntas de control, y se reporta su acuerdo. La aprobación de los cambios del wiki por *Pull Request* y su revisión en Obsidian quedaron fuera del alcance.
 
 **Código y datos abiertos.** Repositorio público bajo licencia MIT, sobre fuentes libres, en coherencia con los principios de Ciencia Abierta que el proyecto estudia.
 
@@ -49,17 +49,17 @@ Cuatro decisiones delimitan el alcance:
 
 La pregunta es deliberadamente abierta. Se busca establecer *bajo qué condiciones* compilar por adelantado conviene, no demostrar que siempre conviene: Han et al. (2025) ya mostraron que ninguna arquitectura gana en todo. Hay además una hipótesis de riesgo que el proyecto se obliga a probar contra sí mismo: **una base compilada puede blanquear el ruido**, convirtiendo una afirmación débil en prosa segura y permanente. Si eso ocurre, el WikiLLM sería peor que RAG aquí, y el proyecto lo reportará.
 
-El método es simple: se ordenan las fuentes por fecha, se ingieren de a una, y tras cada ingesta se guarda una copia versionada del wiki. Sobre cada copia se responde el mismo conjunto de preguntas de control, cuyas respuestas correctas los dos autores fijaron de antemano. Se miden cinco cosas:
+El método es simple: se ordenan las fuentes (por fecha, en tres cargas con unas pocas excepciones; decisión 0009), se ingieren de a una, y tras cada ingesta se guarda una copia versionada del wiki. Sobre cada copia se responde el mismo conjunto de preguntas de control, cuyas respuestas correctas los dos autores fijaron de antemano. Se miden cinco cosas:
 
 | Qué se mide | Pregunta que responde |
 |---|---|
 | Cobertura | ¿El wiki sabe lo que debería saber? |
 | Fundamentación | ¿Cada afirmación se puede rastrear a su fuente, con su nivel de respaldo? |
 | Resolución de contradicciones | Cuando un trabajo nuevo supera una cifra anterior, ¿el wiki se actualiza? |
-| Supervivencia del error | Si se introduce un error a propósito, ¿cuántas ingestas después sigue ahí? |
+| Conservación | Al ingerir más fuentes, ¿el wiki conserva lo que ya sabía? |
 | Costo | ¿Cuántos tokens y cuánto tiempo por ingesta y por consulta, frente a RAG? |
 
-Comparando esas mediciones al variar la frecuencia de la revisión automática (*lint*) y el grado de intervención humana, se identifica qué política de mantenimiento conserva mejor la calidad. Esas dos variables están enunciadas en la literatura pero nadie las ha medido.
+El diseño final compara dos arquitecturas con el mismo modelo (RAG simple y WikiLLM) y no políticas de mantenimiento: la revisión automática periódica (*lint*) y el grado de intervención humana en la escritura quedaron fuera del alcance y se declaran como trabajo futuro. Son dos variables enunciadas en la literatura que nadie ha medido.
 
 ## 5. Contribución esperada
 

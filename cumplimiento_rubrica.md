@@ -1,252 +1,266 @@
 # Entregable 3: Cumplimiento de la rúbrica
 
-Estado al 10 de noviembre de 2026. Cada criterio dice lo que pide, lo que el proyecto **ya
-tiene** (con el archivo donde se comprueba), lo que **falta** y lo que **quedó fuera del
-alcance**. Este documento reemplaza al de la formulación inicial, que prometía cosas que el
-diseño final no construye (aprobación humana por Pull Request, Obsidian, `litellm`, un
-orquestador con avisos, pruebas de inyección y un brazo con modelo local). El alcance real
-está en el [README](README.md#alcance-y-límites).
+Estado al 17 de noviembre de 2026. Cada criterio dice lo que pide, lo que el proyecto **ya tiene** (con el
+archivo donde se comprueba), lo que **falta** y lo que **quedó fuera del alcance**. Reemplaza a la versión del
+10 de noviembre, que se escribió antes de ampliar el corpus a 100 papers y de correr el experimento. El
+alcance real está en el [README](README.md#alcance-y-límites).
 
-Leyenda: **Hecho** = existe y se puede comprobar hoy · **Con la corrida** = lo produce la
-corrida completa · **Falta** = trabajo pendiente · **Fuera de alcance** = decidido y declarado.
+Leyenda: **Hecho** = existe y se puede comprobar hoy · **Falta** = trabajo pendiente · **Fuera de alcance** =
+decidido y declarado.
 
-## R.6.1 — Modelos de IA generativa para nuevos productos
+## R.6.1: Modelos de IA generativa para nuevos productos
 
-### Cr1 — Formulación del problema
+### Cr1: Formulación del problema
 
 **Pide:** traducir el entorno empresarial en un problema abordable con IA generativa.
 
-**Hecho.** El problema parte de una necesidad organizacional medida: el conocimiento está
-fragmentado, envejece rápido y buscarlo consume jornada (Nakash y Bouhnik, 2024, en
-[definicion_problema.md](definicion_problema.md)). El RAG que hoy se usa para mitigarlo tiene tres
-límites: repite la síntesis en cada consulta, mezcla documentos obsoletos con vigentes y no
-acumula nada. El proyecto lo estudia sobre literatura abierta de IA porque es la versión más
-difícil del mismo problema y la única que se puede evaluar en público. La pregunta de
-investigación y la hipótesis están en el [README](README.md#pregunta-de-investigación-e-hipótesis)
-y la literatura en [docs/estado-del-arte.md](docs/estado-del-arte.md).
+**Hecho.** El problema parte de una necesidad organizacional medida: el conocimiento está fragmentado, envejece
+rápido y buscarlo consume jornada (Nakash y Bouhnik, 2024, en [definicion_problema.md](definicion_problema.md),
+alineada con el diseño final el 17 de noviembre). El RAG que se usa para mitigarlo repite la síntesis en cada
+consulta, mezcla documentos obsoletos con vigentes y no acumula nada. El proyecto lo estudia sobre literatura
+abierta de IA porque es la versión más difícil del mismo problema y la única que se puede evaluar en público. La
+pregunta de investigación y la hipótesis están en el [README](README.md#pregunta-de-investigación-e-hipótesis).
 
-**Falta.** Alinear `definicion_problema.md` con el diseño final: todavía describe la aprobación por
-Pull Request y la revisión en Obsidian, que están fuera de alcance.
+**Falta.** Un párrafo en el informe que traduzca los resultados a la decisión de negocio (cuándo conviene
+compilar y cuándo recuperar), con el costo y la sensibilidad al contexto del RAG.
 
-### Cr2 — Elección del modelo
+### Cr2: Elección del modelo
 
 **Pide:** justificar la elección comparando alternativas, no solo nombrar un modelo.
 
-**Hecho.** Se usa un modelo único, `deepseek-flash`, en los dos sistemas, porque el tutor pidió el
-mismo modelo en ambos y recomendó este. La
-[decisión 0001](docs/decisiones/0001-modelo-unico-deepseek-flash.md) compara las alternativas
-disponibles (DeepSeek Pro, Gemini, modelos comerciales grandes, modelo local) con criterios
+**Hecho.** Se usa un modelo único, `deepseek-flash`, en los dos sistemas, porque el tutor pidió el mismo modelo
+en ambos y recomendó este (y pidió no usar el Pro). La [decisión 0001](docs/decisiones/0001-modelo-unico-deepseek-flash.md)
+compara las alternativas (DeepSeek Pro, Gemini, modelos comerciales grandes, modelo local) con criterios
 explícitos: contexto, formato de salida, costo con caché y saldo. La
-[decisión 0003](docs/decisiones/0003-roles-de-modelos-en-la-evaluacion.md) separa los roles
-(responde, redacta, juzga) para que ningún modelo se evalúe a sí mismo.
+[decisión 0003](docs/decisiones/0003-roles-de-modelos-en-la-evaluacion.md) separa los roles (responde, redacta,
+juzga) para que ningún modelo se evalúe a sí mismo.
 
-**Límite declarado.** El experimento mide arquitecturas con un modelo, no modelos. No se comparó la
-calidad de otros respondedores.
+**Límite declarado.** El experimento mide arquitecturas con un modelo, no modelos.
 
-### Cr3 — Integración del modelo
+### Cr3: Integración del modelo
 
 **Pide:** adaptar el modelo al caso, de forma funcional y escalable.
 
-**Hecho.** El modelo no es un chat: es el motor de dos sistemas que comparten cliente, reglas de
-respuesta y citas. En el WikiLLM, la ingesta es un proceso de dos llamadas por paper (plan y
-escritura) cuya salida valida el código: descarta las citas que no resuelven a un fragmento de un
-paper ya ingerido, deja como texto los enlaces sin destino y cuenta las afirmaciones numéricas sin
-cita (`src/wikillm/wiki/ingesta.py`). La consulta es un agente con herramientas de búsqueda y
-lectura y un tope de acciones. Cada llamada pasa por `ClienteModelo`, que registra tokens, tiempo y
-dólares y respeta el tope de gasto.
+**Hecho.** El modelo es el motor de dos sistemas que comparten cliente, reglas de respuesta y citas. En el
+WikiLLM, la ingesta son dos llamadas por paper (plan y escritura) cuya salida valida el código: descarta las
+citas que no resuelven a un fragmento de un paper ya ingerido, deja como texto los enlaces sin destino y cuenta
+las afirmaciones numéricas sin cita (`src/wikillm/wiki/ingesta.py`). El conocimiento de los 100 papers se
+construyó aparte (461 páginas, 11.662 citas válidas, unos 1,60 USD) y las corridas lo reutilizan (`--wiki-de`);
+el arnés puede correr solo los brazos que se pidan (`--brazos`). La consulta es un agente con herramientas de
+búsqueda y lectura y un tope de acciones.
 
-**Hecho (opcional).** La evaluación de [graphify y tgrep](docs/evaluacion-tgrep-graphify.md) llevó a
-una capa de consulta con grafo sobre el mismo wiki, integrada como brazo adicional `wiki_grafo`
-(`src/wikillm/wiki/capas.py`, opciones `--graphify` y `--tgrep` de `arnes correr`). Está apagada por
-defecto y no cambia el WikiLLM base.
+**Hecho (opcional).** Graphify y tgrep se integraron como capa opcional (`src/wikillm/wiki/capas.py`, brazo
+`wiki_grafo`) y se evaluaron a fondo: no mejoran los aciertos
+([docs/evaluacion-grafo-100-papers.md](docs/evaluacion-grafo-100-papers.md)). La capa queda apagada.
 
 **Fuera de alcance.** La aprobación humana de los cambios del wiki antes de escribirlos.
 
-### Cr4 — Interpretar la evaluación del desempeño
+### Cr4: Interpretar la evaluación del desempeño
 
 **Pide:** aplicar métricas adecuadas e interpretarlas frente a los objetivos.
 
-**Hecho.** Las métricas están implementadas y probadas con resultados sintéticos
-(`src/wikillm/eval/`): correctitud (capa determinista y, solo para lo indeterminado, un juez de
-otro modelo), fundamentación de las citas, cobertura, abstención, respuestas obsoletas y
-contexto, costo y tiempo. Se evalúan contra un banco de 60 preguntas con respuesta fijada de
-antemano por los dos autores, con el acuerdo entre ambos reportado (kappa de 0,40 en A y de 0,15 en
-B antes de aplicar las correcciones cruzadas; [bitácora](docs/bitacora-datos.md)).
+**Hecho.** Las métricas están implementadas y probadas (`src/wikillm/eval/`): correctitud (capa determinista y,
+solo para lo indeterminado, un juez de otro proveedor), fundamentación de las citas, cobertura, abstención,
+respuestas obsoletas, contexto, costo y tiempo, con comparación pareada (intervalos y prueba de McNemar) y
+análisis de fallos. Se evalúan contra un banco de **100 preguntas** fijadas por los dos autores y verificadas
+por ambos contra los papers (el kappa solo existe para las 60 originales; para las 40 de borde no se calculó). La corrida base `ampliado-fases-1` ya está hecha: con `k = 5`, el wiki acierta el
+0,70 frente al 0,48 del RAG al paso 100 (diferencia +0,23, IC 95 % [+0,11, +0,35], p = 0,001). El análisis de
+sensibilidad muestra que con `k = 20` la diferencia baja a +0,06 y deja de ser significativa
+([docs/sensibilidad-rag-y-deriva-del-wiki.md](docs/sensibilidad-rag-y-deriva-del-wiki.md)).
 
-**Con la corrida.** Los resultados y su interpretación (ranking con análisis de sensibilidad) salen
-de la corrida completa y se escriben en el informe.
+**Hecho (segundo juez).** La evaluación auxiliar sobre `ampliado-fases-1` ya está hecha: 115 respuestas a ciegas,
+acuerdo de 94,8 % con el juez principal (kappa 0,893), con las discrepancias y los límites declarados
+([docs/evaluacion-auxiliar-ampliado-fases-1.md](docs/evaluacion-auxiliar-ampliado-fases-1.md)).
 
-**Falta.** Calibrar el juez contra etiquetas humanas (prevista) y ejecutarlo sobre el piloto antes
-de la corrida.
+**Falta.** Escribir la interpretación crítica en el informe (qué dicen los resultados, qué no, y los límites:
+una corrida por celda, orden de ingesta diseñado con las preguntas a la vista).
 
-## R.6.2 — Automatizar tareas con IA generativa
+## R.6.2: Automatizar tareas con IA generativa
 
-### Cr5 — Selección de tareas automatizables
+### Cr5: Selección de tareas automatizables
 
 **Pide:** identificar procesos donde la automatización aporta valor real.
 
-**Hecho.** Se automatiza la síntesis y la reconciliación documental, que es repetitiva y costosa:
-el WikiLLM integra cada fuente nueva en páginas existentes en lugar de rehacer la síntesis en cada
-consulta. La [definición del problema](definicion_problema.md) explica por qué esa es la tarea con
-valor.
+**Hecho.** Se automatiza la síntesis y la reconciliación documental, que es repetitiva y costosa: el WikiLLM
+integra cada fuente nueva en páginas existentes en lugar de rehacer la síntesis en cada consulta
+([definición del problema](definicion_problema.md)).
 
 **Fuera de alcance.** La revisión humana periódica del wiki (*lint*) y la aprobación de cambios.
 
-### Cr6 — Eficiencia lograda
+### Cr6: Eficiencia lograda
 
 **Pide:** demostrar que la solución mejora el proceso, con cifras.
 
-**Hecho.** Todo costo se registra (regla 6) y hay mediciones de desarrollo: ingerir un paper
-cuesta del orden de 0,016 USD y una consulta entre 0,0003 y 0,001 USD
-([README](README.md#mediciones-de-desarrollo)). La evaluación de [graphify y
-tgrep](docs/evaluacion-tgrep-graphify.md) cuantifica tokens y dólares por consulta.
+**Hecho.** Todo costo se registra (regla 6). Construir el conocimiento cuesta unos 1,60 USD; con `k = 5`, una
+respuesta del wiki cuesta unas cinco veces la del RAG (≈ 0,0010 frente a ≈ 0,00018 USD) y usa unos 4.800
+tokens de contexto frente a 1.300. **No existe un punto de equilibrio en dólares**: compilar por adelantado no
+se compensa en costo. Lo que el experimento muestra es una mejora de **calidad** (+0,23 de cobertura con
+`k = 5`), que se reduce cuando el RAG recibe un contexto como el del wiki. También se midió que el wiki casi no
+olvida lo aprendido (97 % a 99 % de las cifras se conservan entre cargas) pero no capta todo al ingerir.
 
-**Con la corrida.** Costo de ingesta, de consulta y tiempo por paso para los dos sistemas, con los
-que se calcula el **punto de equilibrio**: cuántas consultas por paper ingerido hacen falta para que
-compilar por adelantado salga más barato que recuperar (`scripts/punto_de_equilibrio.py`).
+**Falta.** Calcular y graficar con los datos de la corrida el costo y el tiempo por paso y por consulta
+(`scripts/punto_de_equilibrio.py`), y presentar la eficiencia como calidad frente a costo, sin sugerir un
+ahorro que no existe.
 
-**Falta.** Escribir esa curva en el informe con los datos de la corrida.
-
-### Cr7 — Mitigación de riesgos éticos
+### Cr7: Mitigación de riesgos éticos
 
 **Pide:** estrategias para sesgos algorítmicos, privacidad y seguridad.
 
 **Hecho.**
-- **Seguridad.** El texto de un paper es dato, nunca instrucción (regla 13): los prompts lo tratan
-  así y ninguna cita vale si no resuelve a un fragmento real del corpus. Las claves viven en `.env`
-  y fuera de Git (regla 5).
-- **Sesgo.** El criterio de inclusión del corpus está declarado en [docs/corpus.md](docs/corpus.md).
-  La respuesta correcta sale del corpus, no del mundo (regla 3), y el juez es de otro proveedor que
-  el respondedor para evitar la autopreferencia (decisión 0003).
-- **Privacidad y uso responsable.** El corpus es público y sin datos personales. Se respetan
-  `robots.txt`, los términos de uso y el ritmo de peticiones (regla 8), y no se versionan textos de
-  arXiv.
+- **Seguridad.** El texto de un paper es dato, nunca instrucción (regla 13): los prompts lo tratan así y
+  ninguna cita vale si no resuelve a un fragmento real del corpus. Las claves viven en `.env` y fuera de Git
+  (regla 5).
+- **Sesgo.** El criterio de inclusión del corpus está declarado ([docs/corpus.md](docs/corpus.md)). La
+  respuesta correcta sale del corpus, no del mundo (regla 3), y el juez es de otro proveedor que el
+  respondedor (decisión 0003). Las 100 preguntas fueron verificadas por los dos autores como personas; las 40
+  de borde partieron de borradores generados con ayuda de un modelo.
+- **Privacidad y uso responsable.** El corpus es público y sin datos personales. Se respetan `robots.txt`, los
+  términos de uso y el ritmo de peticiones (regla 8), y no se versionan textos de arXiv.
 
-**Falta.** No hay una prueba con documentos hechos para atacar al agente ni con fuentes de baja
-calidad. Opción acotada: probar con 2 o 3 frases de inyección sembradas en un paper de desarrollo y
-reportar si el agente las ignora (costo estimado de centavos). Si no se hace, se declara como
-limitación.
+- **Inyección de instrucciones (18-nov).** Se sembraron tres ataques con canario (anulación directa,
+  suplantación del sistema, secuestro del agente) en el RAG, en la consulta del wiki y en la ingesta de dos
+  papers envenenados: 0 ataques logrados en 72 respuestas y 2 ingestas, por 0,03 USD
+  ([docs/prueba-de-inyeccion.md](docs/prueba-de-inyeccion.md)). Límites declarados allí: 6 preguntas, ataques
+  sencillos y el wiki «en otra página» casi no se expuso.
+
+**Falta.** En el informe hay que declarar el sesgo de selección del orden de ingesta (diez papers
+se movieron de carga mirando las preguntas, decisión 0009).
 
 **Fuera de alcance.** El brazo con modelo local y la medición de eficacia de la revisión humana.
 
-### Cr8 — Documentación de la solución
+### Cr8: Documentación de la solución
 
 **Pide:** que la solución esté documentada y pueda replicarse.
 
-**Hecho.** [README](README.md) con el diseño, las decisiones y cómo reproducir de principio a fin;
-[AGENTS.md](AGENTS.md) y [CONSTITUTION.md](CONSTITUTION.md); cinco [decisiones de
-diseño](docs/decisiones/) con su justificación; contratos en [specs/](specs/); cambios guiados por
-OpenSpec con propuesta, tareas y verificación; bitácora y nota de traspaso de datos; licencia MIT
-([LICENSE](LICENSE)); y el historial de commits semánticos como evidencia del trabajo. Los textos
-de arXiv se regeneran con los comandos del README.
+**Hecho.** [README](README.md) con el diseño, el estado y cómo reproducir de principio a fin (incluido el flujo
+de 100 papers); [AGENTS.md](AGENTS.md) y [CONSTITUTION.md](CONSTITUTION.md); diez
+[decisiones de diseño](docs/decisiones/); contratos en [specs/](specs/); cambios guiados por OpenSpec con
+propuesta, tareas y verificación; bitácora y nota de traspaso de datos; tres documentos de evaluación de las
+herramientas y de sensibilidad; scripts de análisis reproducibles; licencia MIT ([LICENSE](LICENSE)); y el
+historial de commits semánticos como evidencia del trabajo.
 
-**Falta.** Confirmar que el repositorio es público antes de la entrega.
+**Hecho.** El repositorio es público (confirmado el 17 de noviembre).
 
-## R.7.1 — Gestión y preparación de datos para el despliegue
+## R.7.1: Gestión y preparación de datos para el despliegue
 
-### Cr1 — Preprocesamiento
+### Cr1: Preprocesamiento
 
 **Pide:** limpieza, transformación y validación dentro del flujo.
 
-**Hecho.** El corpus de 50 papers pasa por tres capas: *Bronze* (HTML crudo e inmutable, con huella
-SHA-256 de la descarga), *Silver* (texto útil) y *Gold* (Markdown con encabezado de metadatos, versión
-del preprint y huella de contenido). Cada párrafo, tabla, ecuación o pie de figura recibe un
-identificador citable (`span_id`) con su huella ([docs/corpus.md](docs/corpus.md),
-[specs/formato-gold.md](specs/formato-gold.md)). El banco de preguntas se valida con
-`wikillm.eval validar-banco` (60 preguntas, 0 problemas). Todo esto ocurre **antes** de cualquier
-llamada de pago al modelo.
+**Hecho.** Los 100 papers pasan por tres capas: *Bronze* (HTML crudo e inmutable, con huella SHA-256), *Silver*
+(texto útil) y *Gold* (Markdown con metadatos, versión del preprint y huella). Cada párrafo, tabla, ecuación o
+pie de figura recibe un identificador citable (`span_id`) con su huella ([docs/corpus.md](docs/corpus.md),
+[specs/formato-gold.md](specs/formato-gold.md)). Se corrigió el conversor, que perdía 14 tablas de 4 papers que
+LaTeXML dibuja con `<span>`, con prueba. El banco se valida con `wikillm.eval validar-banco` (100 preguntas, 138
+evidencias que resuelven a un fragmento con la misma huella). Todo ocurre **antes** de cualquier llamada de pago.
 
-### Cr2 — Selección y dominio técnico
+### Cr2: Selección y dominio técnico
 
 **Pide:** herramientas pertinentes, usadas correctamente.
 
-**Hecho.** Python 3.12 con uv; ruff y pytest para calidad y regresiones (215 archivos formateados y
-la suite de pruebas pasa sin llamar a la API real, regla 7); LangChain con embeddings
-`bge-small-en-v1.5` en GPU y Qdrant en modo local para el RAG
-([decisión 0005](docs/decisiones/0005-qdrant-como-base-vectorial.md)); la API de arXiv para metadatos;
-Git con una copia versionada del wiki por paso de ingesta; OpenSpec para especificar antes de
-codificar; y un panel web local para observar los dos sistemas.
+**Hecho.** Python 3.12 con uv; ruff y pytest para calidad y regresiones (la suite no llama a la API real,
+regla 7); LangChain con embeddings `bge-small-en-v1.5` en GPU y Qdrant local para el RAG
+([decisión 0005](docs/decisiones/0005-qdrant-como-base-vectorial.md)); la API de arXiv para metadatos; Git con
+una copia versionada del wiki por paso de ingesta; OpenSpec para especificar antes de codificar; y un panel
+web local para observar los dos sistemas. Graphify y tgrep se evaluaron con criterio y se dejaron como capa
+opcional.
 
-### Cr3 — Automatización e integración del pipeline
+### Cr3: Automatización e integración del pipeline
 
 **Pide:** un pipeline que automatice la entrada de datos y se integre con el modelo.
 
 **Hecho.** El pipeline es modular y cada paso es un comando que se puede repetir por separado:
 
 ```
-wikillm.corpus candidatos → seleccionar → manifest → spans   (qué papers y qué fragmentos)
-wikillm.ingest                                               (Bronze → Silver → Gold)
-wikillm.rag indexar                                          (fragmentos → vectores → Qdrant)
-wikillm.wiki ingerir                                         (plan + escritura + validación)
-wikillm.arnes correr                                         (ingesta por pasos + preguntas)
-wikillm.eval metricas                                        (correctitud, citas, costo)
+wikillm.corpus candidatos → seleccionar → manifest → fases → spans   (qué papers, en qué cargas y qué fragmentos)
+wikillm.ingest                                                       (Bronze → Silver → Gold)
+wikillm.eval ampliar-banco                                           (banco de 100 con evidencia anclada)
+wikillm.wiki ingerir                                                 (plan + escritura + validación)
+wikillm.arnes correr [--wiki-de] [--brazos]                          (preguntas por pasos con costo controlado)
+wikillm.eval metricas → informe → fallos → comparar-corridas         (correctitud, citas, costo, comparación)
 ```
 
-Los dos sistemas leen el mismo Gold y el mismo manifiesto (`orden_ingesta`), lo que mantiene una
-sola variable entre ellos.
+Los dos sistemas leen el mismo Gold y el mismo manifiesto (`orden_ingesta`), lo que mantiene una sola variable
+entre ellos.
 
-## R.7.2 — Automatización del despliegue (MLOps)
+## R.7.2: Automatización del despliegue (MLOps)
 
-### Cr4 — Automatización del despliegue
+### Cr4: Automatización del despliegue
 
 **Pide:** scripts, orquestación y monitorización.
 
-**Hecho.** Todo se ejecuta con scripts reproducibles. El arnés (`wikillm.arnes correr`) orquesta la
-ingesta por pasos y las preguntas, imprime antes su estimación de costo y respeta un tope de gasto
-por corrida. El panel local muestra en vivo las llamadas, los costos y las citas.
+**Hecho.** Todo se ejecuta con scripts reproducibles. El arnés imprime antes su estimación de costo, respeta un
+tope de gasto por corrida y avisa de la hora pico del proveedor. El panel local muestra en vivo las llamadas,
+los costos y las citas.
 
-**Fuera de alcance.** Ejecución por calendario y avisos automáticos cuando una métrica se degrada;
-el [cronograma](cronograma.md) ya preveía ejecutar con disparo manual y documentarlo como limitación.
+**Hecho.** Flujo de integración continua en `.github/workflows/ci.yml`: en cada push a `main` y en cada Pull
+Request ejecuta `ruff check`, `ruff format --check` y `pytest`, sin claves ni PyTorch (las pruebas no los
+usan). Se comprobó que la suite pasa en una copia solo con los archivos versionados, sin red ni caché de
+modelos. Queda pendiente su primera ejecución en GitHub.
 
-**Falta (opcional).** Un flujo de integración continua que ejecute ruff y pytest en cada cambio; hoy
-esas comprobaciones se ejecutan a mano antes de cerrar un cambio.
+**Fuera de alcance.** Ejecución por calendario y avisos automáticos cuando una métrica se degrada: el
+[cronograma](cronograma.md) preveía disparo manual y documentarlo como limitación.
 
-### Cr5 — Escalabilidad y robustez
+### Cr5: Escalabilidad y robustez
 
 **Pide:** soportar crecimiento y resistir fallos.
 
-**Hecho.** `ClienteModelo` reintenta con espera creciente ante errores transitorios y falla con un
-error claro al llegar al tope de gasto. El arnés es **reanudable**: repetir el comando con el mismo
-nombre salta lo que ya consta, y comprueba que el wiki contenga exactamente los N primeros papers
-antes de preguntar en el paso N.
+**Hecho.** `ClienteModelo` reintenta con espera creciente ante errores transitorios y falla con un error claro
+al llegar al tope de gasto. El arnés es **reanudable**: repetir el comando con el mismo nombre salta lo que ya
+consta y comprueba que el wiki contenga exactamente los N primeros papers. Se ejerció en las corridas reales,
+con cortes de red que se reanudaron sin perder datos. El corpus creció de 50 a 100 papers sin cambiar el
+código.
 
-**Con la corrida.** El tiempo y el costo por paso a medida que el corpus crece de 0 a 50 papers, para
-los dos sistemas.
+**Falta.** Graficar el costo y el tiempo por paso a medida que el corpus crece de 0 a 100 papers (los datos
+están en `ingestas.jsonl` de la construcción).
 
-### Cr6 — Prácticas MLOps
+### Cr6: Prácticas MLOps
 
 **Pide:** versionado, logging, actualización y reentrenamiento.
 
-**Hecho.** Versionado: el wiki vive en un repositorio Git propio con una etiqueta `paso-N` por paso, y
-cada corrida guarda en `corrida.json` el commit, el modelo, la temperatura, los precios y la huella
-del banco (regla 9). Logging: cada llamada al modelo deja una línea con tokens, tiempo y dólares
-(`llamadas.jsonl`). Regresión: pytest. Equivalente del reentrenamiento: como el sistema no entrena
-pesos, lo equivalente es la **recompilación** del wiki cuando entra un paper que actualiza a otro, y
-las preguntas T4 miden justamente si cada sistema da el valor nuevo o se queda con el obsoleto.
+**Hecho.** Versionado: el wiki vive en un repositorio Git propio con una etiqueta `paso-N` por paso, y cada
+corrida guarda en `corrida.json` el commit, el modelo, la temperatura, los precios y la huella del banco
+(regla 9). Logging: cada llamada al modelo deja una línea con tokens, tiempo y dólares (`llamadas.jsonl`).
+Regresión: pytest. Equivalente del reentrenamiento: como el sistema no entrena pesos, lo equivalente es la
+**actualización** del wiki cuando entra un paper que cambia un dato; las preguntas T4 y el análisis de deriva
+miden si cada sistema da el valor nuevo: el wiki conserva lo aprendido, pero no retira el valor viejo cuando
+llega el nuevo.
 
-## RA1 y RA2 — Comunicación escrita y oral
+## RA1: Comunicación escrita
 
-**Hecho.** Informe y anteproyecto en LaTeX ([docs/entrega](docs/entrega/)), estado del arte con
-referencias verificadas, cronograma como diagrama de Gantt, guion y diapositivas de la demostración
-([docs/presentacion](docs/presentacion/), [docs/demo.md](docs/demo.md)). La sustentación se organiza
-sobre una idea: *compilar y mantener no es lo mismo que recuperar, y la diferencia se puede medir*.
-La demostración muestra la misma pregunta a los dos sistemas antes y después de ingerir el paper que
-la responde.
+**Hecho.** Informe y anteproyecto en LaTeX ([docs/entrega](docs/entrega/)), estado del arte con referencias
+verificadas, cronograma como diagrama de Gantt, y los documentos de evaluación con tablas.
 
-**Falta.** El capítulo de resultados, las cifras finales y la curva de equilibrio, que dependen de la
-corrida. Para la defensa conviene tener preparadas tres preguntas previsibles: por qué no basta con
-GraphRAG, qué pasa si el resultado favorece al RAG (cualquier resultado es válido y se reporta, como
-dice la hipótesis) y por qué confiar en un sistema que usa IA para sintetizar literatura que puede
-estar contaminada por IA (trazabilidad de citas verificadas contra el corpus).
+**Falta (es el mayor pendiente).**
+- **F1 y F2, estructura e intención:** el informe conserva la estructura del anteproyecto («Resultados
+  esperados»). Hay que escribir Resultados, Discusión y Conclusiones con las cifras reales y ordenar el
+  mensaje: *compilar y mantener no es lo mismo que recuperar, y la diferencia se mide, pero depende del
+  contexto que se da al RAG*.
+- **F3, canales y medios:** declarar la estrategia de comunicación (audiencia: tutor y jurado; texto: informe,
+  resumen y one-pager; medios: documento, exposición, demostración y repositorio).
+- **F4, conclusiones:** a partir de los resultados (sensibilidad al `k`, deriva y captura en la ingesta,
+  Graphify y tgrep), no de la hipótesis.
+- **F5, gramática y referencias:** revisión de redacción, tablas y figuras con el estilo pedido por el curso.
+
+## RA2: Comunicación oral (exposición el 20 de noviembre)
+
+**Hecho.** Guion y diapositivas de la demostración ([docs/presentacion](docs/presentacion/),
+[docs/demo.md](docs/demo.md)): la misma pregunta a los dos sistemas antes y después de ingerir el paper que la
+responde.
+
+**Falta.**
+- Actualizar el guion y las diapositivas con las cifras finales (hoy citan 5 de 50 papers y 60 preguntas).
+- Ensayar con tiempos y cuidar muletillas, voz y recursos de apoyo (F4 a F6).
+- Preparar la defensa (F7) con las preguntas previsibles: por qué `k = 5` y qué pasa con `k = 20`; por qué
+  Graphify y tgrep no mejoran los aciertos; qué implica que el orden de ingesta se diseñó mirando las
+  preguntas; por qué el wiki cuesta más y qué se gana; por qué confiar en un sistema que usa IA para
+  sintetizar literatura posiblemente contaminada por IA (trazabilidad de citas verificadas).
 
 ## Resumen de lo que falta
 
-| Pendiente | Criterio | Depende de |
+| Pendiente | Criterio | Fecha límite |
 |---|---|---|
-| Alinear `definicion_problema.md` con el diseño final | R.6.1 Cr1 | Nada |
-| Probar el juez sobre el piloto y calibrarlo | R.6.1 Cr4 | Clave de Gemini |
-| Curva de punto de equilibrio en el informe | R.6.2 Cr6 | Corrida completa |
-| Prueba de inyección o declararlo como limitación | R.6.2 Cr7 | Decisión del equipo |
-| Confirmar que el repositorio es público | R.6.2 Cr8 | Equipo |
-| Flujo de integración continua (opcional) | R.7.2 Cr4 | Nada |
-| Capítulo de resultados y cifras finales | RA1, R.6.1 Cr4 | Corrida completa |
+| Actualizar guion y diapositivas con las cifras finales y ensayar | RA2 | 20 de nov |
+| Capítulo de resultados, discusión y conclusiones, y estrategia de comunicación | RA1, R.6.1 Cr4 | 27 de nov |
+| Costo y tiempo por paso, y presentar la eficiencia como calidad frente a costo | R.6.2 Cr6, R.7.2 Cr5 | 27 de nov |
+| Primera ejecución de la integración continua en GitHub (el flujo ya está escrito) | R.7.2 Cr4 | al subir |

@@ -52,7 +52,9 @@ búsqueda y lectura y un tope de acciones.
 
 **Hecho (opcional).** Graphify y tgrep se integraron como capa opcional (`src/wikillm/wiki/capas.py`, brazo
 `wiki_grafo`) y se evaluaron a fondo: no mejoran los aciertos
-([docs/evaluacion-grafo-100-papers.md](docs/evaluacion-grafo-100-papers.md)). La capa queda apagada.
+([docs/evaluacion-grafo-100-papers.md](docs/evaluacion-grafo-100-papers.md)). La capa queda apagada. Las
+citas entre papers como aristas (idea del tutor) se probaron también en las 34 preguntas de varios papers: el
+agente no usó la herramienta ni una vez ([docs/preguntas-de-varios-saltos.md](docs/preguntas-de-varios-saltos.md)).
 
 **Fuera de alcance.** La aprobación humana de los cambios del wiki antes de escribirlos.
 

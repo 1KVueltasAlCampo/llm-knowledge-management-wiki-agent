@@ -1,0 +1,244 @@
+{
+  "paso": 100,
+  "grupos": {
+    "Un solo paper": {
+      "n": 50,
+      "cobertura": {
+        "RAG k=5": 0.62,
+        "RAG k=10": 0.62,
+        "RAG k=15": 0.68,
+        "RAG k=20": 0.7,
+        "Wiki 8 acc.": 0.8,
+        "Wiki 4 acc.": 0.76
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.64,
+        "RAG k=10": 0.68,
+        "RAG k=15": 0.74,
+        "RAG k=20": 0.82,
+        "Wiki 8 acc.": 0.86,
+        "Wiki 4 acc.": 0.86
+      },
+      "correctas": {
+        "RAG k=5": 31,
+        "RAG k=10": 31,
+        "RAG k=15": 34,
+        "RAG k=20": 35,
+        "Wiki 8 acc.": 40,
+        "Wiki 4 acc.": 38
+      }
+    },
+    "Varios papers": {
+      "n": 34,
+      "cobertura": {
+        "RAG k=5": 0.265,
+        "RAG k=10": 0.441,
+        "RAG k=15": 0.471,
+        "RAG k=20": 0.559,
+        "Wiki 8 acc.": 0.559,
+        "Wiki 4 acc.": 0.529
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.118,
+        "RAG k=10": 0.265,
+        "RAG k=15": 0.294,
+        "RAG k=20": 0.324,
+        "Wiki 8 acc.": 0.412,
+        "Wiki 4 acc.": 0.382
+      },
+      "correctas": {
+        "RAG k=5": 9,
+        "RAG k=10": 15,
+        "RAG k=15": 16,
+        "RAG k=20": 19,
+        "Wiki 8 acc.": 19,
+        "Wiki 4 acc.": 18
+      }
+    },
+    "encadenados por citas": {
+      "n": 30,
+      "cobertura": {
+        "RAG k=5": 0.3,
+        "RAG k=10": 0.467,
+        "RAG k=15": 0.533,
+        "RAG k=20": 0.6,
+        "Wiki 8 acc.": 0.6,
+        "Wiki 4 acc.": 0.567
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.133,
+        "RAG k=10": 0.267,
+        "RAG k=15": 0.333,
+        "RAG k=20": 0.333,
+        "Wiki 8 acc.": 0.433,
+        "Wiki 4 acc.": 0.4
+      },
+      "correctas": {
+        "RAG k=5": 9,
+        "RAG k=10": 14,
+        "RAG k=15": 16,
+        "RAG k=20": 18,
+        "Wiki 8 acc.": 18,
+        "Wiki 4 acc.": 17
+      }
+    },
+    "sin cita entre ellos": {
+      "n": 4,
+      "cobertura": {
+        "RAG k=5": 0.0,
+        "RAG k=10": 0.25,
+        "RAG k=15": 0.0,
+        "RAG k=20": 0.25,
+        "Wiki 8 acc.": 0.25,
+        "Wiki 4 acc.": 0.25
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.0,
+        "RAG k=10": 0.25,
+        "RAG k=15": 0.0,
+        "RAG k=20": 0.25,
+        "Wiki 8 acc.": 0.25,
+        "Wiki 4 acc.": 0.25
+      },
+      "correctas": {
+        "RAG k=5": 0,
+        "RAG k=10": 1,
+        "RAG k=15": 0,
+        "RAG k=20": 1,
+        "Wiki 8 acc.": 1,
+        "Wiki 4 acc.": 1
+      }
+    },
+    "T2 (combinar)": {
+      "n": 15,
+      "cobertura": {
+        "RAG k=5": 0.4,
+        "RAG k=10": 0.6,
+        "RAG k=15": 0.667,
+        "RAG k=20": 0.733,
+        "Wiki 8 acc.": 0.8,
+        "Wiki 4 acc.": 0.8
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.267,
+        "RAG k=10": 0.467,
+        "RAG k=15": 0.6,
+        "RAG k=20": 0.6,
+        "Wiki 8 acc.": 0.8,
+        "Wiki 4 acc.": 0.733
+      },
+      "correctas": {
+        "RAG k=5": 6,
+        "RAG k=10": 9,
+        "RAG k=15": 10,
+        "RAG k=20": 11,
+        "Wiki 8 acc.": 12,
+        "Wiki 4 acc.": 12
+      }
+    },
+    "T3 (comparar)": {
+      "n": 15,
+      "cobertura": {
+        "RAG k=5": 0.2,
+        "RAG k=10": 0.4,
+        "RAG k=15": 0.4,
+        "RAG k=20": 0.467,
+        "Wiki 8 acc.": 0.467,
+        "Wiki 4 acc.": 0.4
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.0,
+        "RAG k=10": 0.133,
+        "RAG k=15": 0.067,
+        "RAG k=20": 0.133,
+        "Wiki 8 acc.": 0.133,
+        "Wiki 4 acc.": 0.133
+      },
+      "correctas": {
+        "RAG k=5": 3,
+        "RAG k=10": 6,
+        "RAG k=15": 6,
+        "RAG k=20": 7,
+        "Wiki 8 acc.": 7,
+        "Wiki 4 acc.": 6
+      }
+    },
+    "T4 (actualizar)": {
+      "n": 4,
+      "cobertura": {
+        "RAG k=5": 0.0,
+        "RAG k=10": 0.0,
+        "RAG k=15": 0.0,
+        "RAG k=20": 0.25,
+        "Wiki 8 acc.": 0.0,
+        "Wiki 4 acc.": 0.0
+      },
+      "fuentes_completas": {
+        "RAG k=5": 0.0,
+        "RAG k=10": 0.0,
+        "RAG k=15": 0.0,
+        "RAG k=20": 0.0,
+        "Wiki 8 acc.": 0.0,
+        "Wiki 4 acc.": 0.0
+      },
+      "correctas": {
+        "RAG k=5": 0,
+        "RAG k=10": 0,
+        "RAG k=15": 0,
+        "RAG k=20": 1,
+        "Wiki 8 acc.": 0,
+        "Wiki 4 acc.": 0
+      }
+    }
+  },
+  "wiki_frente_a_rag_varios_papers": [
+    {
+      "rag": "RAG k=5",
+      "n": 34,
+      "diferencia": 0.294,
+      "ic95": [
+        0.118,
+        0.5
+      ],
+      "solo_rag": 2,
+      "solo_wiki": 12,
+      "p_mcnemar": 0.0129
+    },
+    {
+      "rag": "RAG k=10",
+      "n": 34,
+      "diferencia": 0.118,
+      "ic95": [
+        -0.029,
+        0.294
+      ],
+      "solo_rag": 2,
+      "solo_wiki": 6,
+      "p_mcnemar": 0.2891
+    },
+    {
+      "rag": "RAG k=15",
+      "n": 34,
+      "diferencia": 0.088,
+      "ic95": [
+        -0.059,
+        0.235
+      ],
+      "solo_rag": 2,
+      "solo_wiki": 5,
+      "p_mcnemar": 0.4531
+    },
+    {
+      "rag": "RAG k=20",
+      "n": 34,
+      "diferencia": 0.0,
+      "ic95": [
+        -0.147,
+        0.147
+      ],
+      "solo_rag": 3,
+      "solo_wiki": 3,
+      "p_mcnemar": 1.0
+    }
+  ]
+}

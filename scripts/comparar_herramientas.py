@@ -779,6 +779,35 @@ def _grafo_de_citas(wiki: Wiki, manifest: Path) -> dict[str, Any]:
     return _INDICES[clave]
 
 
+def herramienta_citas(wiki: Wiki, manifest: Path) -> Herramienta:
+    """Acción ``cites``: papers del corpus que cita un paper y los que lo citan (del manifest)."""
+    g = _grafo_de_citas(wiki, manifest)
+    por_pagina = {slug: arxiv for arxiv, slug in g["pagina"].items()}
+
+    def linea(arxiv: str) -> str:
+        return f"- {g['pagina'].get(arxiv, '(no page)')} ({arxiv}): {g['titulo'][arxiv]}"
+
+    def ejecutar(paper: Any) -> tuple[str, str, bool]:
+        clave = re.sub(r"\.md$", "", re.sub(r"^pages/", "", str(paper).strip().strip("[]")))
+        arxiv = clave if clave in g["titulo"] else por_pagina.get(clave)
+        if arxiv is None:
+            return f"Not found: {clave}.", "not found", True
+        cita = sorted(g["cita"].get(arxiv, ()))[:10]
+        citado = sorted(g["citado_por"].get(arxiv, ()))[:10]
+        partes = [f"Papers in the corpus that {arxiv} cites:"] + [linea(a) for a in cita]
+        partes += [f"Papers in the corpus that cite {arxiv}:"] + [linea(a) for a in citado]
+        resumen = f"{len(cita)} cited, {len(citado)} citing"
+        return "\n".join(partes), resumen, not (cita or citado)
+
+    return Herramienta(
+        "cites",
+        "paper",
+        '{"action": "cites", "paper": "page slug or arXiv id"} returns the papers of the corpus '
+        "that this paper cites and the papers of the corpus that cite it, each with its page slug",
+        ejecutar,
+    )
+
+
 class PrecargaPipeline:
     """La cadena que describió el tutor, sin dejar al agente decidir si usarla.
 
@@ -1211,6 +1240,11 @@ def crear_agente(
     # perezoso: cada variante solo construye lo que necesita (el grafo, el binario de tgrep...)
     herramientas = {
         "generico": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "citas": lambda: [
+            herramienta_busqueda(wiki),
+            herramienta_citas(wiki, args.manifest),
+            herramienta_lectura(wiki),
+        ],
         "grep": lambda: [herramienta_grep(wiki), herramienta_lectura(wiki)],
         "secciones": lambda: [herramienta_busqueda(wiki), herramienta_lectura_por_secciones(wiki)],
         "esquema": lambda: [

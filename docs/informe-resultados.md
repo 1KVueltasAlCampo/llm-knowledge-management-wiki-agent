@@ -81,7 +81,15 @@ páginas: 0,38 el grafo, 0,67 el `search` actual, 0,80 el texto completo) y tgre
 mejorar de forma significativa los aciertos (`docs/evaluacion-grafo-100-papers.md`,
 `docs/informe-graphify-independiente.md`). Gasto total de estas pruebas: ≈ 1 USD.
 
-### 2.7 Seguridad frente a texto malicioso
+### 2.7 Preguntas de varios saltos y citas entre papers
+
+Sin cambiar ninguna pregunta, las 34 que exigen combinar dos o más papers (30 de ellas encadenadas por
+citas) son las difíciles: el RAG con `k = 5` acierta el 26 % y el wiki el 56 % (62 % y 80 % en las de un solo
+paper). La ventaja del wiki ahí es +0,29 con `k = 5` (p = 0,013) y **0,00 con `k = 20`**. Una herramienta
+que le deja al agente seguir las citas entre papers **no se usó ni una vez** en 34 preguntas y no mejoró los
+aciertos (`docs/preguntas-de-varios-saltos.md`).
+
+### 2.8 Seguridad frente a texto malicioso
 
 Se sembraron órdenes con un canario (anulación directa, suplantación del sistema, secuestro del agente) en los
 documentos que ven el RAG, la consulta del wiki y la ingesta: **0 ataques logrados en 72 respuestas y 2
@@ -130,13 +138,14 @@ adoptar el wiki conviene probar un RAG con más contexto, que cierra buena parte
 3. **El límite del wiki es la captura, no el olvido:** conserva lo que aprende (97 % de las cifras) pero capta
    del 63 % al 80 % de lo respondible y no retira valores obsoletos. Mejorar la ingesta es el trabajo futuro
    con más recorrido.
-4. **Más herramientas no ayudaron:** ningún grafo supera a la búsqueda de texto completo y tgrep solo ahorra
-   llamadas. Los recortes de costo por tope de acciones son baratos pero pierden respuestas.
+4. **Más herramientas no ayudaron:** ningún grafo supera a la búsqueda de texto completo, tgrep solo ahorra
+   llamadas y el agente no usó una herramienta de citas entre papers ni una vez en las 34 preguntas de varios
+   saltos. Los recortes de costo por tope de acciones son baratos pero pierden respuestas.
 5. **El método es confiable y el sistema resiste inyecciones sencillas:** acuerdo de 94,8 % entre jueces y 0
    ataques logrados en la prueba de inyección, con los límites declarados.
 
-**Trabajo futuro.** Ingesta que capte más y retire lo obsoleto; preguntas de varios saltos con las citas entre
-papers; RAG híbrido (BM25 más vectores) como línea base aparte; más repeticiones y otros modelos.
+**Trabajo futuro.** Ingesta que capte más y retire lo obsoleto; preguntas nuevas de varios saltos que obliguen
+a encadenar citas; RAG híbrido (BM25 más vectores) como línea base aparte; más repeticiones y otros modelos.
 
 ## 5. Estrategia de comunicación (criterio F3 de la rúbrica)
 

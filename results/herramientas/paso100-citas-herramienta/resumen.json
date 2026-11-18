@@ -1,0 +1,24 @@
+[
+ {
+  "variante": "generico",
+  "n": 34,
+  "correctas": 11,
+  "llamadas": 3.85,
+  "tokens_entrada": 10839,
+  "tokens_contexto": 4604,
+  "tokens_salida": 358,
+  "usd": 0.000408,
+  "segundos": 6.9
+ },
+ {
+  "variante": "citas",
+  "n": 34,
+  "correctas": 9,
+  "llamadas": 3.94,
+  "tokens_entrada": 13375,
+  "tokens_contexto": 5552,
+  "tokens_salida": 341,
+  "usd": 0.001184,
+  "segundos": 7.0
+ }
+]

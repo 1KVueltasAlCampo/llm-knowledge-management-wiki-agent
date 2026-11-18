@@ -256,7 +256,8 @@ AJUSTES = Settings(
 
 
 def test_sin_gpu_el_error_indica_cambiar_a_cpu(monkeypatch):
-    import torch
+    # La integración continua no instala PyTorch: allí esta prueba se omite.
+    torch = pytest.importorskip("torch")
 
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
     with pytest.raises(ErrorDeDispositivo, match="EMBEDDING_DEVICE=cpu"):

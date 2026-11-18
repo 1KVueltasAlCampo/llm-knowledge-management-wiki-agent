@@ -1,0 +1,42 @@
+name: CI
+
+# Calidad en cada cambio: estilo, formato y pruebas. Las pruebas nunca llaman a la API real (regla 7),
+# así que no hacen falta claves. Tampoco usan PyTorch: se omiten torch y las bibliotecas CUDA que trae
+# para que la instalación tarde segundos en vez de varios gigabytes.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  calidad:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: "1"
+      EMBEDDING_DEVICE: cpu
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar dependencias (sin torch ni CUDA)
+        run: |
+          excluir=$(grep -E '^name = "(torch|triton|nvidia-[a-z0-9-]+)"' uv.lock \
+            | sed -E 's/name = "(.*)"/--no-install-package \1/' | sort -u | tr '\n' ' ')
+          uv sync --frozen $excluir
+
+      - name: Estilo (ruff check)
+        run: uv run --no-sync ruff check .
+
+      - name: Formato (ruff format)
+        run: uv run --no-sync ruff format --check .
+
+      - name: Pruebas
+        run: uv run --no-sync pytest

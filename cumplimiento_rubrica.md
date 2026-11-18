@@ -21,8 +21,9 @@ consulta, mezcla documentos obsoletos con vigentes y no acumula nada. El proyect
 abierta de IA porque es la versión más difícil del mismo problema y la única que se puede evaluar en público. La
 pregunta de investigación y la hipótesis están en el [README](README.md#pregunta-de-investigación-e-hipótesis).
 
-**Falta.** Un párrafo en el informe que traduzca los resultados a la decisión de negocio (cuándo conviene
-compilar y cuándo recuperar), con el costo y la sensibilidad al contexto del RAG.
+- **Decisión de negocio (18-nov).** Redactada en la discusión del borrador
+  [docs/informe-resultados.md](docs/informe-resultados.md) (cuándo compilar y cuándo recuperar, con el costo
+  y la sensibilidad al contexto del RAG). **Falta** pasarla al informe en LaTeX.
 
 ### Cr2: Elección del modelo
 
@@ -98,9 +99,13 @@ se compensa en costo. Lo que el experimento muestra es una mejora de **calidad**
 `k = 5`), que se reduce cuando el RAG recibe un contexto como el del wiki. También se midió que el wiki casi no
 olvida lo aprendido (97 % a 99 % de las cifras se conservan entre cargas) pero no capta todo al ingerir.
 
-**Falta.** Calcular y graficar con los datos de la corrida el costo y el tiempo por paso y por consulta
-(`scripts/punto_de_equilibrio.py`), y presentar la eficiencia como calidad frente a costo, sin sugerir un
-ahorro que no existe.
+- **Calidad frente a costo (18-nov).** [docs/eficiencia-calidad-costo.md](docs/eficiencia-calidad-costo.md)
+  une la construcción (1,6 a 2,9 USD y 1,8 h), el costo y el tiempo por consulta y por respuesta correcta, y
+  escenarios de 100 a 10.000 consultas: en el paso 100 el wiki acierta 19 respuestas más de cada 100 a 7,2 veces
+  el costo por consulta (unas 6 veces por respuesta correcta con 10.000 consultas). Un experimento de 0,068 USD
+  con tope de 4 acciones recortó el costo un 29 % y perdió 3 respuestas (no significativo).
+
+**Falta.** Solo llevarlo al informe sin sugerir un ahorro que no existe.
 
 ### Cr7: Mitigación de riesgos éticos
 
@@ -211,8 +216,9 @@ consta y comprueba que el wiki contenga exactamente los N primeros papers. Se ej
 con cortes de red que se reanudaron sin perder datos. El corpus creció de 50 a 100 papers sin cambiar el
 código.
 
-**Falta.** Graficar el costo y el tiempo por paso a medida que el corpus crece de 0 a 100 papers (los datos
-están en `ingestas.jsonl` de la construcción).
+- **Costo y tiempo por paso (18-nov).** Las curvas de ingesta de 0 a 100 papers están en
+  `results/costo-calidad/` (`ingesta_usd_acumulado.svg`, `ingesta_minutos_acumulados.svg`) y se explican en
+  [docs/eficiencia-calidad-costo.md](docs/eficiencia-calidad-costo.md).
 
 ### Cr6: Prácticas MLOps
 
@@ -231,15 +237,15 @@ llega el nuevo.
 **Hecho.** Informe y anteproyecto en LaTeX ([docs/entrega](docs/entrega/)), estado del arte con referencias
 verificadas, cronograma como diagrama de Gantt, y los documentos de evaluación con tablas.
 
+**Borrador hecho (18-nov).** [docs/informe-resultados.md](docs/informe-resultados.md) trae Resultados,
+Discusión, Conclusiones y la estrategia de comunicación, con las cifras de las corridas guardadas y el
+mensaje: *compilar y mantener no es lo mismo que recuperar, y la diferencia se mide, pero depende del
+contexto que se da al RAG*.
+
 **Falta (es el mayor pendiente).**
-- **F1 y F2, estructura e intención:** el informe conserva la estructura del anteproyecto («Resultados
-  esperados»). Hay que escribir Resultados, Discusión y Conclusiones con las cifras reales y ordenar el
-  mensaje: *compilar y mantener no es lo mismo que recuperar, y la diferencia se mide, pero depende del
-  contexto que se da al RAG*.
-- **F3, canales y medios:** declarar la estrategia de comunicación (audiencia: tutor y jurado; texto: informe,
-  resumen y one-pager; medios: documento, exposición, demostración y repositorio).
-- **F4, conclusiones:** a partir de los resultados (sensibilidad al `k`, deriva y captura en la ingesta,
-  Graphify y tgrep), no de la hipótesis.
+- **F1, F2, F3 y F4:** pasar ese borrador a `docs/entrega/informe.tex` (que sigue con «Resultados
+  esperados»), recompilar el PDF (no hay LaTeX en el equipo de desarrollo) y revisar la redacción de los
+  autores.
 - **F5, gramática y referencias:** revisión de redacción, tablas y figuras con el estilo pedido por el curso.
 
 ## RA2: Comunicación oral (exposición el 20 de noviembre)
@@ -261,6 +267,5 @@ responde.
 | Pendiente | Criterio | Fecha límite |
 |---|---|---|
 | Actualizar guion y diapositivas con las cifras finales y ensayar | RA2 | 20 de nov |
-| Capítulo de resultados, discusión y conclusiones, y estrategia de comunicación | RA1, R.6.1 Cr4 | 27 de nov |
-| Costo y tiempo por paso, y presentar la eficiencia como calidad frente a costo | R.6.2 Cr6, R.7.2 Cr5 | 27 de nov |
+| Pasar el borrador de resultados, discusión y conclusiones al informe en LaTeX y recompilarlo | RA1, R.6.1 Cr4 | 27 de nov |
 | Primera ejecución de la integración continua en GitHub (el flujo ya está escrito) | R.7.2 Cr4 | al subir |

@@ -1,0 +1,33 @@
+{
+ "modelo": "Claude Sonnet 5.5 (claude-sonnet-5-5) en Claude Code",
+ "fecha": "2026-11-17",
+ "total": {
+  "n": 115,
+  "porcentaje": 0.9478260869565217,
+  "kappa": 0.8933539412673879
+ },
+ "por_origen": {
+  "determinista": {
+   "n": 40,
+   "porcentaje": 0.975,
+   "kappa": 0.95
+  },
+  "juez": {
+   "n": 75,
+   "porcentaje": 0.9333333333333333,
+   "kappa": 0.8585439456808752
+  }
+ },
+ "por_sistema": {
+  "rag": {
+   "n": 53,
+   "porcentaje": 0.9622641509433962,
+   "kappa": 0.9196969696969697
+  },
+  "wiki": {
+   "n": 62,
+   "porcentaje": 0.9354838709677419,
+   "kappa": 0.8705636743215031
+  }
+ }
+}

@@ -1,0 +1,116 @@
+{"meta": {"modelo": "Claude Sonnet 5.5 (claude-sonnet-5-5) en Claude Code", "fecha": "2026-11-17", "calificacion": "ciega, rúbrica del juez principal"}}
+{"item_id": "i0001", "veredicto": "correcta", "motivo": "HippoRAG: grafo sin esquema y PPR; TOKI: operador bitemporal tipado para resolver contradicciones"}
+{"item_id": "i0002", "veredicto": "correcta", "motivo": "GraphRAG"}
+{"item_id": "i0003", "veredicto": "incorrecta", "motivo": "da 66,70 % y 39,06 %; la referencia es 67,6 % frente a 32,4 %"}
+{"item_id": "i0004", "veredicto": "incorrecta", "motivo": "da 7k, 14k y 600k; la referencia es 1764, 3616 y 3911"}
+{"item_id": "i0005", "veredicto": "correcta", "motivo": "89,1 y una ganancia de unos 20 puntos (la referencia dice que el paper redondea a 20); limitación del survey correcta; la línea base (69,1) difiere levemente"}
+{"item_id": "i0006", "veredicto": "correcta", "motivo": "91,4, 89,0 y 83,6 con sus modelos"}
+{"item_id": "i0007", "veredicto": "incorrecta", "motivo": "dice que no hay un mejor puntaje a 128K; la referencia es 94,4 (Gemini-1.5-Pro)"}
+{"item_id": "i0008", "veredicto": "correcta", "motivo": "94,8 y 98,2 con MemGPT 93,4"}
+{"item_id": "i0009", "veredicto": "incorrecta", "motivo": "omite la limitación que señala el survey y da una línea base de 65,6"}
+{"item_id": "i0010", "veredicto": "incorrecta", "motivo": "dice que no se puede establecer; la referencia es que no coinciden, con cifras"}
+{"item_id": "i0011", "veredicto": "incorrecta", "motivo": "dice que no hay un J global; la referencia es 66,88 (y 64,57, 62,14)"}
+{"item_id": "i0012", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia da 43,34 y 38,57"}
+{"item_id": "i0013", "veredicto": "correcta", "motivo": "grafo sin esquema como índice del hipocampo y PPR; el survey trata el grafo como memoria estructural"}
+{"item_id": "i0014", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 0,831 (y 71,0)"}
+{"item_id": "i0015", "veredicto": "incorrecta", "motivo": "brecha de 18 puntos y sin la limitación del survey; la referencia es 20,9"}
+{"item_id": "i0016", "veredicto": "correcta", "motivo": "E2GraphRAG"}
+{"item_id": "i0017", "veredicto": "incorrecta", "motivo": "da el 80 % pero omite el regret acumulado de -20,0 de Online WiCER"}
+{"item_id": "i0018", "veredicto": "incorrecta", "motivo": "da 63,8 y 71,2 pero no los valores de papers posteriores (63,8 de MemOS, 60,20 de LiCoMemory)"}
+{"item_id": "i0019", "veredicto": "incorrecta", "motivo": "menciona dos papers y omite E2GraphRAG"}
+{"item_id": "i0020", "veredicto": "incorrecta", "motivo": "da 63,8 y 71,2 pero no los valores de papers posteriores"}
+{"item_id": "i0021", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 14,65 MB y 0,38 µs"}
+{"item_id": "i0022", "veredicto": "correcta", "motivo": "grafo sin esquema como índice del hipocampo y PPR; el survey describe el grafo como medio de memoria estructural"}
+{"item_id": "i0023", "veredicto": "correcta", "motivo": "E2GraphRAG"}
+{"item_id": "i0024", "veredicto": "incorrecta", "motivo": "dice que solo un paper menciona MEMTRACK; la referencia son tres"}
+{"item_id": "i0025", "veredicto": "incorrecta", "motivo": "da 7k, 14k y 600k; la referencia es 1764, 3616 y 3911"}
+{"item_id": "i0026", "veredicto": "correcta", "motivo": "grafo con nodos de frases y pasajes y PPR frente a wiki Markdown con enlaces bidireccionales y operaciones de búsqueda y lectura"}
+{"item_id": "i0027", "veredicto": "incorrecta", "motivo": "dice que son 10 conversaciones y omite las 50 del paper de LoCoMo y el desacuerdo"}
+{"item_id": "i0028", "veredicto": "correcta", "motivo": "p = 2,56e-6, igual al valor de la referencia"}
+{"item_id": "i0029", "veredicto": "correcta", "motivo": "MemoryAgentBench (2507.05257)"}
+{"item_id": "i0030", "veredicto": "correcta", "motivo": "HippoRAG amplía el índice sin resolver contradicciones; GC-Mem elimina fragmentos contradichos con dominancia temporal"}
+{"item_id": "i0031", "veredicto": "incorrecta", "motivo": "dice que no hay un mejor puntaje a 128K; la referencia es 94,4"}
+{"item_id": "i0032", "veredicto": "correcta", "motivo": "67,6 % es el valor de la referencia; el dato adicional del 39,06 % es correcto"}
+{"item_id": "i0033", "veredicto": "incorrecta", "motivo": "la dirección es correcta pero da 0,486 para HippoRAG 2 y una brecha de 25,3; la referencia es 0,624 y 11,5 puntos"}
+{"item_id": "i0034", "veredicto": "incorrecta", "motivo": "menciona dos papers y omite E2GraphRAG"}
+{"item_id": "i0035", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es GPT-5-mini con 60,6"}
+{"item_id": "i0036", "veredicto": "incorrecta", "motivo": "no da los 7.512 del paper de LoCoMo y declara la discrepancia sin resolver"}
+{"item_id": "i0037", "veredicto": "incorrecta", "motivo": "menciona dos papers y omite E2GraphRAG"}
+{"item_id": "i0038", "veredicto": "correcta", "motivo": "MemoryAgentBench (2507.05257)"}
+{"item_id": "i0039", "veredicto": "correcta", "motivo": "20,3 % frente a 56,8 %, una caída de 36,5 puntos"}
+{"item_id": "i0040", "veredicto": "incorrecta", "motivo": "da 89,1; la referencia es 90,4"}
+{"item_id": "i0041", "veredicto": "incorrecta", "motivo": "da 89,1 como el máximo; la referencia es 89,5 (Contriever)"}
+{"item_id": "i0042", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es CAG"}
+{"item_id": "i0043", "veredicto": "correcta", "motivo": "0,8"}
+{"item_id": "i0044", "veredicto": "incorrecta", "motivo": "acierta el factor (estrategia de servicio) pero contrasta otro par de papers y omite los resultados de WiCER (4,38 frente a 4,08) de la referencia"}
+{"item_id": "i0045", "veredicto": "incorrecta", "motivo": "da 51,9; la referencia es 53,2"}
+{"item_id": "i0046", "veredicto": "correcta", "motivo": "A-MEM con el método Zettelkasten"}
+{"item_id": "i0047", "veredicto": "correcta", "motivo": "69 días"}
+{"item_id": "i0048", "veredicto": "correcta", "motivo": "PPR sobre un grafo extraído con un LLM frente a operadores bitemporales de escritura con aislamiento"}
+{"item_id": "i0049", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia da 53,61, 66,4 y 56,80"}
+{"item_id": "i0050", "veredicto": "correcta", "motivo": "E2GraphRAG"}
+{"item_id": "i0051", "veredicto": "incorrecta", "motivo": "da retención, razonamiento temporal, actualización e integración; la referencia son recuperación precisa, aprendizaje en la prueba, comprensión de largo alcance y olvido selectivo"}
+{"item_id": "i0052", "veredicto": "incorrecta", "motivo": "el rango de MemStrata coincide (0,95 a 1,00) pero el del RAG llega a 0,43 y la referencia es 0,20 a 0,47"}
+{"item_id": "i0053", "veredicto": "correcta", "motivo": "87,1 %"}
+{"item_id": "i0054", "veredicto": "correcta", "motivo": "paso de la contrapartida reactiva a una predicha a partir del flujo de noticias"}
+{"item_id": "i0055", "veredicto": "incorrecta", "motivo": "da 75,14 y 76,60; la referencia es 65,99, 59,22, 40,30 y 44,76"}
+{"item_id": "i0056", "veredicto": "incorrecta", "motivo": "da 51,9 como el máximo; la referencia es 52,1 (Contriever)"}
+{"item_id": "i0057", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 0,8"}
+{"item_id": "i0058", "veredicto": "incorrecta", "motivo": "da 1.986 y 1.540 pero no los 7.512 del paper de LoCoMo"}
+{"item_id": "i0059", "veredicto": "incorrecta", "motivo": "da 7k, 14k y 600k; la referencia es 1764, 3616 y 3911"}
+{"item_id": "i0060", "veredicto": "correcta", "motivo": "GraphRAG"}
+{"item_id": "i0061", "veredicto": "correcta", "motivo": "p = 2,56e-6"}
+{"item_id": "i0062", "veredicto": "incorrecta", "motivo": "dice que el paper de Mem0 no publica un valor global y atribuye 66,88 a Hindsight; omite el 62,14 de la referencia"}
+{"item_id": "i0063", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 90,4"}
+{"item_id": "i0064", "veredicto": "correcta", "motivo": "del bucle reactivo a uno proactivo basado en una predicción"}
+{"item_id": "i0065", "veredicto": "correcta", "motivo": "resultados opuestos, con el wiki peor que el RAG en el estudio de la brecha de compilación, y la estrategia de servicio como factor"}
+{"item_id": "i0066", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 43,34 y 38,57"}
+{"item_id": "i0067", "veredicto": "correcta", "motivo": "decide al escribir si las memorias viejas siguen siendo útiles, se revisan o se bloquean, y las marca como obsoletas o actuales desconocidas"}
+{"item_id": "i0068", "veredicto": "correcta", "motivo": "grafo sin esquema de HippoRAG frente a páginas de wiki persistentes de TrajWiki"}
+{"item_id": "i0069", "veredicto": "correcta", "motivo": "grafo de conocimiento frente a páginas de wiki persistentes"}
+{"item_id": "i0070", "veredicto": "correcta", "motivo": "HippoRAG 2 sin retroalimentación y WikiLoop que aprende de la utilidad posterior"}
+{"item_id": "i0071", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia da 65,99, 59,22, 40,30 y 44,76"}
+{"item_id": "i0072", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 94,8 y 98,2"}
+{"item_id": "i0073", "veredicto": "incorrecta", "motivo": "da 51,9; la referencia es 53,2"}
+{"item_id": "i0074", "veredicto": "incorrecta", "motivo": "menciona solo el propio paper de MEMTRACK; la referencia son tres papers"}
+{"item_id": "i0075", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 218 artículos de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0076", "veredicto": "correcta", "motivo": "HippoRAG sin mecanismo de resolución; GC-Mem elimina fragmentos contradichos con dominancia temporal"}
+{"item_id": "i0077", "veredicto": "incorrecta", "motivo": "da solo 300 turnos y omite los otros valores de la referencia (600 turnos y 27,2 sesiones de 21)"}
+{"item_id": "i0078", "veredicto": "incorrecta", "motivo": "dice que el paper de Mem0 no publica un valor global; omite el 66,88 y el 62,14 de la referencia"}
+{"item_id": "i0079", "veredicto": "incorrecta", "motivo": "da 7k, 14k y 600k; la referencia es 1764, 3616 y 3911"}
+{"item_id": "i0080", "veredicto": "incorrecta", "motivo": "da 89,1; la referencia es 90,4"}
+{"item_id": "i0081", "veredicto": "correcta", "motivo": "0,857 s"}
+{"item_id": "i0082", "veredicto": "incorrecta", "motivo": "dice que no hay un valor numérico; la referencia es 52,94 (y 74,7 en el paper de HippoRAG 2)"}
+{"item_id": "i0083", "veredicto": "correcta", "motivo": "67,6 %"}
+{"item_id": "i0084", "veredicto": "correcta", "motivo": "12 documentos y 2.017.886 tokens"}
+{"item_id": "i0085", "veredicto": "incorrecta", "motivo": "menciona solo el paper de REALTALK; la referencia son cinco papers"}
+{"item_id": "i0086", "veredicto": "correcta", "motivo": "el estudio 3x3 no encuentra beneficio; MERIT sí en hechos actualizados (1,00 / 0,70 / 1,00) frente a una recuperación que cae a 0,35 a 0,70"}
+{"item_id": "i0087", "veredicto": "incorrecta", "motivo": "dice que no se describe el artefacto estructural de HippoRAG 2 ni la comparación; la referencia sí los da"}
+{"item_id": "i0088", "veredicto": "incorrecta", "motivo": "da 75,10, 75,14 y 76,60; la referencia es 65,99, 59,22, 40,30 y 44,76"}
+{"item_id": "i0089", "veredicto": "correcta", "motivo": "82,6 %"}
+{"item_id": "i0090", "veredicto": "incorrecta", "motivo": "dice que no hay un valor numérico; la referencia es 74,7"}
+{"item_id": "i0091", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia contrasta WiCER con el estudio de ronda única"}
+{"item_id": "i0092", "veredicto": "incorrecta", "motivo": "da 39,06 % y 66,70 %; la referencia es 67,6 % frente a 32,4 %"}
+{"item_id": "i0093", "veredicto": "incorrecta", "motivo": "da 7k, 14k y 600k; la referencia es 1764, 3616 y 3911"}
+{"item_id": "i0094", "veredicto": "correcta", "motivo": "66,88 publicado y 62,14 al ponderar por preguntas; falta el 64,57 de MemOS, dato secundario"}
+{"item_id": "i0095", "veredicto": "correcta", "motivo": "0,8"}
+{"item_id": "i0096", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 74,7 frente a 51,9"}
+{"item_id": "i0097", "veredicto": "correcta", "motivo": "LightMem"}
+{"item_id": "i0098", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 43,34 y 38,57"}
+{"item_id": "i0099", "veredicto": "correcta", "motivo": "67,6 %; el 39,06 % adicional es correcto"}
+{"item_id": "i0100", "veredicto": "incorrecta", "motivo": "menciona dos papers y omite E2GraphRAG"}
+{"item_id": "i0101", "veredicto": "correcta", "motivo": "87,1 %"}
+{"item_id": "i0102", "veredicto": "correcta", "motivo": "0,05"}
+{"item_id": "i0103", "veredicto": "incorrecta", "motivo": "da 7k, 14k y 600k; la referencia es 1764, 3616 y 3911"}
+{"item_id": "i0104", "veredicto": "incorrecta", "motivo": "menciona solo el paper de REALTALK; la referencia son cinco papers"}
+{"item_id": "i0105", "veredicto": "incorrecta", "motivo": "dice que no hay un J global; la referencia es 66,88 (y 64,57, 62,14)"}
+{"item_id": "i0106", "veredicto": "incorrecta", "motivo": "dice que no hay comparación directa; la referencia es que no coinciden, con cifras"}
+{"item_id": "i0107", "veredicto": "correcta", "motivo": "línea de tiempo versionada con procedencia frente a historia cruda con resolución temporal por el lector"}
+{"item_id": "i0108", "veredicto": "incorrecta", "motivo": "no da los 62,60 de LightMem ni los 57,40 de LiCoMemory; solo valores por categoría de otro modelo base"}
+{"item_id": "i0109", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia es 218 artículos de 2023 Q1 a 2025 Q4"}
+{"item_id": "i0110", "veredicto": "correcta", "motivo": "unos 300 turnos frente a unos 600 que cita otro paper; falta la tercera descripción, dato secundario"}
+{"item_id": "i0111", "veredicto": "correcta", "motivo": "66,88 publicado y 62,14 al ponderar por preguntas; falta el 64,57 de MemOS, dato secundario"}
+{"item_id": "i0112", "veredicto": "incorrecta", "motivo": "dice que el contexto no describe la arquitectura de Raw-RAG; la referencia sí contrasta ambas"}
+{"item_id": "i0113", "veredicto": "correcta", "motivo": "GraphRAG"}
+{"item_id": "i0114", "veredicto": "incorrecta", "motivo": "se abstiene; la referencia contrasta HippoRAG con GC-Mem"}
+{"item_id": "i0115", "veredicto": "correcta", "motivo": "MemoryAgentBench (2507.05257)"}

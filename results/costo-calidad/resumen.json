@@ -1,0 +1,12 @@
+{
+  "construccion_wiki_usd": 1.6037,
+  "construccion_wiki_horas": 1.79,
+  "papers": 100,
+  "ingesta_rag_segundos": 250.4,
+  "usd_primer_paper": 0.0045,
+  "usd_ultimo_paper": 0.0254,
+  "razon_costo_consulta": 7.15,
+  "razon_tiempo_consulta": 4.12,
+  "respuestas_correctas_adicionales": 19.0,
+  "usd_por_correcta_adicional_solo_consulta": 0.00435
+}

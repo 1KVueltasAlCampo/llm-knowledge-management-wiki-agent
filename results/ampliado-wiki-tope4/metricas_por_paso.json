@@ -1,0 +1,19 @@
+[
+ {
+  "system": "wiki",
+  "ingest_step": 100,
+  "n": 100,
+  "n_respondibles": 84,
+  "cobertura": 0.6666666666666666,
+  "indeterminadas": 0,
+  "abstencion_correcta": 1.0,
+  "n_t4_actualizadas": 4,
+  "obsoletas": 0,
+  "tasa_obsoleta": 0.0,
+  "fundamentacion_media": 1.0,
+  "context_tokens_media": 3249.52,
+  "context_tokens_mediana": 3171.5,
+  "tokens_por_correcta": 5802.714285714285,
+  "costo_usd_total": 0.068158044
+ }
+]

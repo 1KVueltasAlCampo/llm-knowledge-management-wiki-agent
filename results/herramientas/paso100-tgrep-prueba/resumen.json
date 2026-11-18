@@ -1,0 +1,24 @@
+[
+ {
+  "variante": "tgrep_paginas",
+  "n": 2,
+  "correctas": 0,
+  "llamadas": 2.0,
+  "tokens_entrada": 17618,
+  "tokens_contexto": 7122,
+  "tokens_salida": 182,
+  "usd": 0.001444,
+  "segundos": 3.3
+ },
+ {
+  "variante": "tgrep_lineas",
+  "n": 2,
+  "correctas": 0,
+  "llamadas": 4.5,
+  "tokens_entrada": 38597,
+  "tokens_contexto": 11236,
+  "tokens_salida": 360,
+  "usd": 0.002336,
+  "segundos": 7.7
+ }
+]

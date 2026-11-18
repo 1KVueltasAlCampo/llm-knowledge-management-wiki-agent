@@ -622,6 +622,105 @@ class PrecargaCruda:
         )
 
 
+# --- cadena del tutor con el binario real de tgrep ---------------------------------------------
+class PrecargaTgrep:
+    """El LLM nombra los términos (entidades), tgrep real los busca y el agente decide.
+
+    ``paginas``: se cuentan las coincidencias de cada término por página (``tgrep -c``), se ordenan
+    las páginas por la suma de ``idf × (1 + log conteo)`` y se entregan las mejores completas.
+    ``lineas``: se entregan las líneas que devuelve tgrep (``-n -M``) de las mejores páginas, que el
+    agente aún tiene que abrir con ``read`` antes de responder.
+    """
+
+    def __init__(
+        self,
+        wiki: Wiki,
+        consultas: dict[str, dict[str, list[str]]],
+        tgrep: Path,
+        raiz: Path,
+        indice: Path,
+        *,
+        modo: str = "paginas",
+        paginas: int = 3,
+        lineas_por_pagina: int = 5,
+        columnas: int = 300,
+    ) -> None:
+        self._wiki = wiki
+        self._consultas = consultas
+        self._tgrep = str(tgrep)
+        self._raiz = raiz
+        self._indice = str(indice.resolve())
+        self._modo = modo
+        self._paginas = paginas
+        self._lineas = lineas_por_pagina
+        self._columnas = columnas
+
+    def _correr(self, argumentos: list[str]) -> str:
+        proceso = subprocess.run(
+            [self._tgrep, *argumentos, "--index-path", self._indice, "--no-require-git"],
+            cwd=self._raiz,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        return proceso.stdout
+
+    def _terminos(self, pregunta: str) -> list[str]:
+        c = self._consultas.get(pregunta) or {"entities": [], "keywords": [pregunta]}
+        candidatos = c["entities"] or c["keywords"]
+        return [t for t in dict.fromkeys(t.strip() for t in candidatos) if len(t) >= 3][:6]
+
+    def _ranking(self, terminos: list[str]) -> list[str]:
+        total = len(list(self._raiz.glob("pages/*.md")))
+        puntos: Counter[str] = Counter()
+        for termino in terminos:
+            conteos: dict[str, int] = {}
+            for linea in self._correr(["-c", "-i", "-F", "--", termino, "pages"]).splitlines():
+                ruta, _, cuantas = linea.rpartition(":")
+                if cuantas.isdigit() and int(cuantas) > 0:
+                    conteos[Path(ruta.replace("\\", "/")).stem] = int(cuantas)
+            if not conteos:
+                continue
+            idf = math.log(1 + total / len(conteos))
+            for slug, cuantas in conteos.items():
+                puntos[slug] += idf * (1 + math.log(cuantas))
+        return [s for s, _ in puntos.most_common() if self._wiki.existe(s)]
+
+    def __call__(self, pregunta: str) -> tuple[str, bool]:
+        terminos = self._terminos(pregunta)
+        orden = self._ranking(terminos) if terminos else []
+        if not orden:
+            return "tgrep found no page matching the question's terms.", False
+        if self._modo == "paginas":
+            bloques = [
+                f"=== Page {s} ===\n{self._wiki.leer(s).a_texto().strip()}"
+                for s in orden[: self._paginas]
+            ]
+            return (
+                "Pages found by tgrep (a trigram-indexed text search) with terms taken from the "
+                "question (best first):\n\n" + "\n\n".join(bloques),
+                True,
+            )
+        mejores = orden[:5]
+        argumentos = ["-n", "-i", "-F", "-M", str(self._columnas), "--max-columns-preview"]
+        for termino in terminos:
+            argumentos += ["-e", termino]
+        por_pagina: dict[str, list[str]] = defaultdict(list)
+        for linea in self._correr([*argumentos, "--", "pages"]).splitlines():
+            ruta, _, resto = linea.partition(":")
+            slug = Path(ruta.replace("\\", "/")).stem
+            if slug in mejores and len(por_pagina[slug]) < self._lineas:
+                por_pagina[slug].append(f"pages/{slug}.md:{resto}")
+        lineas = [ln for s in mejores for ln in por_pagina.get(s, [])]
+        return (
+            "Lines found by tgrep (a trigram-indexed text search) in the best-matching pages, "
+            "with terms taken from the question. They are leads: read the pages that bear on the "
+            "question before answering.\n\n" + "\n".join(lineas),
+            False,
+        )
+
+
 # --- cadena del tutor: consulta del LLM -> texto completo -> grafo -> WikiLLM -------------------
 PARADAS_TEXTO = frozenset(
     "a an the of in on for to and or is are was were be been what which who how many much does do "
@@ -1225,8 +1324,19 @@ def crear_agente(
             herramienta_crudo(args.indice_rag_abierto),
         ],
         "wiki_crudo_precarga": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "tgrep_paginas": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
+        "tgrep_lineas": lambda: [herramienta_busqueda(wiki), herramienta_lectura(wiki)],
     }[variante]()
     precarga = None
+    if variante.startswith("tgrep_"):
+        precarga = PrecargaTgrep(
+            wiki,
+            args.consultas_por_texto,
+            args.tgrep,
+            args.tgrep_raiz,
+            args.tgrep_indice,
+            modo="paginas" if variante == "tgrep_paginas" else "lineas",
+        )
     if variante == "wiki_crudo_precarga":
         precarga = PrecargaCruda(args.indice_rag_abierto)
     if variante.startswith("pipe_"):
@@ -1355,6 +1465,11 @@ def main() -> int:
     )
     analizador.add_argument("--tgrep", type=Path, help="tgrep.exe real (variante tgrep)")
     analizador.add_argument("--tgrep-indice", type=Path, help="carpeta del índice de tgrep")
+    analizador.add_argument(
+        "--tgrep-raiz",
+        type=Path,
+        help="carpeta con la copia de pages/ que indexó tgrep (variantes tgrep_*)",
+    )
     analizador.add_argument("--tgrep-columnas", type=int, default=300)
     analizador.add_argument("--presupuesto-grafo", type=int, default=800)
     analizador.add_argument("--profundidad-grafo", type=int, default=1)
@@ -1403,7 +1518,14 @@ def main() -> int:
     if any(v.startswith("wiki_crudo") for v in variantes):
         args.indice_rag_abierto = abrir_indice_rag(args)
     args.consultas_por_texto = {}
-    if any(v.startswith("pipe_") for v in variantes):
+    if any(v.startswith("tgrep_") for v in variantes) and not (
+        args.tgrep and args.tgrep_indice and args.tgrep_raiz
+    ):
+        print(
+            "Las variantes tgrep_* necesitan --tgrep --tgrep-indice --tgrep-raiz", file=sys.stderr
+        )
+        return 1
+    if any(v.startswith(("pipe_", "tgrep_")) for v in variantes):
         if not args.consultas:
             print("Las variantes pipe_* necesitan --consultas", file=sys.stderr)
             return 1

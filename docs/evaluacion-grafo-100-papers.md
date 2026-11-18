@@ -98,6 +98,45 @@ T2, 0,53 → 0,73. Las citas vienen de la bibliografía del paper, información 
 | Cadena sobre las **34 preguntas con varias fuentes** (sin elegir) | 11/34 | texto completo: 10/34; con citas: 11/34 | Sin diferencia. Fracción de claves 0,49 / 0,52 / 0,54 (diferencia con citas: +0,055 [−0,04, +0,16]) |
 | Cadena sobre las **47 T1** y **16 T5** (sin elegir) | T1 35/47, T5 16/16 | T1 38/47, T5 15/16 | T1: 4 ganadas y 1 perdida (p = 0,38). T5: 1 perdida. 1,0 llamadas contra 3,9 en T1 |
 
+## tgrep real a 100 papers
+
+En noviembre el binario de tgrep solo se había probado con 15 papers. El 17 de noviembre se probó a 100
+como primera etapa obligatoria de la cadena del tutor: el LLM nombra los términos (las entidades de
+`results/herramientas/paso100-consultas/consultas_llm.json`), **tgrep 1.2.7 real** los busca y el
+agente del wiki decide. Se descargó `tgrep-v1.2.7-x86_64-pc-windows-msvc.zip` (5.806.983 bytes) del
+repositorio oficial de Microsoft y se comprobó su SHA-256 (`62023fbe…cbe31`) contra el publicado. Se
+indexó una copia de las 461 páginas fuera del repo (31.801 trigramas, 0,2 s).
+
+- `tgrep_paginas`: se cuentan las coincidencias de cada término por página (`tgrep -c`), se ordenan las
+  páginas por la suma de `idf × (1 + log del conteo)` y se entregan las 3 mejores completas.
+- `tgrep_lineas`: se entregan las líneas que devuelve tgrep (`-n -M 300`) de las 5 mejores páginas, y el
+  agente tiene que abrirlas con `read` antes de responder.
+- Referencias en la misma sesión: la base y la cadena con TF-IDF (`pipe_paginas`).
+
+**30 preguntas**, fijadas por una regla antes de ver resultados: estratificadas por tipo con semilla
+20261117 (12 T1, 5 T2, 6 T3, 2 T4 y 5 T5; los ids en `results/herramientas/paso100-tgrep/preguntas.txt`).
+Una repetición, acierto por presencia de claves.
+
+| Variante | Respondibles (25) | T5 (5) | Total (30) | Llamadas | Tokens de entrada | Segundos |
+|---|--:|--:|--:|--:|--:|--:|
+| Base (`search` y `read`) | 14 | 5 | 19 | 4,1 | 7.900 | 7,0 |
+| Texto completo con TF-IDF | 15 | 5 | 20 | 2,1 | 17.400 | 3,8 |
+| **tgrep real, páginas completas** | 14 | 5 | 19 | 2,5 | 12.100 | 4,7 |
+| **tgrep real, líneas** | 14 | 5 | 19 | 3,3 | 12.300 | 5,6 |
+
+- **No hay diferencia en aciertos**: cada variante cambia 1 o 2 preguntas respecto a la base en cada
+  sentido (p = 1,0 en todas las comparaciones). tgrep con páginas empata con la base (19 y 19) y queda a
+  una pregunta del TF-IDF (20).
+- **Sí reduce llamadas y tiempo**: de 4,1 a 2,5 llamadas y de 7,0 s a 4,7 s con las páginas completas,
+  a cambio de más tokens de entrada (12.100 contra 7.900).
+- **En las 5 preguntas T5 tgrep no encontró ninguna página** (los términos no existen en el wiki), y
+  las cuatro variantes se abstuvieron bien. Su búsqueda exacta actúa como filtro; el TF-IDF siempre
+  devuelve algo.
+- El binario real da lo mismo que el TF-IDF que lo sustituía en las pruebas anteriores. Los dólares no se
+  comparan (el caché de DeepSeek altera el costo entre variantes).
+- Límites: 30 preguntas, una repetición, términos escogidos por el LLM y ranking propio sobre los
+  conteos de tgrep (tgrep no ordena por relevancia). Gasto: 0,09 USD.
+
 ## Lectura
 
 - El banco es mayoritariamente de **dato puntual** (47 T1 de 100) y de comparaciones entre dos papers
@@ -107,7 +146,9 @@ T2, 0,53 → 0,73. Las citas vienen de la bibliografía del paper, información 
   con las mayores ganancias en MuSiQue y 2WikiMultiHopQA). No hay en el banco preguntas de ese tipo.
 - Los fallos que quedan son sobre todo **contenido que el wiki no conservó** (13 % del banco) y
   **composición de la respuesta** (listas incompletas, abstención). Una mejor recuperación no los arregla.
-- La parte de la cadena que sí aporta es **buscar en el texto completo** (el papel de tgrep), no el grafo.
+- La parte de la cadena que sí aporta es **buscar en el texto completo** (el papel de tgrep), no el grafo:
+  mejora la recuperación y reduce llamadas y tiempo, pero no se ve una mejora de aciertos, tampoco con el
+  binario real de tgrep a 100 papers (30 preguntas, ver la sección anterior).
 
 ## Limitaciones
 

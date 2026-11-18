@@ -51,3 +51,6 @@ data/grafo/
 
 # Grabaciones del panel de demostración: incluyen fragmentos de papers, no se versionan
 results/demo/grabaciones/
+
+# Restos de corridas interrumpidas (se reanudan, no se versionan)
+*.parcial.jsonl
